@@ -48,11 +48,7 @@
                         Data Type (Required)        
                     </div>
                     <div class="panel-body">
-                        <select id="data-type">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
+                        <input id="data-type">
                     </div>
                 </div>
                                 
@@ -62,9 +58,9 @@
                     </div>
                     <div class="panel-body">
                         <select id="raw-file-format">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
+                            <option value="FASTQ"></option>
+                            <option value="FASTA"></option>
+                            <option value="BAM"></option>
                         </select>
                     </div>
                 </div>
@@ -76,7 +72,7 @@
                     </div>
                     <div class="panel-body">
                         <select id="organism">
-                            <option value=""></option>
+                            <option value="eco"></option>
                             <option value=""></option>
                             <option value=""></option>
                         </select>
@@ -89,11 +85,7 @@
                         Parent Strain (Required)
                     </div>
                     <div class="panel-body">
-                        <select id="parent-strain">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
+                        <input id="parent-strain">
                     </div>
                 </div>
 
@@ -102,12 +94,7 @@
                         Strain ID (Required)
                     </div>
                     <div class="panel-body">
-
-                        <select id="strain-id">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
+                        <input id="strain-id">
                     </div>
                 </div>
                 
@@ -117,11 +104,7 @@
                         Mutations (Required)
                     </div>
                     <div class="panel-body">
-                        <select id="mutations">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
+                        <input id="mutations">
                     </div>
                 </div>
                 
@@ -130,11 +113,7 @@
                         Antibody (Optional)
                     </div>
                     <div class="panel-body">
-                        <select id="antibody">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
+                        <input id="antibody">
                     </div>
                 </div>
                 
@@ -143,11 +122,7 @@
                         Growth Stage (Required)
                     </div>
                     <div class="panel-body">
-                        <select id="growth-stage">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
+                        <input id="growth-stage">
                     </div>
                 </div>
                 
@@ -157,11 +132,7 @@
                         Oxygen Availability
                     </div>
                     <div class="panel-body">
-                        <select id="oxygen-availability">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
+                        <input id="oxygen-availability">
                     </div>
                 </div>
 
@@ -171,11 +142,7 @@
                         Sample Preparation Details (Optional)
                     </div>
                     <div class="panel-body">
-                        <select id="sample-preparation-details">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
+                        <input id="sample-preparation-details">
                     </div>
                 </div>
 
@@ -184,11 +151,7 @@
                         Base Media
                     </div>
                     <div class="panel-body">
-                        <select id="base-media">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
-                        </select>
+                        <input id="base-media">
                     </div>
                 </div>
 
@@ -198,7 +161,15 @@
                         Carbon Source(s)
                     </div>
                     <div class="panel-body">
-
+                        <select id="carbon-source">
+                            <option value=""></option>
+                            <option value=""></option>
+                            <option value=""></option>
+                        </select>
+                        <br>
+                        or
+                        <br>
+                        <input id="carbon-source-custom">
                     </div>
                 </div>
 
@@ -208,7 +179,7 @@
                         Concentration for each carbon source (g/L)
                     </div>
                     <div class="panel-body">
-
+                        <input id="concentration" type="number">
                     </div>
                 </div>
                 
@@ -218,11 +189,15 @@
                         Nitrogen Source
                     </div>
                     <div class="panel-body">
-                        <select id="nitrogen">
+                        <select id="nitrogen-source">
                             <option value=""></option>
                             <option value=""></option>
                             <option value=""></option>
                         </select>
+                        <br>
+                        or
+                        <br>
+                        <input id="nitrogen-source-custom">
                     </div>
                 </div>
 
@@ -232,11 +207,15 @@
                         Phosphorous Source
                     </div>
                     <div class="panel-body">
-                        <select id="phosphorous">
+                        <select id="phosphorous-source">
                             <option value=""></option>
                             <option value=""></option>
                             <option value=""></option>
                         </select>
+                        <br>
+                        or
+                        </br>
+                        <input id="phosphorous-source-custom"> 
                     </div>
                 </div>
 
@@ -246,11 +225,15 @@
                         Sulphur Source
                     </div>
                     <div class="panel-body">
-                        <select id="sulphur">
+                        <select id="sulphur-source">
                             <option value=""></option>
                             <option value=""></option>
                             <option value=""></option>
                         </select>
+                        <br>
+                        or
+                        <br>
+                        <input id="sulphur-source-custom">
                     </div>
                 </div>
 
@@ -260,7 +243,7 @@
                         Antibiotic Resistance
                     </div>
                     <div class="panel-body">
-
+                        <input id="anitibiotic-resistance">
                     </div>
                 </div>
 
@@ -269,7 +252,7 @@
                         Replicates
                     </div>
                     <div class="panel-body">
-
+                        <input id="replicates">
                     </div>
                 </div>
 
@@ -278,172 +261,16 @@
                         Other Experimental Data 
                     </div>
                     <div class="panel-body">
-
-                    </div>
-                </div>
-
-
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Read Length
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-
-
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Illumina Kit Details
-                    </div>
-                    <div class="panel-body">
-
+                        <input id="other-experiment-variables">
                     </div>
                 </div>
 
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        Experiment Summary And Hypothesis
+                        Sequencer 
                     </div>
                     <div class="panel-body">
-
-                    </div>
-                </div>
-                
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Experimentalist
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-                
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Experimentalist Email
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-                
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Grand ID
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-                
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Kit Used To Isolate DNA/RNA
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>                
-
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        SOP Title
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Alignment Algorithm and Options
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-
-
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Reference Sequence
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-                
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Other Processing Details
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        GEO Submission
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-                
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Author(s)
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-                
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        State of Preculture
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-                
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Media of Preculture
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Flasks Since Frozen Stock
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Time Point
-                    </div>
-                    <div class="panel-body">
-
-                    </div>
-                </div>
-
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Sequencers Used 
-                    </div>
-                    <div class="panel-body">
-                        <select id='test1' multiple="multiple" style="width:100%">
+                        <select id='sequencer' multiple="multiple" style="width:100%">
                             <option value='ex1'>example1</option>
                             <option value='ex2'>example2</option>
                             <option value='ex3'>example3</option>
@@ -454,21 +281,167 @@
                         <input type="text" placeholder="Enter Sequencer" class="col-sm-12 col-md-12 col-lg-12" style="padding-left:5px;">
                     </div>
                 </div>
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Read Length
+                    </div>
+                    <div class="panel-body">
+                        <input id="read-length">
+                    </div>
+                </div>
+
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Illumina Kit Details
+                    </div>
+                    <div class="panel-body">
+                        <input id="illumina-kit-details">
+                    </div>
+                </div>
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Experiment Summary And Hypothesis
+                    </div>
+                    <div class="panel-body">
+                        <textarea class="form-control" rows="3" style="max-width:100%;"></textarea>
+                    </div>
+                </div>
+                
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Experimentalist
+                    </div>
+                    <div class="panel-body">
+                        <input id="experimentalist">
+                    </div>
+                </div>
+                
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Experimentalist Email
+                    </div>
+                    <div class="panel-body">
+                        <input id="experimentalist-email">
+                    </div>
+                </div>
+                
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Grand ID
+                    </div>
+                    <div class="panel-body">
+                        <input id="grant-id">
+                    </div>
+                </div>
+                
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Kit Used To Isolate DNA/RNA
+                    </div>
+                    <div class="panel-body">
+                        <input id="isolate-kit">
+                    </div>
+                </div>                
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        SOP Title
+                    </div>
+                    <div class="panel-body">
+                        <input id="sop-title">
+                    </div>
+                </div>
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Alignment Algorithm and Options
+                    </div>
+                    <div class="panel-body">
+                        <input id="alignment-algorithm">
+                    </div>
+                </div>
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Reference Sequence
+                    </div>
+                    <div class="panel-body">
+                        <input id="reference-sequence">
+                    </div>
+                </div>
+                
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Other Processing Details
+                    </div>
+                    <div class="panel-body">
+                        <input id="other-processing-details">
+                    </div>
+                </div>
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        GEO Submission
+                    </div>
+                    <div class="panel-body">
+                        <input id="geo-submission">
+                    </div>
+                </div>
+                
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Author(s)
+                    </div>
+                    <div class="panel-body">
+                        <input id="author">
+                    </div>
+                </div>
+                
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        State of Preculture
+                    </div>
+                    <div class="panel-body">
+                        <input id="state-of-preculture">
+                    </div>
+                </div>
+                
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Media of Preculture
+                    </div>
+                    <div class="panel-body">
+                        <input id="media-of-preculture">
+                    </div>
+                </div>
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Flasks Since Frozen Stock
+                    </div>
+                    <div class="panel-body">
+                        <input id="flasks">
+                    </div>
+                </div>
+
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Time Point
+                    </div>
+                    <div class="panel-body">
+                        <input id="time-point">
+                    </div>
+                </div>
+
                 <!--
                 <select id='test2'>
                     <option value='ex4'>example4</option>
                     <option value='ex5'>example5</option>
                     <option value='ex6'>example6</option>
                 </select>-->
-                
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        Enter in Hypothesis
-                    </div>
-                    <div class="panel-body">
-                        <textarea class="form-control" rows="3"></textarea>
-                    </div>
-                </div>
                 <button id="submitForm" type="submit" class="btn btn-default">Submit</button>
             </div>
         </div>
