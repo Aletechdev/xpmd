@@ -34,7 +34,7 @@
                     <p>...</p>
                     <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
                 </div>
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         Enter in Date (Required)
                     </div>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         Data Type (Required)        
                     </div>
@@ -52,21 +52,20 @@
                     </div>
                 </div>
                                 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         Raw File Format (Required)
                     </div>
                     <div class="panel-body">
                         <select id="raw-file-format">
-                            <option value="FASTQ"></option>
-                            <option value="FASTA"></option>
-                            <option value="BAM"></option>
+                            <option value="FASTQ">FASTQ</option>
+                            <option value="FASTA">FASTA</option>
+                            <option value="BAM">BAM</option>
                         </select>
                     </div>
                 </div>
                 
-                
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         Organism (Required)
                     </div>
@@ -80,7 +79,7 @@
                 </div>
                 
                 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         Parent Strain (Required)
                     </div>
@@ -89,7 +88,7 @@
                     </div>
                 </div>
 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         Strain ID (Required)
                     </div>
@@ -99,7 +98,7 @@
                 </div>
                 
                 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         Mutations (Required)
                     </div>
@@ -110,14 +109,14 @@
                 
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        Antibody (Optional)
+                        Antibody 
                     </div>
                     <div class="panel-body">
                         <input id="antibody">
                     </div>
                 </div>
                 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         Growth Stage (Required)
                     </div>
@@ -127,9 +126,9 @@
                 </div>
                 
                 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
-                        Oxygen Availability
+                        Oxygen Availability (Required)
                     </div>
                     <div class="panel-body">
                         <input id="oxygen-availability">
@@ -139,16 +138,16 @@
                 
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        Sample Preparation Details (Optional)
+                        Sample Preparation Details 
                     </div>
                     <div class="panel-body">
                         <input id="sample-preparation-details">
                     </div>
                 </div>
 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
-                        Base Media
+                        Base Media (Required)
                     </div>
                     <div class="panel-body">
                         <input id="base-media">
@@ -156,20 +155,20 @@
                 </div>
 
 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
-                        Carbon Source(s)
+                        Carbon Source(s) (Required)
                     </div>
                     <div class="panel-body">
-                        <select id="carbon-source">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
+                        <select id="carbon-source" multiple="multiple" style="width:100%;">
+                            <option value="ex1">example1</option>
+                            <option value="ex2">example2</option>
+                            <option value="ex3">example3</option>
                         </select>
                         <br>
                         or
                         <br>
-                        <input id="carbon-source-custom">
+                        <input id="carbon-source-custom" type="text" placeholder="Enter Carbon Source" class="col-sm-12 col-md-12 col-lg-12" style="padding-left:5px;">
                     </div>
                 </div>
 
@@ -184,63 +183,63 @@
                 </div>
                 
 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
-                        Nitrogen Source
+                        Nitrogen Source (Required)
                     </div>
                     <div class="panel-body">
-                        <select id="nitrogen-source">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
+                        <select id="nitrogen-source" multiple="multiple" style="width:100%">
+                            <option value="ex1">example1</option>
+                            <option value="ex2">example2</option>
+                            <option value="ex3">example3</option>
                         </select>
                         <br>
                         or
                         <br>
-                        <input id="nitrogen-source-custom">
+                        <input id="nitrogen-source-custom" type="text" placeholder="Enter Nitrogen Source" class="col-sm-12 col-md-12 col-lg-12" style="padding-left:5px;">
                     </div>
                 </div>
 
 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
-                        Phosphorous Source
+                        Phosphorous Source (Required)
                     </div>
                     <div class="panel-body">
-                        <select id="phosphorous-source">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
+                        <select id="phosphorous-source" multiple="multiple" style="width:100%">
+                            <option value="ex1">example1</option>
+                            <option value="ex2">example2</option>
+                            <option value="ex3">example3</option>
                         </select>
                         <br>
                         or
                         </br>
-                        <input id="phosphorous-source-custom"> 
+                        <input id="phosphorous-source-custom" type="text" placeholder="Enter Phosphorous Source" class="col-sm-12 col-md-12 col-lg-12" style="padding-left:5px;">    
                     </div>
                 </div>
 
 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
-                        Sulphur Source
+                        Sulphur Source (Required)
                     </div>
                     <div class="panel-body">
-                        <select id="sulphur-source">
-                            <option value=""></option>
-                            <option value=""></option>
-                            <option value=""></option>
+                        <select id="sulphur-source" multiple="multiple" style="width:100%">
+                            <option value="ex1">example1</option>
+                            <option value="ex2">example2</option>
+                            <option value="ex3">example3</option>
                         </select>
                         <br>
                         or
                         <br>
-                        <input id="sulphur-source-custom">
+                        <input id="sulphur-source-custom" type="text" placeholder="Enter Sulphur Source" class="col-sm-12 col-md-12 col-lg-12" style="padding-left:5px;">
                     </div>
                 </div>
 
 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
-                        Antibiotic Resistance
+                        Antibiotic Resistance (Required)
                     </div>
                     <div class="panel-body">
                         <input id="anitibiotic-resistance">
@@ -278,7 +277,7 @@
                         <br>
                         or
                         <br>
-                        <input type="text" placeholder="Enter Sequencer" class="col-sm-12 col-md-12 col-lg-12" style="padding-left:5px;">
+                        <input id="sequencer-custom" type="text" placeholder="Enter Sequencer" class="col-sm-12 col-md-12 col-lg-12" style="padding-left:5px;">
                     </div>
                 </div>
 
@@ -306,7 +305,7 @@
                         Experiment Summary And Hypothesis
                     </div>
                     <div class="panel-body">
-                        <textarea class="form-control" rows="3" style="max-width:100%;"></textarea>
+                        <textarea id="experiment-summary" class="form-control" rows="3" style="max-width:100%;"></textarea>
                     </div>
                 </div>
                 
@@ -391,9 +390,9 @@
                     </div>
                 </div>
                 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
-                        Author(s)
+                        Author(s) (Required)
                     </div>
                     <div class="panel-body">
                         <input id="author">
@@ -445,6 +444,30 @@
                 <button id="submitForm" type="submit" class="btn btn-default">Submit</button>
             </div>
         </div>
+        <footer style="padding:10px;">
+        MIT License (MIT)
+
+        Copyright (c) 2015 The Regents of the University of California
+
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+
+        The above copyright notice and this permission notice shall be included in
+        all copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+        THE SOFTWARE.
+  </footer>
+
     </div>
-  </body>
+    </body>
 </html>
