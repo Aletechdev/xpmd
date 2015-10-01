@@ -86,13 +86,26 @@ function saveFile(array){
 }
 
 function alertIncomplete(input){
-    alert( input + ' is required')
+    //alert( input + ' is required')
+    var error_string = '';
+    for(z = 0; z < data.length; z++){
+        if( getValue(data[z]) == 'Empty'){
+            error_string += data[z][0] + ' is required\n';
+        }
+    
+
+    }
+    alert(error_string);
 }
 
 function getValue(data){
        var value = $('#'+data[1]).val();  
+       if(data.length == 6){
+            value += $('#'+data[5][1]).val();
+       }
+       console.log(value);
        if(data[2] == true){
-            if (value  == ''){
+            if (value  == '' || value == 'null' || typeof value == 'undefined'){
                 //alertIncomplete(data[0]);  
                 return 'Empty';
             }
@@ -119,7 +132,6 @@ function bindFunction(data){
 
 function createHtml(data){
     //if length of data is longer or is multi input use the additional array to add extra input
-    console.log('1');
     var required = '';
     if(data[2] == false){
         required = '';
