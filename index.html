@@ -34,7 +34,8 @@
                     <p>...</p>
                     <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
                 </div>
-                <div class="panel panel-danger">
+                <div id='center-column'>
+                <!--<div class="panel panel-danger">
                     <div class="panel-heading">
                         Enter in Date (Required)
                     </div>
@@ -71,7 +72,7 @@
                     </div>
                     <div class="panel-body">
                         <select id="organism">
-                            <option value="eco"></option>
+                            <option value="eco">eco</option>
                             <option value=""></option>
                             <option value=""></option>
                         </select>
@@ -84,7 +85,7 @@
                         Parent Strain (Required)
                     </div>
                     <div class="panel-body">
-                        <input id="parent-strain">
+                        <input id="parent-strain" value="K-12 MG1655">
                     </div>
                 </div>
 
@@ -121,7 +122,7 @@
                         Growth Stage (Required)
                     </div>
                     <div class="panel-body">
-                        <input id="growth-stage">
+                        <input id="growth-stage" value="mid-log">
                     </div>
                 </div>
                 
@@ -130,7 +131,7 @@
                     <div class="panel-heading">
                         Oxygen Availability (Required)
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" value="O2">
                         <input id="oxygen-availability">
                     </div>
                 </div>
@@ -150,7 +151,7 @@
                         Base Media (Required)
                     </div>
                     <div class="panel-body">
-                        <input id="base-media">
+                        <input id="base-media" value="M9">
                     </div>
                 </div>
 
@@ -161,7 +162,7 @@
                     </div>
                     <div class="panel-body">
                         <select id="carbon-source" multiple="multiple" style="width:100%;">
-                            <option value="ex1">example1</option>
+                            <option value="Glucose">Glucose</option>
                             <option value="ex2">example2</option>
                             <option value="ex3">example3</option>
                         </select>
@@ -173,7 +174,7 @@
                 </div>
 
                 
-                <div class="panel panel-info">
+                <div class="panel panel-danger">
                     <div class="panel-heading">
                         Concentration for each carbon source (g/L)
                     </div>
@@ -189,7 +190,7 @@
                     </div>
                     <div class="panel-body">
                         <select id="nitrogen-source" multiple="multiple" style="width:100%">
-                            <option value="ex1">example1</option>
+                            <option value="NO3-">NO3-</option>
                             <option value="ex2">example2</option>
                             <option value="ex3">example3</option>
                         </select>
@@ -207,7 +208,7 @@
                     </div>
                     <div class="panel-body">
                         <select id="phosphorous-source" multiple="multiple" style="width:100%">
-                            <option value="ex1">example1</option>
+                            <option value="PO4-">PO4-</option>
                             <option value="ex2">example2</option>
                             <option value="ex3">example3</option>
                         </select>
@@ -225,7 +226,7 @@
                     </div>
                     <div class="panel-body">
                         <select id="sulphur-source" multiple="multiple" style="width:100%">
-                            <option value="ex1">example1</option>
+                            <option value="SO3-">SO3-</option>
                             <option value="ex2">example2</option>
                             <option value="ex3">example3</option>
                         </select>
@@ -270,7 +271,7 @@
                     </div>
                     <div class="panel-body">
                         <select id='sequencer' multiple="multiple" style="width:100%">
-                            <option value='ex1'>example1</option>
+                            <option value='Miseq'>Miseq</option>
                             <option value='ex2'>example2</option>
                             <option value='ex3'>example3</option>
                         </select>
@@ -286,7 +287,7 @@
                         Read Length
                     </div>
                     <div class="panel-body">
-                        <input id="read-length">
+                        <input id="read-length" value="50">
                     </div>
                 </div>
 
@@ -296,7 +297,7 @@
                         Illumina Kit Details
                     </div>
                     <div class="panel-body">
-                        <input id="illumina-kit-details">
+                        <input id="illumina-kit-details" value="50 cycle kit PE">
                     </div>
                 </div>
 
@@ -359,7 +360,7 @@
                         Alignment Algorithm and Options
                     </div>
                     <div class="panel-body">
-                        <input id="alignment-algorithm">
+                        <input id="alignment-algorithm" value="Bowtie2">
                     </div>
                 </div>
 
@@ -433,8 +434,8 @@
                     <div class="panel-body">
                         <input id="time-point">
                     </div>
+                </div>-->
                 </div>
-
                 <!--
                 <select id='test2'>
                     <option value='ex4'>example4</option>
