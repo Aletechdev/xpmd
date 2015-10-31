@@ -1,4 +1,4 @@
-/* global $, CSV, Blob, saveAs */
+/* global $, Blob, saveAs, CSV */
 
 var data = [
     { label: 'Data Type',
@@ -69,10 +69,15 @@ var data = [
 
 $(document).ready(function(){
 
+    // add the uploader
+    create_uploader();
+
+    // add the form
     for(var i = 0; i < data.length; i++) {
         // add the input
         create_input(data[i], $('#center-column'), i === 0);
     }
+
     $("#submitForm").click(function(){
         var array = [];
         for(i = 0; i < data.length; i++){
@@ -89,14 +94,29 @@ $(document).ready(function(){
 
 });
 
+function create_uploader() {
+    $('#file-upload').fileReaderJS({
+        dragClass: 'drag',
+        readAsDefault: 'Text',
+        on: {
+            load: handle_upload
+        }
+    });
+}
+
+function handle_upload(e, file) {
+    var csv_data = e.target.result,
+        arrays = new CSV(csv_data).parse();
+    for (var i = 0; i < arrays.length; i++)
+        set_value(arrays[i][0], arrays[i][1]);
+}
+
 function saveFile(array) {
-    var csv = [],
-        label = ['data-type', 'creator', 'date'].map(function(el) {
+    var label = ['data-type', 'creator', 'date'].map(function(el) {
             return get_value(el).replace(/\//g, '-');
-        }).join('_');
-    console.log(label);
-    csv.push(new CSV(array).encode());
-    var file = new Blob(csv, {type: 'text/plain;charset=utf-8'});
+        }).join('_'),
+        csv = [new CSV(array).encode()],
+        file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
     saveAs(file, label + '.csv');
 }
 
@@ -114,12 +134,16 @@ function alertIncomplete(input){
 }
 
 function get_value(id) {
-    var value = $('#' + id).val();
-    return value;
+    return $('#' + id).val();;
+}
+
+function set_value(id, value) {
+    $('#' + id).val(value);
 }
 
 function add_div(html, label, required) {
-    return '<div class="form-group"><label>' + label + required + '</label><br>' + html + '</div>';
+    return '<div class="form-group row"><div class="col-sm-6"><label>' + label + required +
+           '</label></div><div class="col-sm-6">' + html + '</div></div>';
 }
 
 function create_input(data, parent_sel, autofocus) {
@@ -132,7 +156,7 @@ function create_input(data, parent_sel, autofocus) {
         options = data['options'],
         html = '',
         autofocus_str = autofocus ? ' autofocus' : '',
-        width = '200px',
+        width = '100%',
         after_append, options_html, i;
 
     if (type == 'dropdown') {
@@ -150,7 +174,6 @@ function create_input(data, parent_sel, autofocus) {
                 };
             };
         }
-        console.log(select_options);
 
         options_html = '';
         for(i = 0; i < options.length; i++){
