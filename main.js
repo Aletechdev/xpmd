@@ -3,17 +3,15 @@
 var data = [
     { label: 'Data Type',
       id: 'data-type',
-      required: true,
       type: 'dropdown',
       custom_options: true,
-      options: ['mRNA'] },
+      options: ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo'] },
     { label: 'Date',
       id: 'date',
       required: true,
       type: 'date' },
     { label: 'Raw File Format',
       id: 'raw-file-format',
-      required: true,
       type: 'dropdown',
       options: ['FASTQ','FASTA','BAM'] },
     // ['Organism', 'organism', true, 'dropdown', 'eco', null, ['eco']],
@@ -78,21 +76,31 @@ $(document).ready(function(){
         create_input(data[i], $('#center-column'), i === 0);
     }
 
-    $("#submitForm").click(function(){
+    $('#submit').click(function(){
+        if (!check_required()) {
+            return;
+        }
         var array = [];
         for(i = 0; i < data.length; i++){
             var val = get_value(data[i]['id']);
-            if (val === null) {
-                // alertIncomplete(data[i][1]);
-                return;
-            } else {
-                array.push([data[i]['id'], val]);
-            }
+            array.push([data[i]['id'], val]);
         }
         saveFile(array);
     });
 
 });
+
+function check_required() {
+    if ($('.required.alert-danger').length !== 0) {
+        $('#submit').get(0).disabled = true;
+        $('#required-to-submit').show();
+        return false;
+    } else {
+        $('#submit').get(0).disabled = false;
+        $('#required-to-submit').hide();
+        return true;
+    }
+}
 
 function create_uploader() {
     $('#file-upload').fileReaderJS({
@@ -141,22 +149,26 @@ function set_value(id, value) {
     $('#' + id).val(value);
 }
 
-function add_div(html, label, required) {
-    return '<div class="form-group row"><div class="col-sm-6"><label>' + label + required +
-           '</label></div><div class="col-sm-6">' + html + '</div></div>';
+function add_div(html, label, required, id) {
+    var required_str;
+    if (required)
+        required_str = '<span id="required-alert-' + id + '" class="required alert alert-danger" role="alert">(Required)</span>';
+    else
+        required_str = '';
+    return '<div class="form-group row"><div class="col-sm-6"><label>' + label + required_str +
+        '</label></div><div class="col-sm-6">' + html + '</div></div>';
 }
 
 function create_input(data, parent_sel, autofocus) {
     var label = data['label'],
         id = data['id'],
-        required = data['required'] ? ' (required)' : '',
+        required = data['required'],
         type = data['type'],
         def = data['default'] || '',
         example = data['example'] || '',
         options = data['options'],
         html = '',
         autofocus_str = autofocus ? ' autofocus' : '',
-        width = '100%',
         after_append, options_html, i;
 
     if (type == 'dropdown') {
@@ -179,20 +191,34 @@ function create_input(data, parent_sel, autofocus) {
         for(i = 0; i < options.length; i++){
             options_html += '<option value="'+ options[i] + '">' + options[i] + '</option>';
         }
-        html = '<select id="' + id + '" style="width: ' + width + '" ' + autofocus_str + '>' + options_html + '</select>';
+        html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '>' + options_html + '</select>';
         after_append = function() {
             $('#' + id).select2(select_options);
         };
     } else if (type == 'date') {
-        html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: ' + width + '" >',
+        html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
+            ' placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >',
         after_append = function() {
             $('#' + id).datepicker({ format: 'yyyy-mm-dd' });
         };
     } else if (type == 'input') {
-        html = '<input id="' + id + '" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: ' + width + '" >';
+        html = '<input id="' + id + '" class="form-control" " value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >';
     }
 
     // create and run
-    parent_sel.append(add_div(html, label, required));
+    parent_sel.append(add_div(html, label, required, id));
+    // toggle the required label
+    $('#' + id).on('change', function() {
+        if (this.value === '') {
+            $('#required-alert-' + id)
+                .addClass('alert-danger')
+                .removeClass('alert-success');
+        } else {
+            $('#required-alert-' + id)
+                .addClass('alert-success')
+                .removeClass('alert-danger');
+        }
+        check_required();
+    });
     if (after_append) after_append();
 }

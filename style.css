@@ -11,6 +11,16 @@
   margin-bottom: 0;
 }
 
+.required.alert {
+  padding: 5px;
+  margin-left: 5px;
+}
+
+#required-to-submit {
+  padding: 7px;
+  margin-left: 10px;
+}
+
 .form-group.row {
   padding-bottom: 10px;
 }
@@ -20,6 +30,7 @@
   border: 2px solid #fff;
   padding: 5px;
   border: 2px dashed #ddd;
+  text-align: center;
 }
 
 #file-upload.drag {
