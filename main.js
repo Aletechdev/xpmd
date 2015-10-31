@@ -14,8 +14,19 @@ var data = [
       id: 'raw-file-format',
       type: 'dropdown',
       options: ['FASTQ','FASTA','BAM'] },
-    // ['Organism', 'organism', true, 'dropdown', 'eco', null, ['eco']],
-    // ['Parent Strain', 'parent-strain', true, 'input', 'K-12 MG1655', 'K-12 MG1655'],
+    { label: 'Organism',
+      id: 'organism',
+      type: 'dropdown',
+      default: 'eco',
+      options_function: function(callback) {
+          var options = [];
+          $.getJSON('assets/kegg_organisms.json', function(d) {
+              callback(Object.keys(d), d);
+          });
+      } },
+    { label: 'Parent strain',
+      required: true,
+      example: 'BOP27' },
     // ['Strain ID', 'strain-id', true, 'input', 'BOP27', ''],
     // ['Mutations', 'mutations', true, 'input', 'deltaCRP', ''],
     // ['Antibody', 'antibody', false, 'input', 'anti-CRP', ''],
@@ -121,8 +132,8 @@ function handle_upload(e, file) {
 
 function saveFile(array) {
     var label = ['data-type', 'creator', 'date'].map(function(el) {
-            return get_value(el).replace(/\//g, '-');
-        }).join('_'),
+        return get_value(el).replace(/\//g, '-');
+    }).join('_'),
         csv = [new CSV(array).encode()],
         file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
     saveAs(file, label + '.csv');
@@ -155,8 +166,9 @@ function add_div(html, label, required, id) {
         required_str = '<span id="required-alert-' + id + '" class="required alert alert-danger" role="alert">(Required)</span>';
     else
         required_str = '';
-    return '<div class="form-group row"><div class="col-sm-6"><label>' + label + required_str +
-        '</label></div><div class="col-sm-6">' + html + '</div></div>';
+    return '<div class="form-group row"><div class="col-sm-6"><label>' + label + '</label>' +
+        required_str +
+        '</div><div class="col-sm-6">' + html + '</div></div>';
 }
 
 function create_input(data, parent_sel, autofocus) {
@@ -167,58 +179,84 @@ function create_input(data, parent_sel, autofocus) {
         def = data['default'] || '',
         example = data['example'] || '',
         options = data['options'],
+        options_function = data['options_function'],
         html = '',
         autofocus_str = autofocus ? ' autofocus' : '',
         after_append, options_html, i;
 
-    if (type == 'dropdown') {
-        var select_options = {};
-        if (data['multiple']) {
-            select_options['multiple'] = true;
-        }
-        if (data['custom_options']) {
-            select_options['tags'] = true;
-            select_options['createTag'] = function(query) {
-                return {
-                    id: query.term,
-                    text: query.term + ' (custom)',
-                    tag: true
-                };
-            };
-        }
-
-        options_html = '';
-        for(i = 0; i < options.length; i++){
-            options_html += '<option value="'+ options[i] + '">' + options[i] + '</option>';
-        }
-        html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '>' + options_html + '</select>';
-        after_append = function() {
-            $('#' + id).select2(select_options);
-        };
-    } else if (type == 'date') {
-        html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
-            ' placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >',
-        after_append = function() {
-            $('#' + id).datepicker({ format: 'yyyy-mm-dd' });
-        };
-    } else if (type == 'input') {
-        html = '<input id="' + id + '" class="form-control" " value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >';
+    // prefer options to options_function
+    if (!options && options_function) {
+        options_function(next);
+    } else {
+        next(options, null);
     }
 
-    // create and run
-    parent_sel.append(add_div(html, label, required, id));
-    // toggle the required label
-    $('#' + id).on('change', function() {
-        if (this.value === '') {
-            $('#required-alert-' + id)
-                .addClass('alert-danger')
-                .removeClass('alert-success');
+    function next(options, options_data) {
+        if (type == 'dropdown') {
+            var select_options = {};
+            if (data['multiple']) {
+                select_options['multiple'] = true;
+            }
+            if (data['custom_options']) {
+                select_options['tags'] = true;
+                select_options['createTag'] = function(query) {
+                    return {
+                        id: query.term,
+                        text: query.term + ' (custom)',
+                        tag: true
+                    };
+                };
+            }
+            if (options_data) {
+                select_options['templateResult'] = function(state) {
+                    return state.id + ': ' + options_data[state.id];
+                };
+                select_options['matcher'] = function (params, data) {
+                    // check both the 3-letter-id and the explanation text
+                    if ($.trim(params.term) === '' ||
+                        data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1 ||
+                        options_data[data.text].toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                        return data;
+                    }
+                    return null;
+                };
+            }
+
+            options_html = '';
+            for(i = 0; i < options.length; i++){
+                var opt = options[i],
+                    selected_str = opt === def ? ' selected="selected"' : '';
+                options_html += '<option value="'+ opt + '"' + selected_str + '>' + opt + '</option>';
+            }
+            html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '>' + options_html + '</select>';
+            after_append = function() {
+                $('#' + id).select2(select_options);
+            };
+        } else if (type == 'date') {
+            html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
+                ' placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >',
+            after_append = function() {
+                $('#' + id).datepicker({ format: 'yyyy-mm-dd' });
+            };
         } else {
-            $('#required-alert-' + id)
-                .addClass('alert-success')
-                .removeClass('alert-danger');
+            html = '<input id="' + id + '" class="form-control" " value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >';
         }
-        check_required();
-    });
-    if (after_append) after_append();
+
+        // create and run
+        parent_sel.append(add_div(html, label, required, id));
+        // toggle the required label
+        $('#' + id).on('change', function() {
+            if (this.value === '') {
+                $('#required-alert-' + id)
+                    .addClass('alert-danger')
+                    .removeClass('alert-success');
+            } else {
+                $('#required-alert-' + id)
+                    .addClass('alert-success')
+                    .removeClass('alert-danger');
+            }
+            check_required();
+        });
+        if (after_append) after_append();
+    }
 }
