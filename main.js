@@ -32,7 +32,7 @@ var data = [
       default: 'eco',
       options_function: function(callback) {
           var options = [];
-          $.getJSON('assets/kegg_organisms.json', function(d) {
+          $.getJSON('kegg_organisms.json', function(d) {
               callback(Object.keys(d), d);
           });
       } },
@@ -218,12 +218,17 @@ function save_file(array) {
 }
 
 function get_value(id) {
-    return $('#' + id).val();;
+    var val = $('#' + id).val();;
+    if ((typeof val === 'undefined') || (val === null))
+        val = '';
+    return val;
 }
 
 function set_value(id, value) {
     var sel = $('#' + id),
-        split_val = value.split(',');
+        split_val = value.split(',').filter(function(x) {
+            return x.replace(' ', '') !== '';
+        });
     if (sel.data('select2')) {
         // for multiple selections, add the options if it doesn't exist
         var ids = [];
