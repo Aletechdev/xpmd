@@ -17,8 +17,8 @@ var data = [
       custom: true,
       default: 'DNA-seq',
       options: ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo'] },
-    { label: 'Date (YYYY-MM-DD)',
-      id: 'date',
+    { label: 'MiSeq Run Date (YYYY-MM-DD)',
+      id: 'run-date',
       required: true,
       type: 'date' },
     { label: 'Raw File Format',
@@ -39,66 +39,120 @@ var data = [
     { label: 'Parent strain',
       id: 'parent-strain',
       required: true,
-      example: 'BOP27' },
+      custom: true,
+      type: 'dropdown',
+      options: ['BOP27', 'BW25113 (Keio)'] },
     { label: 'Strain ID',
       id: 'strain-id',
       required: true,
       example: 'BOP286' },
+    { label: 'Mutations',
+      id: 'mutations',
+      example: 'Δcrp' },
+    { label: 'Growth Stage',
+      id: 'growth-stage',
+      example: 'mid-log' },
+    { label: 'Antibody',
+      id: 'antibody',
+      example: 'anti-CRP' },
+    { label: 'Base Media',
+      id: 'base-media',
+      type: 'dropdown',
+      required: true,
+      custom: true,
+      options: ['M9', 'LB'] },
+    { label: 'Carbon Source(s)',
+      id: 'carbon-source',
+      type: 'dropdown',
+      multiple: true,
+      custom: true,
+      options: ['Glucose', 'Fructose', 'Acetate', 'Galactose'] },
+    { label: 'Nitrogen Source(s)',
+      id: 'nitrogen-source',
+      type: 'dropdown',
+      multiple: true,
+      custom: true,
+      options: ['NO3', 'Glutamine', 'Glutamate'] },
+    { label: 'Phosphorous Source(s)',
+      id: 'phosphorous-source',
+      type: 'dropdown',
+      multiple: true,
+      custom: true,
+      options: ['PO4'] },
+    { label: 'Sulfur Source(s)',
+      id: 'Sulfur-source',
+      type: 'dropdown',
+      multiple: true,
+      custom: true,
+      options: ['Ammonium sulfate'] },
     { label: 'Electron acceptor',
       id: 'electron-acceptor',
       type: 'dropdown',
       options: ['O2', 'NO3', 'SO4'],
-      default: null,
-      required: true,
       multiple: true,
       custom: true },
-    { label: 'Base Media',
-      id: 'base-media',
-      required: true,
-      example: 'M9' },
-    { label: 'Mutations',
-      id: 'mutations',
-      example: 'Δcrp' },
-    { label: 'Antibody',
-      id: 'antibody',
-      example: 'anti-CRP' },
-    { label: 'Growth Stage',
-      id: 'growth-stage',
-      example: 'mid-log' },
-    // ['Carbon Source(s)', 'carbon-source', true, 'multi-dropdown', 'Glucose', null, ['Glucose'],
-    //  ['Carbon Source(s)', 'carbon-source-custom', false, 'input', '']],
-    // ['Concentration for each carbon source (g/L)', 'concentration', true, 'input-number', '', ''],
-    // ['Nitrogen Source', 'nitrogen-source', true, 'multi-dropdown', ['NO3'],
-    //  ['Nitrogen Source', 'nitrogen-source-custom', false, 'input']],
-    // ['Phosphorous Source', 'phosphorous-source', true, 'multi-dropdown', ['PO4'],
-    //  ['Phosphorous Source', 'phosphorous-source-custom', false, 'input']],
-    // ['Sulphur Source', 'sulphur-source', true, 'multi-dropdown', ['Sulphur'],
-    //  ['Sulphur Source', 'sulphur-source-custom', false, 'input']],
-    // ['Antibiotic Resistance', 'antibiotic-resistance', true, 'input', 'Kanamycin (50 ug/ml)', ''],
-    // ['Replicates', 'replicates', false, 'input', '', ''],
-    // ['Other Experimental Variables', 'other-experimental-variables', false, 'input', '', ''],
-    // ['Sequencer', 'sequencer', false, 'multi-dropdown', ['Miseq'],
-    //  ['Sequencer', 'sequencer-custom', false, 'input']],
-    // ['Read Length', 'read-length', false, 'input', '50', ''],
-    // ['Illumina Kit Details', 'illumina-kit-details', false, 'input', '50 cycle kit PE', '50 cycle kit PE'],
-    // ['Experiment Summary and Hypothesis', 'experiment-summary', false, 'textarea', ''],
-    // ['Experimentalist', 'experimentalist', false, 'input', '', 'Unknown'],
-    // ['Experimentalist Email', 'experimentalist-email', false, 'input', '', 'Unknown'],
-    // ['Grant ID', 'grant-id', false, 'input', '', ''],
-    // ['Kit Used to Isolate DNA/RNA', 'isolate-kit', false, 'input', 'Qiagen', 'Unknown'],
-    // ['SOP Title', 'sop-title', false, 'input', '', ''],
-    // ['Alignment Algorithm and Options', 'alignment-algorithm', false, 'input', 'Bowtie2', 'Bowtie2'],
-    // ['Reference Sequence', 'reference-sequence', false, 'input', 'NC_000913.3', 'Unknown'],
-    // ['Other Processing Details', 'other-processing-details', false, 'input', '', ''],
-    // ['GEO Submission', 'geo-submission', false, 'input', 'GDS5093', ''],
-    // ['State of Preculture', 'state-of-preculture', false, 'input', 'stationary phase overnight, exponential phase', ''],
-    // ['Media of Preculture', 'media-of-preculture', false, 'input', 'LB,M9', ''],
-    // ['Flasks Since Frozen Stock', 'flasks', false, 'input', '3', ''],
-    // ['Time Point', 'time-point', false, 'input', '200s', '']
-    { label: 'Sample Preparation Details',
-      id: 'sample-preparation-details',
-      type: 'textarea' },
+    { label: 'Antibiotic resistance',
+      id: 'antibiotic-resistance',
+      type: 'dropdown',
+      custom: true,
+      multiple: true,
+      options: ['Kanamycin', 'Spectinomycin', 'Streptomycin', 'Ampicillin',
+                'Carbenicillin', 'Bleomycin', 'Erythromycin', 'Polymyxin B',
+                'Tetracycline', 'Chloramphenicol'] },
+    { label: 'Biological replicates',
+      id: 'biological-replicates',
+      type: 'number',
+      default: 1,
+      min: 1,
+      max: 100 },
+    { label: 'Technical replicates',
+      id: 'technical-replicates',
+      type: 'number',
+      default: 1,
+      min: 1,
+      max: 100 },
+    { label: 'Sequencer',
+      id: 'sequencer',
+      type: 'dropdown',
+      custom: true,
+      default: 'MiSeq',
+      options: ['MiSeq'] },
+    { label: 'Illumina Kit Details',
+      id: 'illumina-kit-details',
+      type: 'dropdown',
+      custom: true,
+      default: '50 cycle kit PE',
+      options: ['50 cycle kit PE'] },
+    { label: 'Read Length',
+      id: 'read-length',
+      type: 'number',
+      default: 50,
+      min: 1,
+      max: 1000000 },
+    { label: 'Sample Preparation and Experiment Details',
+      id: 'expertiment-details',
+      type: 'textarea' }
 ];
+// ['Concentration for each carbon source (g/L)', 'concentration', true, 'input-number', '', ''],
+// ['Replicates', 'replicates', false, 'input', '', ''],
+// ['Other Experimental Variables', 'other-experimental-variables', false, 'input', '', ''],
+// ['Read Length', 'read-length', false, 'input', '50', ''],
+// ['Illumina Kit Details', 'illumina-kit-details', false, 'input', '50 cycle kit PE', '50 cycle kit PE'],
+// ['Experiment Summary and Hypothesis', 'experiment-summary', false, 'textarea', ''],
+// ['Experimentalist', 'experimentalist', false, 'input', '', 'Unknown'],
+// ['Experimentalist Email', 'experimentalist-email', false, 'input', '', 'Unknown'],
+// ['Grant ID', 'grant-id', false, 'input', '', ''],
+// ['Kit Used to Isolate DNA/RNA', 'isolate-kit', false, 'input', 'Qiagen', 'Unknown'],
+// ['SOP Title', 'sop-title', false, 'input', '', ''],
+// ['Alignment Algorithm and Options', 'alignment-algorithm', false, 'input', 'Bowtie2', 'Bowtie2'],
+// ['Reference Sequence', 'reference-sequence', false, 'input', 'NC_000913.3', 'Unknown'],
+// ['Other Processing Details', 'other-processing-details', false, 'input', '', ''],
+// ['GEO Submission', 'geo-submission', false, 'input', 'GDS5093', ''],
+// ['State of Preculture', 'state-of-preculture', false, 'input', 'stationary phase overnight, exponential phase', ''],
+// ['Media of Preculture', 'media-of-preculture', false, 'input', 'LB,M9', ''],
+// ['Flasks Since Frozen Stock', 'flasks', false, 'input', '3', ''],
+// ['Time Point', 'time-point', false, 'input', '200s', '']
+
 
 $(document).ready(function(){
 
@@ -155,7 +209,7 @@ function handle_upload(e, file) {
 }
 
 function save_file(array) {
-    var label = ['data-type', 'creator', 'date'].map(function(el) {
+    var label = ['data-type', 'creator', 'run-date'].map(function(el) {
         return get_value(el).replace(/\//g, '-');
     }).join('_'),
         csv = [new CSV(array).encode()],
@@ -170,10 +224,18 @@ function get_value(id) {
 function set_value(id, value) {
     var sel = $('#' + id),
         split_val = value.split(',');
-    if (sel.data('select2'))
-        sel.select2('val', split_val); // TODO bug: cannot set custom tags
-    else
-        sel.val(value);
+    if (sel.data('select2')) {
+        // for multiple selections, add the options if it doesn't exist
+        var ids = [];
+        sel.find('option').each(function() {
+            ids.push($(this).val());
+        });
+        split_val.forEach(function(val) {
+            if (ids.indexOf(val) === -1)
+                sel.append('<option value="' + val + '">' + val + '</option>');
+        });
+    }
+    sel.val(split_val).trigger('change');
 
     updated_required_label(id, value);
 }
@@ -240,7 +302,7 @@ function add_dropdown_options(input_sel, options, options_data, def, select_opti
     input_sel.select2(select_options);
 
     // to avoid the default tag
-    if (!def) input_sel.select2('val', []);
+    if (!def) input_sel.val([]).trigger('change');
 }
 
 function create_input(data, parent_sel, autofocus) {
@@ -254,12 +316,17 @@ function create_input(data, parent_sel, autofocus) {
         options_function = data['options_function'],
         multiple = data['multiple'],
         custom = data['custom'],
+        min = data['min'],
         html = '',
         autofocus_str = autofocus ? ' autofocus' : '',
         after_append;
 
     // check for some required attributes
     if (!id) console.error('No ID for ' + label);
+    if (options && (type !== 'dropdown'))
+        console.error('Has "options" with a type that is not "dropdown" for ' + label);
+    if (min && (type !== 'number'))
+        console.error('Has "min" with a type that is not "number" for ' + label);
 
     if (type == 'dropdown') {
         var select_options = {};
@@ -290,16 +357,22 @@ function create_input(data, parent_sel, autofocus) {
                 add_dropdown_options($('#' + id), options, null, def, select_options);
             }
         };
-    } else if (type == 'date') {
+    } else if (type === 'date') {
         html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
             ' placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >',
         after_append = function() {
             $('#' + id).datepicker({ format: 'yyyy-mm-dd' });
         };
-    } else if (type == 'textarea') {
-        html = '<textarea id="' + id + '" class="form-control" " value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" ></textarea>';
+    } else if (type === 'textarea') {
+        html = '<textarea id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" ></textarea>';
+    } else if (type === 'number' ){
+        html = '<input id="' + id + '" type="number" class="form-control" min="' + min + '"' +
+                 ' value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >';
+        after_append = function() {
+            $('#' + id).bootstrapNumber();
+        };
     } else {
-        html = '<input id="' + id + '" class="form-control" " value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >';
+        html = '<input id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >';
     }
 
     // create and run

@@ -5084,89 +5084,52 @@ S2.define('select2/core',[
       });
     });
 
-// Modified by Z King according to https://github.com/select2/select2/issues/3472
-    this.on('keypress', function (evt) {
-    var key = evt.which;
+// Modified by Zachary King according to https://github.com/select2/select2/issues/3472
+      this.on('keypress', function (evt) {
+          var key = evt.which;
 
-    if (self.isOpen()) {
-        if (key === KEYS.ENTER) {
-        self.trigger('results:select');
-
-        evt.preventDefault();
-        } else if ((key === KEYS.SPACE && evt.ctrlKey)) {
-        self.trigger('results:toggle');
-
-        evt.preventDefault();
-        } else if (key === KEYS.UP) {
-        self.trigger('results:previous');
-
-        evt.preventDefault();
-        } else if (key === KEYS.DOWN) {
-        self.trigger('results:next');
-
-        evt.preventDefault();
-        } else if (key === KEYS.ESC || key === KEYS.TAB) {
-        self.close();
-
-        evt.preventDefault();
-        }
-    } else {
-        if (key === KEYS.ENTER || key === KEYS.SPACE ||
-            ((key === KEYS.DOWN || key === KEYS.UP) && evt.altKey)) {
-        self.open();
-
-        evt.preventDefault();
-        }
-        if (key === KEYS.DOWN) {
-        if (undefined != this.$element.find('option:selected').next().val()) {
-            this.$element.val(this.$element.find('option:selected').next().val());
-            this.$element.trigger('change');
-        }
-        evt.preventDefault();
-        }
-        if (key === KEYS.UP) {
-        if (undefined != this.$element.find('option:selected').prev().val()) {
-            this.$element.val(this.$element.find('option:selected').prev().val());
-            this.$element.trigger('change');
-        }
-        evt.preventDefault();
-        }
-    }
-    });
-    // this.on('keypress', function (evt) {
-    //   var key = evt.which;
-
-    //   if (self.isOpen()) {
-    //     if (key === KEYS.ENTER) {
-    //       self.trigger('results:select');
-
-    //       evt.preventDefault();
-    //     } else if ((key === KEYS.SPACE && evt.ctrlKey)) {
-    //       self.trigger('results:toggle');
-
-    //       evt.preventDefault();
-    //     } else if (key === KEYS.UP) {
-    //       self.trigger('results:previous');
-
-    //       evt.preventDefault();
-    //     } else if (key === KEYS.DOWN) {
-    //       self.trigger('results:next');
-
-    //       evt.preventDefault();
-    //     } else if (key === KEYS.ESC || key === KEYS.TAB) {
-    //       self.close();
-
-    //       evt.preventDefault();
-    //     }
-    //   } else {
-    //     if (key === KEYS.ENTER || key === KEYS.SPACE ||
-    //         ((key === KEYS.DOWN || key === KEYS.UP) && evt.altKey)) {
-    //       self.open();
-
-    //       evt.preventDefault();
-    //     }
-    //   }
-    // });
+          if (key === KEYS.SHIFT) {
+              // pass
+          } else if (key === KEYS.TAB) {
+              self.close();
+          } else if (self.isOpen()) {
+              if (key === KEYS.ENTER) {
+                  self.trigger('results:toggle');
+                  evt.preventDefault();
+              } else if (key === KEYS.UP) {
+                  self.trigger('results:previous');
+                  evt.preventDefault();
+              } else if (key === KEYS.DOWN) {
+                  self.trigger('results:next');
+                  evt.preventDefault();
+              } else if (key === KEYS.ESC) {
+                  self.close();
+                  evt.preventDefault();
+              }
+          } else {
+              var just_open = (key === KEYS.ENTER || key === KEYS.SPACE || // enter & space
+                               ((key === KEYS.DOWN || key === KEYS.UP) && evt.altKey) || // alt with key
+                               this.options.get('multiple')); // with tags, always open menu
+              if (just_open) {
+                  self.open();
+                  evt.preventDefault();
+              } else if (key === KEYS.DOWN) {
+                  if (typeof this.$element.find('option:selected').next().val() !== 'undefined')
+                      this.$element.val(this.$element.find('option:selected').next().val());
+                  else
+                      this.$element.val(this.$element.find('option').first().val());
+                  this.$element.trigger('change');
+                  evt.preventDefault();
+              } else if (key === KEYS.UP) {
+                  if (typeof this.$element.find('option:selected').prev().val() !== 'undefined')
+                      this.$element.val(this.$element.find('option:selected').prev().val());
+                  else
+                      this.$element.val(this.$element.find('option').first().val());
+                  this.$element.trigger('change');
+                  evt.preventDefault();
+              }
+          }
+      });
   };
 
   Select2.prototype._syncAttributes = function () {
