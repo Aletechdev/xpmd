@@ -16,7 +16,7 @@ var data = [
       type: 'dropdown',
       custom: true,
       default: 'DNA-seq',
-      options: ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo'] },
+      options: ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq'] },
     { label: 'MiSeq Run Date (YYYY-MM-DD)',
       id: 'run-date',
       required: true,
