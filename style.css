@@ -36,3 +36,30 @@
 #file-upload.drag {
   background-color: #ffdddd;
 }
+
+.concentration-input {
+  margin-top: 2px;
+}
+
+.concentration-input>span {
+  padding-right: 10px;
+  width: 60%;
+  display: inline-block;
+}
+
+.concentration-input>input {
+  width: 40%;
+  display: inline-block;;
+}
+
+.match-height {
+  height: 60px;
+}
+
+ol>li {
+  margin-top: 10px;
+}
+  
+#folder-name {
+  background-color: white;
+}
