@@ -139,10 +139,9 @@ var data = [
       options: ['Single-end reads', 'Paired-end reads'] },
     { label: 'Read Length',
       id: 'read-length',
-      type: 'number',
-      default: 50,
-      min: 1,
-      max: 1000000 },
+      type: 'dropdown',
+      options: ['31', '62', '76', '151', '301'],
+      custom: true },
     { label: 'Sample Preparation and Experiment Details',
       id: 'expertiment-details',
       type: 'textarea' }
