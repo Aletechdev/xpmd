@@ -63,6 +63,7 @@ var data = [
       options: ['M9', 'LB'] },
     { label: 'Isolate  Type',
       id: 'isolate-type',
+      required: true,
       type: 'dropdown',
       custom: true,
       options: ['clonal', 'population'] },
