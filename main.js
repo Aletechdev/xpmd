@@ -64,6 +64,7 @@ var data = [
   { label: 'Isolate  Type',
     id: 'isolate-type',
     type: 'dropdown',
+    required: true,
     custom: true,
     options: ['clonal', 'population'] },
   { label: 'Carbon Source(s)',
