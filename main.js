@@ -1,5 +1,4 @@
 /* -*- Mode: js2; indent-tabs-mode: nil; js2-basic-offset: 2; -*- */
-
 /* global $, Blob, saveAs, CSV, d3, _ */
 
 var data = [
@@ -165,7 +164,7 @@ data.forEach(function(d) { data_as_object[d.id] = d })
 $(document).ready(function(){
 
   // add the uploader
-  create_uploader()
+  create_uploaders()
 
   // add the form
   for(var i = 0; i < data.length; i++) {
@@ -199,12 +198,19 @@ function check_required() {
   }
 }
 
-function create_uploader() {
+function create_uploaders() {
   $('#file-upload').fileReaderJS({
     dragClass: 'drag',
     readAsDefault: 'Text',
     on: {
       load: handle_upload
+    }
+  })
+  $('#name-file-upload').fileReaderJS({
+    dragClass: 'drag',
+    readAsDefault: 'Text',
+    on: {
+      load: handle_name_upload
     }
   })
 }
@@ -215,6 +221,29 @@ function handle_upload(e, file) {
   for (var i = 0; i < arrays.length; i++)
     set_value(arrays[i][0], arrays[i][1])
   check_required()
+}
+
+
+function handle_name_upload(e, file) {
+
+  var csv_data = e.target.result,
+      arrays = new CSV(csv_data).parse();
+
+  // This is copy-paste of code in $(document).ready
+  // Should make function for it "get_data"
+  var data_array = [];
+  for(var i = 0; i < data.length; i++){
+    var val = get_value(data[i]['id']);
+    data_array .push([data[i]['id'], val])
+  }
+
+  var name_array = arrays[0];
+  var csv = [new CSV(data_array).encode()]
+  for (var idx = 0; idx < name_array.length; idx++) {
+    var label = name_array[idx],
+        output_file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
+    saveAs(output_file, label + '.csv')
+  }
 }
 
 
