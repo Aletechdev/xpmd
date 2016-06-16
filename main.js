@@ -157,14 +157,14 @@ var data = [
     type: 'textarea' }
 ]
 
-var data_as_object = {}
-data.forEach(function(d) { data_as_object[d.id] = d })
+var data_as_object = {};
+data.forEach(function(d) { data_as_object[d.id] = d });
 
 
 $(document).ready(function(){
 
   // add the uploader
-  create_uploaders()
+  create_uploaders();
 
   // add the form
   for(var i = 0; i < data.length; i++) {
@@ -174,17 +174,21 @@ $(document).ready(function(){
 
   // submit
   $('#submit').click(function(){
-    if (!check_required()) return
-
-    var array = []
-    for(i = 0; i < data.length; i++){
-      var val = get_value(data[i]['id'])
-      array.push([data[i]['id'], val])
-    }
-    save_file(array)
+    if (!check_required()) return;
+    var data_array = get_data_array();
+    save_file(data_array )
   })
 
-})
+});
+
+function get_data_array() {
+  var data_array = [];
+  for(i = 0; i < data.length; i++){
+    var val = get_value(data[i]['id']);
+    data_array.push([data[i]['id'], val])
+  }
+  return data_array
+}
 
 function check_required() {
   if ($('.required.alert-danger').length !== 0) {
@@ -217,7 +221,7 @@ function create_uploaders() {
 
 function handle_upload(e, file) {
   var csv_data = e.target.result,
-      arrays = new CSV(csv_data).parse()
+      arrays = new CSV(csv_data).parse();
   for (var i = 0; i < arrays.length; i++)
     set_value(arrays[i][0], arrays[i][1])
   check_required()
@@ -227,18 +231,11 @@ function handle_upload(e, file) {
 function handle_name_upload(e, file) {
 
   var csv_data = e.target.result,
-      arrays = new CSV(csv_data).parse();
+      csv_arrays = new CSV(csv_data).parse(),
+      data_array = get_data_array();
 
-  // This is copy-paste of code in $(document).ready
-  // Should make function for it "get_data"
-  var data_array = [];
-  for(var i = 0; i < data.length; i++){
-    var val = get_value(data[i]['id']);
-    data_array .push([data[i]['id'], val])
-  }
-
-  var name_array = arrays[0];
-  var csv = [new CSV(data_array).encode()]
+  var name_array = csv_arrays[0];
+  var csv = [new CSV(data_array).encode()];
   for (var idx = 0; idx < name_array.length; idx++) {
     var label = name_array[idx],
         output_file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
