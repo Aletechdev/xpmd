@@ -242,6 +242,10 @@ function handle_upload(e, file) {
 
 function handle_name_upload(e, file) {
 
+  // fast fail
+  if (!check_required())
+    return;
+
   var csv_data = e.target.result,
       csv_arrays = new CSV(csv_data).parse(),
       data_array = get_data_array();
