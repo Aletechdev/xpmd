@@ -255,22 +255,19 @@ function handle_name_upload(e, file) {
       csv_arrays = new CSV(csv_data).parse()
 
   for (var name_idx = 0; name_idx < csv_arrays.length; name_idx++) {
-    data['ALE-number'] = csv_arrays[name_idx][ALE_NUMBER_IDX]
-    data['Flask-number'] = csv_arrays[name_idx][FLASK_NUMBER_IDX]
-    data['Isolate-number'] = csv_arrays[name_idx][ISOLATE_NUMBER_IDX]
-    data['technical-replicate-number'] = csv_arrays[name_idx][TECHNICAL_REPLICATE_IDX]
+    set_value('ALE-number', csv_arrays[name_idx][ALE_NUMBER_IDX])
+    set_value('Flask-number', csv_arrays[name_idx][FLASK_NUMBER_IDX])
+    set_value('Isolate-number', csv_arrays[name_idx][ISOLATE_NUMBER_IDX])
+    set_value('technical-replicate-number',csv_arrays[name_idx][TECHNICAL_REPLICATE_IDX])
 
-    var label = data['ALE-number'].toString()
-        + '_' + data['Flask-number'].toString()
-        + '_' + data['Isolate-number'].toString()
-        + '_' + data['technical-replicate-number'].toString()
+    var label = get_value('ALE-number').toString()
+        + '_' + get_value('Flask-number').toString()
+        + '_' + get_value('Isolate-number').toString()
+        + '_' + get_value('technical-replicate-number').toString()
 
     var csv = [new CSV(get_data_array()).encode()]
-
     var output_file = new Blob(csv, { type: 'text/plain;charset=utf-8' })
     saveAs(output_file, label + '.csv')
-
-    console.log(data['Isolate-number'])
   }
 }
 
