@@ -116,14 +116,26 @@ var data = [
     options: ['Kanamycin', 'Spectinomycin', 'Streptomycin', 'Ampicillin',
               'Carbenicillin', 'Bleomycin', 'Erythromycin', 'Polymyxin B',
               'Tetracycline', 'Chloramphenicol'] },
+  { label: 'ALE number',
+    id: 'ALE-number',
+    type: 'number',
+    default: 1,
+    min: 1,
+    max: 100 },
+  { label: 'Flask number',
+    id: 'Flask-number',
+    type: 'number',
+    default: 1,
+    min: 1,
+    max: 100 },
   { label: 'Isolate number',
     id: 'Isolate-number',
     type: 'number',
     default: 1,
     min: 1,
     max: 100 },
-  { label: 'Technical replicates',
-    id: 'technical-replicates',
+  { label: 'Technical replicate number',
+    id: 'technical-replicate-number',
     type: 'number',
     default: 1,
     min: 1,
@@ -155,7 +167,7 @@ var data = [
   { label: 'Sample Preparation and Experiment Details',
     id: 'expertiment-details',
     type: 'textarea' }
-]
+];
 
 var data_as_object = {};
 data.forEach(function(d) { data_as_object[d.id] = d });
@@ -183,7 +195,7 @@ $(document).ready(function(){
 
 function get_data_array() {
   var data_array = [];
-  for(i = 0; i < data.length; i++){
+  for(var i = 0; i < data.length; i++){
     var val = get_value(data[i]['id']);
     data_array.push([data[i]['id'], val])
   }
@@ -192,12 +204,12 @@ function get_data_array() {
 
 function check_required() {
   if ($('.required.alert-danger').length !== 0) {
-    $('#submit').get(0).disabled = true
-    $('#required-to-submit').show()
+    $('#submit').get(0).disabled = true;
+    $('#required-to-submit').show();
     return false
   } else {
-    $('#submit').get(0).disabled = false
-    $('#required-to-submit').hide()
+    $('#submit').get(0).disabled = false;
+    $('#required-to-submit').hide();
     return true
   }
 }
@@ -260,7 +272,7 @@ function update_folder_name() {
 function save_file(array) {
   var label = folder_name(),
       csv = [new CSV(array).encode()],
-      file = new Blob(csv, { type: 'text/plain;charset=utf-8' })
+      file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
   saveAs(file, label + '.csv')
 }
 
@@ -272,15 +284,15 @@ function get_value(id, input_only) {
     input_only = false
 
   // try to get concentrations
-  var concentrations = {}
+  var concentrations = {};
   $('#' + id).parent().find('.concentration-input>input').each(function() {
     var el = $(this),
-        val = $(this).val()
+        val = $(this).val();
     if (val) concentrations[el.attr('id')] = val
   })
 
   // get the value
-  var vals = $('#' + id).val()
+  var vals = $('#' + id).val();
   if ((typeof vals === 'undefined') || (vals === null))
     return ''
 
@@ -291,7 +303,7 @@ function get_value(id, input_only) {
   if (_.isArray(vals)) {
     return vals.map(function(val) {
       if (val in concentrations)
-        return val + '(' + concentrations[val] + ')'
+        return val + '(' + concentrations[val] + ')';
       else
         return val
     })
@@ -303,7 +315,7 @@ function get_value(id, input_only) {
 
 function set_value(id, value) {
   if (!(id in data_as_object)) {
-    console.warn('Unrecognized key ' + id)
+    console.warn('Unrecognized key ' + id);
     return
   }
 
