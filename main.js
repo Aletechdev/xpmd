@@ -233,29 +233,44 @@ function create_uploaders() {
 
 function handle_upload(e, file) {
   var csv_data = e.target.result,
-      arrays = new CSV(csv_data).parse();
+      arrays = new CSV(csv_data).parse()
   for (var i = 0; i < arrays.length; i++)
     set_value(arrays[i][0], arrays[i][1])
   check_required()
 }
 
 
+const ALE_NUMBER_IDX = 0
+const FLASK_NUMBER_IDX = 1
+const ISOLATE_NUMBER_IDX = 2
+const TECHNICAL_REPLICATE_IDX = 3
+
 function handle_name_upload(e, file) {
 
   // fast fail
   if (!check_required())
-    return;
+    return
 
   var csv_data = e.target.result,
-      csv_arrays = new CSV(csv_data).parse(),
-      data_array = get_data_array();
+      csv_arrays = new CSV(csv_data).parse()
 
-  var name_array = csv_arrays[0];
-  var csv = [new CSV(data_array).encode()];
-  for (var idx = 0; idx < name_array.length; idx++) {
-    var label = name_array[idx],
-        output_file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
+  for (var name_idx = 0; name_idx < csv_arrays.length; name_idx++) {
+    data['ALE-number'] = csv_arrays[name_idx][ALE_NUMBER_IDX]
+    data['Flask-number'] = csv_arrays[name_idx][FLASK_NUMBER_IDX]
+    data['Isolate-number'] = csv_arrays[name_idx][ISOLATE_NUMBER_IDX]
+    data['technical-replicate-number'] = csv_arrays[name_idx][TECHNICAL_REPLICATE_IDX]
+
+    var label = data['ALE-number'].toString()
+        + '_' + data['Flask-number'].toString()
+        + '_' + data['Isolate-number'].toString()
+        + '_' + data['technical-replicate-number'].toString()
+
+    var csv = [new CSV(get_data_array()).encode()]
+
+    var output_file = new Blob(csv, { type: 'text/plain;charset=utf-8' })
     saveAs(output_file, label + '.csv')
+
+    console.log(data['Isolate-number'])
   }
 }
 
@@ -276,7 +291,7 @@ function update_folder_name() {
 function save_file(array) {
   var label = folder_name(),
       csv = [new CSV(array).encode()],
-      file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
+      file = new Blob(csv, { type: 'text/plain;charset=utf-8' })
   saveAs(file, label + '.csv')
 }
 
