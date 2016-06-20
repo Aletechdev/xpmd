@@ -191,6 +191,13 @@ $(document).ready(function(){
     save_file(data_array )
   })
 
+  $('#download_example').click(function(){
+    var output_file_name = "ale_sample_names",
+        example_output = [["1","1","0","1"],["\n1","1","1","1"],["\n1","1","2","1"]],
+        file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
+    saveAs(file, output_file_name + '.csv');
+  })
+
 });
 
 function get_data_array() {

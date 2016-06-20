@@ -102,7 +102,10 @@
       </div>
       <div class="panel panel-default">
         <div class="panel-heading">
-          <strong>(Optional: ALE Specific)</strong> CSV with ALE sample names.
+          <strong>(Optional: ALE Specific)</strong> CSV with ALE sample names (row: ALE#, Flask#, Isolate#, Technical Replicate#).
+          <button id="download_example" type="submit" class="btn btn-default">
+            Download Example
+          </button>
         </div>
         <div class="panel-body">
           <div id="name-file-upload">Drag and drop a CSV file.</div>
@@ -128,10 +131,11 @@
           <div class="panel panel-default">
             <div class="panel-heading">Folder name</div>
             <div class="panel-body match-height">
-              <input id="folder-name" class="form-control" onclick="select();" readonly></input>
+              <input id="folder-name" class="form-control" onclick="select();" readonly>
             </div>
           </div>
         </div>
       </div>
+    </div>
   </body>
 </html>
