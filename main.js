@@ -113,6 +113,7 @@ var data = [
     type: 'dropdown',
     custom: true,
     multiple: true,
+    concentration_with_default: 1,
     options: ['Kanamycin', 'Spectinomycin', 'Streptomycin', 'Ampicillin',
               'Carbenicillin', 'Bleomycin', 'Erythromycin', 'Polymyxin B',
               'Tetracycline', 'Chloramphenicol'] },
