@@ -253,13 +253,14 @@ function handle_upload(e, file) {
 
 
 function get_file_name() {
-  lib_prep = get_lib_prep_code(get_value('library-prep-kit-manufacturer').toString())
+  lib_prep = get_lib_prep_code(get_value('library-prep-kit-manufacturer').toString());
   if (lib_prep != '')
     lib_prep = '_' + lib_prep;
 
   return file_name = get_value('project').toString()
     + lib_prep
-    + '_' + get_value('ALE-number').toString()
+    + '_'
+    + get_value('ALE-number').toString()
     + '-' + get_value('Flask-number').toString()
     + '-' + get_value('Isolate-number').toString()
     + '-' + get_value('technical-replicate-number').toString();
