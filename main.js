@@ -71,7 +71,7 @@ var data = [
     type: 'dropdown',
     multiple: true,
     custom: true,
-    concentration_with_default: '2',
+    concentration_with_default: 2,
     options: ['Glucose', 'Fructose', 'Acetate', 'Galactose'] },
   { label: 'Nitrogen Source(s)',
     id: 'nitrogen-source',
@@ -189,12 +189,12 @@ $(document).ready(function(){
     if (!check_required()) return;
     var data_array = get_data_array();
     save_file(data_array )
-  })
+  });
 
   $('#download_example').click(function(){
     var output_file_name = "ale_sample_names",
         example_output = [["1","1","0","1"],["\n1","1","1","1"],["\n1","1","2","1"]],
-        file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
+        file = new Blob(example_output, { type: 'text/plain;charset=utf-8' });
     saveAs(file, output_file_name + '.csv');
   })
 
@@ -228,7 +228,7 @@ function create_uploaders() {
     on: {
       load: handle_upload
     }
-  })
+  });
   $('#name-file-upload').fileReaderJS({
     dragClass: 'drag',
     readAsDefault: 'Text',
@@ -240,40 +240,40 @@ function create_uploaders() {
 
 function handle_upload(e, file) {
   var csv_data = e.target.result,
-      arrays = new CSV(csv_data).parse()
+      arrays = new CSV(csv_data).parse();
   for (var i = 0; i < arrays.length; i++)
     set_value(arrays[i][0], arrays[i][1])
   check_required()
 }
 
 
-const ALE_NUMBER_IDX = 0
-const FLASK_NUMBER_IDX = 1
-const ISOLATE_NUMBER_IDX = 2
-const TECHNICAL_REPLICATE_IDX = 3
+const ALE_NUMBER_IDX = 0;
+const FLASK_NUMBER_IDX = 1;
+const ISOLATE_NUMBER_IDX = 2;
+const TECHNICAL_REPLICATE_IDX = 3;
 
 function handle_name_upload(e, file) {
 
   // fast fail
   if (!check_required())
-    return
+    return;
 
   var csv_data = e.target.result,
-      csv_arrays = new CSV(csv_data).parse()
+      csv_arrays = new CSV(csv_data).parse();
 
   for (var name_idx = 0; name_idx < csv_arrays.length; name_idx++) {
-    set_value('ALE-number', csv_arrays[name_idx][ALE_NUMBER_IDX])
-    set_value('Flask-number', csv_arrays[name_idx][FLASK_NUMBER_IDX])
-    set_value('Isolate-number', csv_arrays[name_idx][ISOLATE_NUMBER_IDX])
-    set_value('technical-replicate-number',csv_arrays[name_idx][TECHNICAL_REPLICATE_IDX])
+    set_value('ALE-number', csv_arrays[name_idx][ALE_NUMBER_IDX]);
+    set_value('Flask-number', csv_arrays[name_idx][FLASK_NUMBER_IDX]);
+    set_value('Isolate-number', csv_arrays[name_idx][ISOLATE_NUMBER_IDX]);
+    set_value('technical-replicate-number',csv_arrays[name_idx][TECHNICAL_REPLICATE_IDX]);
 
     var label = get_value('ALE-number').toString()
         + '_' + get_value('Flask-number').toString()
         + '_' + get_value('Isolate-number').toString()
-        + '_' + get_value('technical-replicate-number').toString()
+        + '_' + get_value('technical-replicate-number').toString();
 
-    var csv = [new CSV(get_data_array()).encode()]
-    var output_file = new Blob(csv, { type: 'text/plain;charset=utf-8' })
+    var csv = [new CSV(get_data_array()).encode()];
+    var output_file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
     saveAs(output_file, label + '.csv')
   }
 }
@@ -282,7 +282,7 @@ function handle_name_upload(e, file) {
 function folder_name() {
   var l = ['run-date', 'data-type'].map(function(el) {
     return get_value(el).replace(' ', '').replace(/\//g, '-')
-  })
+  });
   return _.every(l) ? l.join('_') : ''
 }
 
@@ -295,7 +295,7 @@ function update_folder_name() {
 function save_file(array) {
   var label = folder_name(),
       csv = [new CSV(array).encode()],
-      file = new Blob(csv, { type: 'text/plain;charset=utf-8' })
+      file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
   saveAs(file, label + '.csv')
 }
 
@@ -304,7 +304,7 @@ function get_value(id, input_only) {
   /** Get the value for the given input id */
 
   if (_.isUndefined(input_only))
-    input_only = false
+    input_only = false;
 
   // try to get concentrations
   var concentrations = {};
@@ -312,15 +312,15 @@ function get_value(id, input_only) {
     var el = $(this),
         val = $(this).val();
     if (val) concentrations[el.attr('id')] = val
-  })
+  });
 
   // get the value
   var vals = $('#' + id).val();
   if ((typeof vals === 'undefined') || (vals === null))
-    return ''
+    return '';
 
   if (input_only)
-    return vals
+    return vals;
 
   // add concentrations to val
   if (_.isArray(vals)) {
@@ -342,31 +342,31 @@ function set_value(id, value) {
     return
   }
 
-  var sel = $('#' + id)
+  var sel = $('#' + id);
 
   if (sel.data('select2')) {
     var split_val = value.split(',').filter(function(x) {
       return x.replace(' ', '') !== ''
     }),
         extracted_val = extract_concentrations(split_val),
-        concentrations = {}
+        concentrations = {};
     // for multiple selections, add the options if it doesn't exist
-    var ids = [], input_val = []
+    var ids = [], input_val = [];
     sel.find('option').each(function() {
       ids.push($(this).val())
-    })
+    });
     extracted_val.forEach(function(val_obj) {
-      var val = val_obj.id
+      var val = val_obj.id;
       if (ids.indexOf(val) === -1)
-        sel.append('<option value="' + val + '">' + val + '</option>')
+        sel.append('<option value="' + val + '">' + val + '</option>');
       // for the input
-      input_val.push(val)
+      input_val.push(val);
 
       // for the concentrations
       if (val_obj.concentration)
         concentrations[val] = val_obj.concentration
-    })
-    sel.val(input_val).trigger('change')
+    });
+    sel.val(input_val).trigger('change');
 
     // update the concentration
     if (Object.keys(concentrations).length > 0) {
@@ -376,14 +376,14 @@ function set_value(id, value) {
     }
   } else if (data_as_object[id]['type'] == 'date') {
     var date = new Date(value),
-        date_str = [date.getFullYear(), date.getMonth(), date.getDate()].join('-')
+        date_str = [date.getFullYear(), date.getMonth(), date.getDate()].join('-');
     sel.val(date_str).trigger('change')
   } else {
     sel.val(value).trigger('change')
   }
 
   // update UI
-  update_required_label(id, value)
+  update_required_label(id, value);
   update_folder_name()
 }
 
@@ -403,25 +403,25 @@ function update_required_label(id, value) {
 
 
 function add_form_container(html, label, required, id, description, custom, multiple) {
-  var required_str, custom_mult_str, description_str
+  var required_str, custom_mult_str, description_str;
   if (required)
-    required_str = '<span id="required-alert-' + id + '" class="required alert alert-danger" role="alert">(Required)</span>'
+    required_str = '<span id="required-alert-' + id + '" class="required alert alert-danger" role="alert">(Required)</span>';
   else
-    required_str = ''
+    required_str = '';
 
   if (custom && multiple)
-    custom_mult_str = ' (Choose one or more, including custom values)'
+    custom_mult_str = ' (Choose one or more, including custom values)';
   else if (custom)
-    custom_mult_str = ' (Choose or enter a new value)'
+    custom_mult_str = ' (Choose or enter a new value)';
   else if (multiple)
-    custom_mult_str = ' (Choose one or more)'
+    custom_mult_str = ' (Choose one or more)';
   else
-    custom_mult_str = ''
+    custom_mult_str = '';
 
   if (description)
-    description_str = '<div>' + description + '</div>'
+    description_str = '<div>' + description + '</div>';
   else
-    description_str = ''
+    description_str = '';
 
   return '<div class="form-group row"><div class="col-sm-6"><label>' + label + '</label>' + custom_mult_str +
     required_str + description_str +
@@ -430,18 +430,18 @@ function add_form_container(html, label, required, id, description, custom, mult
 
 
 function add_dropdown_options(input_sel, options, options_data, def, select_options) {
-  var options_html = ''
+  var options_html = '';
   for (var i = 0; i < options.length; i++) {
     var opt = options[i],
-        selected_str = opt === def ? ' selected="selected"' : ''
+        selected_str = opt === def ? ' selected="selected"' : '';
     options_html += '<option value="'+ opt + '"' + selected_str + '>' + opt + '</option>'
   }
 
-  input_sel.html(options_html)
+  input_sel.html(options_html);
   if (options_data) {
     select_options['templateResult'] = function(state) {
       return state.id + ': ' + options_data[state.id]
-    }
+    };
     select_options['matcher'] = function (params, data) {
       // check both the 3-letter-id and the explanation text
       if ($.trim(params.term) === '' ||
@@ -454,7 +454,7 @@ function add_dropdown_options(input_sel, options, options_data, def, select_opti
   }
 
   // initialize select2
-  input_sel.select2(select_options)
+  input_sel.select2(select_options);
 
   // to avoid the default tag
   if (!def) input_sel.val([]).trigger('change')
@@ -464,12 +464,12 @@ function add_dropdown_options(input_sel, options, options_data, def, select_opti
 function extract_concentrations(vals) {
   /** Get the ids and concentrations from strings like "Glucose(2)" */
 
-  var out = []
+  var out = [];
   for (var i=0, l=vals.length; i<l; i++) {
     var t = vals[i],
-        res = /(.*)\(([0-9.]+)\)/.exec(t)
+        res = /(.*)\(([0-9.]+)\)/.exec(t);
     if (_.isNull(res))
-      out.push({ id: t, concentration: null })
+      out.push({ id: t, concentration: null });
     else
       out.push({ id: res[1], concentration: res[2] })
   }
@@ -478,16 +478,16 @@ function extract_concentrations(vals) {
 
 
 function draw_concentrations(id, def, value_dict) {
-  if (_.isUndefined(value_dict)) value_dict = {}
+  if (_.isUndefined(value_dict)) value_dict = {};
 
   var sel = d3.select(d3.select('#' + id).node().parentNode)
         .selectAll('.concentration-input')
-        .data(get_value(id, true), function(d) { return d; })
+        .data(get_value(id, true), function(d) { return d; });
   var div = sel.enter()
         .append('div')
-        .attr('class', 'concentration-input')
+        .attr('class', 'concentration-input');
   div.append('span')
-    .text(function(d) { return d + ' concentration (g/L)'; })
+    .text(function(d) { return d + ' concentration (g/L)'; });
   div.append('input').attr('type', 'number')
     .attr('id', function(d) { return d; })
     .attr('class', 'form-control')
@@ -495,7 +495,7 @@ function draw_concentrations(id, def, value_dict) {
     .attr('max', '1000')
     .attr('value', function(d) {
       return (d in value_dict) ? value_dict[d] : def
-    })
+    });
 
   sel.exit().remove()
 }
@@ -517,27 +517,27 @@ function create_input(data, parent_sel, autofocus) {
       min = data['min'],
       html = '',
       autofocus_str = autofocus ? ' autofocus' : '',
-      after_append
+      after_append;
 
   // check for some required attributes
-  if (!id) console.error('No ID for ' + label)
+  if (!id) console.error('No ID for ' + label);
   if (options && (type !== 'dropdown'))
-    console.error('Has "options" with a type that is not "dropdown" for ' + label)
+    console.error('Has "options" with a type that is not "dropdown" for ' + label);
   if (min && (type !== 'number'))
-    console.error('Has "min" with a type that is not "number" for ' + label)
+    console.error('Has "min" with a type that is not "number" for ' + label);
 
   if (type == 'dropdown') {
     var select_options = {
       'allowClear': true,
       'placeholder': '',
-    }
+    };
     // multiple selections
     if (multiple) {
       select_options['multiple'] = true
     }
     // custom options
     if (custom) {
-      select_options['tags'] = true
+      select_options['tags'] = true;
       select_options['createTag'] = function(query) {
         return {
           id: query.term,
@@ -549,7 +549,7 @@ function create_input(data, parent_sel, autofocus) {
     if (!required) {
 
     }
-    html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '></select>'
+    html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '></select>';
 
     after_append = function() {
       // prefer options to options_function
@@ -581,7 +581,7 @@ function create_input(data, parent_sel, autofocus) {
     html = '<textarea id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" ></textarea>'
   } else if (type === 'number' ){
     html = '<input id="' + id + '" type="number" class="form-control" min="' + min + '"' +
-      ' value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >'
+      ' value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >';
     after_append = function() {
       $('#' + id).bootstrapNumber()
     }
@@ -590,11 +590,11 @@ function create_input(data, parent_sel, autofocus) {
   }
 
   // create and run
-  parent_sel.append(add_form_container(html, label, required, id, description, custom, multiple))
+  parent_sel.append(add_form_container(html, label, required, id, description, custom, multiple));
   // toggle the required label
   $('#' + id).on('change', function() {
-    update_required_label(id, this.value)
+    update_required_label(id, this.value);
     update_folder_name()
-  })
+  });
   if (after_append) after_append()
 }
