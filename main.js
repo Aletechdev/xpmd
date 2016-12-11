@@ -487,8 +487,10 @@ function draw_concentrations(id, def, value_dict) {
   var div = sel.enter()
         .append('div')
         .attr('class', 'concentration-input');
-  div.append('span')
-    .text(function(d) { return d + ' concentration (g/L)'; });
+  if(id == "antibiotic")
+      div.append('span').text(function(d) { return d + ' concentration (ug/mL)'; });
+  else
+      div.append('span').text(function(d) { return d + ' concentration (g/L)'; });
   div.append('input').attr('type', 'number')
     .attr('id', function(d) { return d; })
     .attr('class', 'form-control')
