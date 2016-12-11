@@ -252,6 +252,20 @@ function handle_upload(e, file) {
 }
 
 
+function get_file_name() {
+  lib_prep = get_lib_prep_code(get_value('library-prep-kit-manufacturer').toString())
+  if (lib_prep != '')
+    lib_prep = '_' + lib_prep;
+
+  return file_name = get_value('project').toString()
+    + lib_prep
+    + '_' + get_value('ALE-number').toString()
+    + '-' + get_value('Flask-number').toString()
+    + '-' + get_value('Isolate-number').toString()
+    + '-' + get_value('technical-replicate-number').toString();
+}
+
+
 const ALE_NUMBER_IDX = 0;
 const FLASK_NUMBER_IDX = 1;
 const ISOLATE_NUMBER_IDX = 2;
@@ -272,14 +286,11 @@ function handle_name_upload(e, file) {
     set_value('Isolate-number', csv_arrays[name_idx][ISOLATE_NUMBER_IDX]);
     set_value('technical-replicate-number',csv_arrays[name_idx][TECHNICAL_REPLICATE_IDX]);
 
-    var label = get_value('ALE-number').toString()
-        + '_' + get_value('Flask-number').toString()
-        + '_' + get_value('Isolate-number').toString()
-        + '_' + get_value('technical-replicate-number').toString();
+    file_name = get_file_name();
 
     var csv = [new CSV(get_data_array()).encode()];
     var output_file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
-    saveAs(output_file, label + '.csv')
+    saveAs(output_file, file_name + '.csv')
   }
 }
 
@@ -308,15 +319,10 @@ function get_lib_prep_code(lib_prep_manufacturer) {
 
 
 function save_file(array) {
-  var label = get_value('project').toString()
-    + '_' + get_lib_prep_code(get_value('library-prep-kit-manufacturer').toString())
-    + '_' + get_value('ALE-number').toString()
-    + '-' + get_value('Flask-number').toString()
-    + '-' + get_value('Isolate-number').toString()
-    + '-' + get_value('technical-replicate-number').toString();
+  file_name = get_file_name();
   var csv_data = [new CSV(array).encode()];
   var file = new Blob(csv_data, { type: 'text/plain;charset=utf-8' });
-  saveAs(file, label + '.csv')
+  saveAs(file, file_name + '.csv')
 }
 
 
