@@ -49,7 +49,8 @@ var data = [
     example: 'mid-log' },
   { label: 'Sample Time',
     id: 'sample-time',
-    type: 'time'},
+    type: 'time-minutes',
+    description: 'Minutes from start of experiment.'},
   { label: 'Antibody',
     id: 'antibody',
     example: 'anti-CRP' },
@@ -296,10 +297,25 @@ function update_folder_name() {
 }
 
 
+function get_lib_prep_code(lib_prep_manufacturer) {
+  lib_prep_code = '';
+  if (lib_prep_manufacturer == 'Kapa')
+    lib_prep_code = 'KHP';
+  else if (lib_prep_manufacturer == 'Illumina')
+    lib_prep_code = 'NXT';
+  return lib_prep_code;
+}
+
+
 function save_file(array) {
-  var label = folder_name(),
-      csv = [new CSV(array).encode()],
-      file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
+  var label = get_value('project').toString()
+    + '_' + get_lib_prep_code(get_value('library-prep-kit-manufacturer').toString())
+    + '_' + get_value('ALE-number').toString()
+    + '-' + get_value('Flask-number').toString()
+    + '-' + get_value('Isolate-number').toString()
+    + '-' + get_value('technical-replicate-number').toString();
+  var csv_data = [new CSV(array).encode()];
+  var file = new Blob(csv_data, { type: 'text/plain;charset=utf-8' });
   saveAs(file, label + '.csv')
 }
 
