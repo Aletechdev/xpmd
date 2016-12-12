@@ -1,5 +1,6 @@
 /* -*- Mode: js2; indent-tabs-mode: nil; js2-basic-offset: 2; -*- */
 /* global $, Blob, saveAs, CSV, d3, _ */
+// CSV: https://github.com/knrz/CSV.js/
 
 var data = [
   { label: 'Creator (Name)',
@@ -297,9 +298,7 @@ function handle_name_upload(e, file) {
     saveAs(output_sample_metadata_file, file_name + '.csv')
   }
 
-  console.log(output_sample_name_array); // !!! FOR DEBUGGING
   var output_sample_name_csv_data = [new CSV(output_sample_name_array).encode()];
-  console.log(output_sample_name_csv_data);
   var output_sample_name_file = new Blob(output_sample_name_csv_data, { type: 'text/plain;charset=utf-8' });
   saveAs(output_sample_name_file, 'samples.csv')
 }
