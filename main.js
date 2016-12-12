@@ -327,11 +327,6 @@ function folder_name() {
 }
 
 
-function update_folder_name() {
-  $('#folder-name').val(folder_name())
-}
-
-
 function get_lib_prep_code(lib_prep_manufacturer) {
   lib_prep_code = '';
   if (lib_prep_manufacturer == 'Kapa')
@@ -434,7 +429,6 @@ function set_value(id, value) {
 
   // update UI
   update_required_label(id, value);
-  update_folder_name()
 }
 
 
@@ -646,7 +640,6 @@ function create_input(data, parent_sel, autofocus) {
   // toggle the required label
   $('#' + id).on('change', function() {
     update_required_label(id, this.value);
-    update_folder_name()
   });
   if (after_append) after_append()
 }
