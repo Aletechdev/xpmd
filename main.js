@@ -193,7 +193,7 @@ $(document).ready(function(){
   $('#submit').click(function(){
     if (!check_required()) return;
     var data_array = get_data_array();
-    save_file(data_array )
+    save_sample_metadata_file(data_array )
   });
 
   $('#download_example').click(function(){
@@ -278,21 +278,30 @@ function handle_name_upload(e, file) {
   if (!check_required())
     return;
 
-  var csv_data = e.target.result,
-      csv_arrays = new CSV(csv_data).parse();
+  var input_csv_data = e.target.result,
+      variable_file_name_array = new CSV(input_csv_data).parse();
 
-  for (var name_idx = 0; name_idx < csv_arrays.length; name_idx++) {
-    set_value('ALE-number', csv_arrays[name_idx][ALE_NUMBER_IDX]);
-    set_value('Flask-number', csv_arrays[name_idx][FLASK_NUMBER_IDX]);
-    set_value('Isolate-number', csv_arrays[name_idx][ISOLATE_NUMBER_IDX]);
-    set_value('technical-replicate-number',csv_arrays[name_idx][TECHNICAL_REPLICATE_IDX]);
+  var output_sample_name_array = [];
+
+  for (var name_idx = 0; name_idx < variable_file_name_array.length; name_idx++) {
+    set_value('ALE-number', variable_file_name_array[name_idx][ALE_NUMBER_IDX]);
+    set_value('Flask-number', variable_file_name_array[name_idx][FLASK_NUMBER_IDX]);
+    set_value('Isolate-number', variable_file_name_array[name_idx][ISOLATE_NUMBER_IDX]);
+    set_value('technical-replicate-number',variable_file_name_array[name_idx][TECHNICAL_REPLICATE_IDX]);
 
     file_name = get_file_name();
+    output_sample_name_array.push([file_name]);
 
-    var csv = [new CSV(get_data_array()).encode()];
-    var output_file = new Blob(csv, { type: 'text/plain;charset=utf-8' });
-    saveAs(output_file, file_name + '.csv')
+    var output_sample_csv_data = [new CSV(get_data_array()).encode()];
+    var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' });
+    saveAs(output_sample_metadata_file, file_name + '.csv')
   }
+
+  console.log(output_sample_name_array); // !!! FOR DEBUGGING
+  var output_sample_name_csv_data = [new CSV(output_sample_name_array).encode()];
+  console.log(output_sample_name_csv_data);
+  var output_sample_name_file = new Blob(output_sample_name_csv_data, { type: 'text/plain;charset=utf-8' });
+  saveAs(output_sample_name_file, 'samples.csv')
 }
 
 
@@ -319,7 +328,7 @@ function get_lib_prep_code(lib_prep_manufacturer) {
 }
 
 
-function save_file(array) {
+function save_sample_metadata_file(array) {
   file_name = get_file_name();
   var csv_data = [new CSV(array).encode()];
   var file = new Blob(csv_data, { type: 'text/plain;charset=utf-8' });
