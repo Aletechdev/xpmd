@@ -1,5 +1,5 @@
 /* -*- Mode: js2; indent-tabs-mode: nil; js2-basic-offset: 2; -*- */
-/* global $, Blob, saveAs, CSV, d3, _ */
+/* global $, Blob, saveAs, CSV, d3, JSZip, _ */
 // CSV: https://github.com/knrz/CSV.js/
 
 var data = [
@@ -253,6 +253,13 @@ function handle_upload(e, file) {
 }
 
 
+function get_zip_name() {
+
+  return file_name = get_value('project').toString()
+    + '_' + folder_name();
+}
+
+
 function get_file_name() {
   lib_prep = get_lib_prep_code(get_value('library-prep-kit-manufacturer').toString());
   if (lib_prep != '')
@@ -284,23 +291,31 @@ function handle_name_upload(e, file) {
 
   var output_sample_name_array = [];
 
+  var zip = new JSZip();
+
   for (var name_idx = 0; name_idx < variable_file_name_array.length; name_idx++) {
     set_value('ALE-number', variable_file_name_array[name_idx][ALE_NUMBER_IDX]);
     set_value('Flask-number', variable_file_name_array[name_idx][FLASK_NUMBER_IDX]);
     set_value('Isolate-number', variable_file_name_array[name_idx][ISOLATE_NUMBER_IDX]);
     set_value('technical-replicate-number',variable_file_name_array[name_idx][TECHNICAL_REPLICATE_IDX]);
 
-    file_name = get_file_name();
+    file_name = get_file_name() + '.csv';
     output_sample_name_array.push([file_name]);
 
     var output_sample_csv_data = [new CSV(get_data_array()).encode()];
     var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' });
-    saveAs(output_sample_metadata_file, file_name + '.csv')
+    // saveAs(output_sample_metadata_file, file_name)
+    zip.folder("samples").file(file_name, output_sample_metadata_file)
   }
 
   var output_sample_name_csv_data = [new CSV(output_sample_name_array).encode()];
   var output_sample_name_file = new Blob(output_sample_name_csv_data, { type: 'text/plain;charset=utf-8' });
-  saveAs(output_sample_name_file, 'samples.csv')
+  zip.file('samples.csv', output_sample_name_file);
+
+  zip.generateAsync({type:"blob"})
+    .then(function (blob) {
+      saveAs(blob, get_zip_name() + '.zip');
+    });
 }
 
 
