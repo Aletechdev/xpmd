@@ -45,6 +45,8 @@ var data = [
                   '<a href="http://www.hgvs.org/mutnomen/recs.html" target="_blank" tabindex="-1">here</a>.'),
     required: true,
     example: 'e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)' },
+  { label: 'Species',
+    id: 'species' },
   { label: 'Growth Stage',
     id: 'growth-stage',
     example: 'mid-log' },
