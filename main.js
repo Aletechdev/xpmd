@@ -306,11 +306,10 @@ function handle_name_upload(e, file) {
 
     var output_sample_csv_data = [new CSV(get_data_array()).encode()];
     var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' });
-    // saveAs(output_sample_metadata_file, file_name)
     zip.folder("samples").file(file_name, output_sample_metadata_file)
   }
 
-  var output_sample_name_csv_data = [new CSV(output_sample_name_array).encode()];
+  var output_sample_name_csv_data = [new CSV(output_sample_name_array, {header: ["samples"]}).encode()];
   var output_sample_name_file = new Blob(output_sample_name_csv_data, { type: 'text/plain;charset=utf-8' });
   zip.file('samples.csv', output_sample_name_file);
 
