@@ -566,7 +566,7 @@ function create_input(data, parent_sel, autofocus) {
   if (type == 'dropdown') {
     var select_options = {
       'allowClear': true,
-      'placeholder': '',
+      'placeholder': ''
     };
     // multiple selections
     if (multiple) {
