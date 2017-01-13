@@ -60,7 +60,8 @@ var data = [
   { label: 'Temperature',
     description: 'Temperature in Celcius',
     id: 'temperature',
-    example: '37' },
+    example: '37',
+    form: 'ALE'},
   { label: 'Base Media',
     id: 'base-media',
     type: 'dropdown',
@@ -129,25 +130,29 @@ var data = [
     type: 'number',
     default: 1,
     min: 1,
-    max: 100 },
+    max: 100,
+    form: 'ALE'},
   { label: 'Flask number',
     id: 'Flask-number',
     type: 'number',
     default: 1,
     min: 1,
-    max: 100 },
+    max: 100,
+    form: 'ALE'},
   { label: 'Isolate number',
     id: 'Isolate-number',
     type: 'number',
     default: 1,
     min: 1,
-    max: 100 },
+    max: 100,
+    form: 'ALE'},
   { label: 'Technical replicate number',
     id: 'technical-replicate-number',
     type: 'number',
     default: 1,
     min: 1,
-    max: 100 },
+    max: 100,
+    form: 'ALE'},
   { label: 'Machine',
     id: 'machine',
     type: 'dropdown',
@@ -174,7 +179,26 @@ var data = [
     custom: true },
   { label: 'Sample Preparation and Experiment Details',
     id: 'expertiment-details',
-    type: 'textarea' }
+    type: 'textarea' },
+  { label: 'Environment',
+    description: 'Describe any other environmental parameters, such as temperature.',
+    id: 'environment',
+    example: '42C',
+    form: 'Generic'},
+  { label: 'Biological replicates',
+    id: 'biological-replicates',
+    type: 'number',
+    default: 1,
+    min: 1,
+    max: 100,
+    form: 'Generic'},
+  { label: 'Technical replicates',
+    id: 'technical-replicates',
+    type: 'number',
+    default: 1,
+    min: 1,
+    max: 100,
+    form: 'Generic'}
 ];
 
 var data_as_object = {};
@@ -186,11 +210,7 @@ $(document).ready(function(){
   // add the uploader
   create_uploaders();
 
-  // add the form
-  for(var i = 0; i < data.length; i++) {
-    // add the input
-    create_input(data[i], $('#center-column'), i === 0)
-  }
+  create_form('Generic');
 
   // submit
   $('#submit').click(function(){
@@ -207,6 +227,31 @@ $(document).ready(function(){
   })
 
 });
+
+function create_form(form_type) {
+
+  var center_column = $('#center-column');
+
+  // Remove all child elements of center-column to start with blank sheet.
+  while (center_column[0].firstChild) {
+    center_column[0].removeChild(center_column[0].firstChild);
+  }
+
+  // Hide/show the Optional: Ale Specific Drag and drop CSV box
+  if(form_type == 'Generic') {
+    document.getElementById('csv_drag_and_drop').style.display = 'none';
+  } else {
+    document.getElementById('csv_drag_and_drop').style.display = 'block';
+  }
+
+  // add the form
+  for(var i = 0; i < data.length; i++) {
+    // add the input
+    if (data[i]['form'] == form_type || data[i]['form'] == undefined) {
+      create_input(data[i], center_column, i === 0)
+    }
+  }
+}
 
 function get_data_array() {
   var data_array = [];
