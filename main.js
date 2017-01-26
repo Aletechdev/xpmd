@@ -239,8 +239,10 @@ function create_form(form_type) {
   // Hide/show the Optional: Ale Specific Drag and drop CSV box
   if(form_type == 'Generic') {
     document.getElementById('csv_drag_and_drop').style.display = 'none';
+    document.getElementById('generic_instructions').style.display = 'block';
   } else {
     document.getElementById('csv_drag_and_drop').style.display = 'block';
+    document.getElementById('generic_instructions').style.display = 'none';
   }
 
   // add the form

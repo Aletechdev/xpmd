@@ -46,19 +46,69 @@
 
       <hr/>
 
-      <input id="switch" type="checkbox" checked data-toggle="toggle" data-on="Generic" data-off="ALE" data-offstyle="success">
+      <p>
+        Toggle between <i>Generic</i> or <i>ALE</i> metadata workflows
+      </p>
+
+      <input id="switch" type="checkbox" checked data-toggle="toggle" data-on="Generic" data-off="ALE"
+             data-offstyle="success">
       <script>
-      $(function() {
-        $('#switch').change(function() {
-          if ($(this).prop('checked')) {
-            create_form('Generic');
-          } else {
-            create_form('ALE');
-          }
+        $(function () {
+          $('#switch').change(function () {
+            if ($(this).prop('checked')) {
+              create_form('Generic');
+            } else {
+              create_form('ALE');
+            }
+          })
         })
-      })
-    </script>
+      </script>
+
       <hr/>
+
+      <div id="generic_instructions">
+      <p>
+        <i>Using this tool at SBRG:</i>
+      <ol>
+        <li>
+          <strong>Create a new folder</strong> on Nucleoid with the form
+          <code>data/raw_data/{User}/{Project Name}/{Folder Name}/</code>.
+        </li>
+        <ul>
+          <li>
+            Each data type collected on a given day gets a unique folder.
+          </li>
+          <li>
+            The Project Name can be anything you want, but try to make it
+            short, unique, and descriptive.
+          </li>
+          <li>
+            The Folder Name looks like <code>{YYYY}-{MM}-{DD}_{data type}</code>.
+          </li>
+          <li>
+            To make things easier, after you fill out this form, the Folder
+            Name is provided at the bottom of the page.
+          </li>
+          <li>
+            If there are duplicates, then add <code>_1</code>,
+            <code>_2</code>, &hellip; to the end.
+          </li>
+          <li>
+            Example: <code>data/raw_data/z1king/Y-ome/2015-11-19_Tn-Seq_1/</code>
+          </li>
+        </ul>
+        <li>
+          <strong>Copy</strong> raw data files (e.g. <code>*.fastq.gz</code>
+          from the MiSeq) to the new folder.
+        </li>
+        <li>
+          <strong>Fill out this form</strong>, save the CSV file, and put it
+          in your folder.
+        </li>
+      </ol>
+      </p>
+      <hr/>
+      </div>
 
       <div class="panel panel-default">
         <div class="panel-heading">
