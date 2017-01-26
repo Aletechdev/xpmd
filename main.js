@@ -196,42 +196,42 @@ var data = [
     min: 1,
     max: 100,
     form: 'Generic'}
-];
+]
 
-var data_as_object = {};
-data.forEach(function(d) { data_as_object[d.id] = d });
+var data_as_object = {}
+data.forEach(function(d) { data_as_object[d.id] = d })
 
 
 $(document).ready(function(){
 
   // add the uploader
-  create_uploaders();
+  create_uploaders()
 
-  create_form('Generic');
+  create_form('Generic')
 
   // submit
   $('#submit').click(function(){
-    if (!check_required()) return;
-    var data_array = get_data_array();
+    if (!check_required()) return
+    var data_array = get_data_array()
     save_sample_metadata_file(data_array )
-  });
+  })
 
   $('#download_example').click(function(){
     var output_file_name = "ale_sample_names",
         example_output = [["1","1","0","1"],["\n1","1","1","1"],["\n1","1","2","1"]],
-        file = new Blob(example_output, { type: 'text/plain;charset=utf-8' });
-    saveAs(file, output_file_name + '.csv');
+        file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
+    saveAs(file, output_file_name + '.csv')
   })
 
-});
+})
 
 function create_form(form_type) {
 
-  var center_column = $('#center-column');
+  var center_column = $('#center-column')
 
   // Remove all child elements of center-column to start with blank sheet.
   while (center_column[0].firstChild) {
-    center_column[0].removeChild(center_column[0].firstChild);
+    center_column[0].removeChild(center_column[0].firstChild)
   }
 
   // Hide/show the Optional: Ale Specific Drag and drop CSV box
@@ -571,16 +571,16 @@ function draw_concentrations(id, def, value_dict) {
 
   var sel = d3.select(d3.select('#' + id).node().parentNode)
         .selectAll('.concentration-input')
-        .data(get_value(id, true), function(d) { return d; })
+        .data(get_value(id, true), function(d) { return d })
   var div = sel.enter()
         .append('div')
         .attr('class', 'concentration-input')
   if(id == "antibiotic")
-      div.append('span').text(function(d) { return d + ' concentration (ug/mL)'; })
+      div.append('span').text(function(d) { return d + ' concentration (ug/mL)' })
   else
-      div.append('span').text(function(d) { return d + ' concentration (g/L)'; })
+      div.append('span').text(function(d) { return d + ' concentration (g/L)' })
   div.append('input').attr('type', 'number')
-    .attr('id', function(d) { return d; })
+    .attr('id', function(d) { return d })
     .attr('class', 'form-control')
     .attr('min', '0')
     .attr('max', '1000')
