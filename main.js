@@ -236,11 +236,11 @@ function create_form(form_type) {
 
   // Hide/show the Optional: Ale Specific Drag and drop CSV box
   if(form_type == 'Generic') {
-    document.getElementById('csv_drag_and_drop').style.display = 'none';
-    document.getElementById('generic_instructions').style.display = 'block';
+    document.getElementById('csv_drag_and_drop').style.display = 'none'
+    document.getElementById('generic_instructions').style.display = 'block'
   } else {
-    document.getElementById('csv_drag_and_drop').style.display = 'block';
-    document.getElementById('generic_instructions').style.display = 'none';
+    document.getElementById('csv_drag_and_drop').style.display = 'block'
+    document.getElementById('generic_instructions').style.display = 'none'
   }
 
   // add the form
@@ -253,9 +253,9 @@ function create_form(form_type) {
 }
 
 function get_data_array() {
-  var data_array = [];
+  var data_array = []
   for(var i = 0; i < data.length; i++){
-    var val = get_value(data[i]['id']);
+    var val = get_value(data[i]['id'])
     data_array.push([data[i]['id'], val])
   }
   return data_array
@@ -263,12 +263,12 @@ function get_data_array() {
 
 function check_required() {
   if ($('.required.alert-danger').length !== 0) {
-    $('#submit').get(0).disabled = true;
-    $('#required-to-submit').show();
+    $('#submit').get(0).disabled = true
+    $('#required-to-submit').show()
     return false
   } else {
-    $('#submit').get(0).disabled = false;
-    $('#required-to-submit').hide();
+    $('#submit').get(0).disabled = false
+    $('#required-to-submit').hide()
     return true
   }
 }
@@ -292,7 +292,7 @@ function create_uploaders() {
 
 function handle_upload(e, file) {
   var csv_data = e.target.result,
-      arrays = new CSV(csv_data).parse();
+      arrays = new CSV(csv_data).parse()
   for (var i = 0; i < arrays.length; i++)
     set_value(arrays[i][0], arrays[i][1])
   check_required()
@@ -302,14 +302,14 @@ function handle_upload(e, file) {
 function get_zip_name() {
 
   return file_name = get_value('project').toString()
-    + '_' + folder_name();
+    + '_' + folder_name()
 }
 
 
 function get_file_name() {
-  lib_prep = get_lib_prep_code(get_value('library-prep-kit-manufacturer').toString());
+  lib_prep = get_lib_prep_code(get_value('library-prep-kit-manufacturer').toString())
   if (lib_prep != '')
-    lib_prep = '_' + lib_prep;
+    lib_prep = '_' + lib_prep
 
   return file_name = get_value('project').toString()
     + lib_prep
@@ -317,75 +317,75 @@ function get_file_name() {
     + get_value('ALE-number').toString()
     + '-' + get_value('Flask-number').toString()
     + '-' + get_value('Isolate-number').toString()
-    + '-' + get_value('technical-replicate-number').toString();
+    + '-' + get_value('technical-replicate-number').toString()
 }
 
 
-const ALE_NUMBER_IDX = 0;
-const FLASK_NUMBER_IDX = 1;
-const ISOLATE_NUMBER_IDX = 2;
-const TECHNICAL_REPLICATE_IDX = 3;
+const ALE_NUMBER_IDX = 0
+const FLASK_NUMBER_IDX = 1
+const ISOLATE_NUMBER_IDX = 2
+const TECHNICAL_REPLICATE_IDX = 3
 
 function handle_name_upload(e, file) {
 
   // fast fail
   if (!check_required())
-    return;
+    return
 
   var input_csv_data = e.target.result,
-      variable_file_name_array = new CSV(input_csv_data).parse();
+      variable_file_name_array = new CSV(input_csv_data).parse()
 
-  var output_sample_name_array = [];
+  var output_sample_name_array = []
 
-  var zip = new JSZip();
+  var zip = new JSZip()
 
   for (var name_idx = 0; name_idx < variable_file_name_array.length; name_idx++) {
-    set_value('ALE-number', variable_file_name_array[name_idx][ALE_NUMBER_IDX]);
-    set_value('Flask-number', variable_file_name_array[name_idx][FLASK_NUMBER_IDX]);
-    set_value('Isolate-number', variable_file_name_array[name_idx][ISOLATE_NUMBER_IDX]);
-    set_value('technical-replicate-number',variable_file_name_array[name_idx][TECHNICAL_REPLICATE_IDX]);
+    set_value('ALE-number', variable_file_name_array[name_idx][ALE_NUMBER_IDX])
+    set_value('Flask-number', variable_file_name_array[name_idx][FLASK_NUMBER_IDX])
+    set_value('Isolate-number', variable_file_name_array[name_idx][ISOLATE_NUMBER_IDX])
+    set_value('technical-replicate-number',variable_file_name_array[name_idx][TECHNICAL_REPLICATE_IDX])
 
-    file_name = get_file_name() + '.csv';
-    output_sample_name_array.push([file_name]);
+    file_name = get_file_name() + '.csv'
+    output_sample_name_array.push([file_name])
 
-    var output_sample_csv_data = [new CSV(get_data_array()).encode()];
-    var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' });
+    var output_sample_csv_data = [new CSV(get_data_array()).encode()]
+    var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' })
     zip.folder("samples").file(file_name, output_sample_metadata_file)
   }
 
-  var output_sample_name_csv_data = [new CSV(output_sample_name_array, {header: ["samples"]}).encode()];
-  var output_sample_name_file = new Blob(output_sample_name_csv_data, { type: 'text/plain;charset=utf-8' });
-  zip.file('samples.csv', output_sample_name_file);
+  var output_sample_name_csv_data = [new CSV(output_sample_name_array, {header: ["samples"]}).encode()]
+  var output_sample_name_file = new Blob(output_sample_name_csv_data, { type: 'text/plain;charset=utf-8' })
+  zip.file('samples.csv', output_sample_name_file)
 
   zip.generateAsync({type:"blob"})
     .then(function (blob) {
-      saveAs(blob, get_zip_name() + '.zip');
-    });
+      saveAs(blob, get_zip_name() + '.zip')
+    })
 }
 
 
 function folder_name() {
   var l = ['run-date', 'data-type'].map(function(el) {
     return get_value(el).replace(' ', '').replace(/\//g, '-')
-  });
+  })
   return _.every(l) ? l.join('_') : ''
 }
 
 
 function get_lib_prep_code(lib_prep_manufacturer) {
-  lib_prep_code = '';
+  lib_prep_code = ''
   if (lib_prep_manufacturer == 'Kapa')
-    lib_prep_code = 'KHP';
+    lib_prep_code = 'KHP'
   else if (lib_prep_manufacturer == 'Illumina')
-    lib_prep_code = 'NXT';
-  return lib_prep_code;
+    lib_prep_code = 'NXT'
+  return lib_prep_code
 }
 
 
 function save_sample_metadata_file(array) {
-  file_name = get_file_name();
-  var csv_data = [new CSV(array).encode()];
-  var file = new Blob(csv_data, { type: 'text/plain;charset=utf-8' });
+  file_name = get_file_name()
+  var csv_data = [new CSV(array).encode()]
+  var file = new Blob(csv_data, { type: 'text/plain;charset=utf-8' })
   saveAs(file, file_name + '.csv')
 }
 
@@ -394,29 +394,29 @@ function get_value(id, input_only) {
   /** Get the value for the given input id */
 
   if (_.isUndefined(input_only))
-    input_only = false;
+    input_only = false
 
   // try to get concentrations
-  var concentrations = {};
+  var concentrations = {}
   $('#' + id).parent().find('.concentration-input>input').each(function() {
     var el = $(this),
-        val = $(this).val();
+        val = $(this).val()
     if (val) concentrations[el.attr('id')] = val
-  });
+  })
 
   // get the value
-  var vals = $('#' + id).val();
+  var vals = $('#' + id).val()
   if ((typeof vals === 'undefined') || (vals === null))
-    return '';
+    return ''
 
   if (input_only)
-    return vals;
+    return vals
 
   // add concentrations to val
   if (_.isArray(vals)) {
     return vals.map(function(val) {
       if (val in concentrations)
-        return val + '(' + concentrations[val] + ')';
+        return val + '(' + concentrations[val] + ')'
       else
         return val
     })
@@ -428,35 +428,35 @@ function get_value(id, input_only) {
 
 function set_value(id, value) {
   if (!(id in data_as_object)) {
-    console.warn('Unrecognized key ' + id);
+    console.warn('Unrecognized key ' + id)
     return
   }
 
-  var sel = $('#' + id);
+  var sel = $('#' + id)
 
   if (sel.data('select2')) {
     var split_val = value.split(',').filter(function(x) {
       return x.replace(' ', '') !== ''
     }),
         extracted_val = extract_concentrations(split_val),
-        concentrations = {};
+        concentrations = {}
     // for multiple selections, add the options if it doesn't exist
-    var ids = [], input_val = [];
+    var ids = [], input_val = []
     sel.find('option').each(function() {
       ids.push($(this).val())
-    });
+    })
     extracted_val.forEach(function(val_obj) {
-      var val = val_obj.id;
+      var val = val_obj.id
       if (ids.indexOf(val) === -1)
-        sel.append('<option value="' + val + '">' + val + '</option>');
+        sel.append('<option value="' + val + '">' + val + '</option>')
       // for the input
-      input_val.push(val);
+      input_val.push(val)
 
       // for the concentrations
       if (val_obj.concentration)
         concentrations[val] = val_obj.concentration
-    });
-    sel.val(input_val).trigger('change');
+    })
+    sel.val(input_val).trigger('change')
 
     // update the concentration
     if (Object.keys(concentrations).length > 0) {
@@ -466,14 +466,14 @@ function set_value(id, value) {
     }
   } else if (data_as_object[id]['type'] == 'date') {
     var date = new Date(value),
-        date_str = [date.getFullYear(), date.getMonth(), date.getDate()].join('-');
+        date_str = [date.getFullYear(), date.getMonth(), date.getDate()].join('-')
     sel.val(date_str).trigger('change')
   } else {
     sel.val(value).trigger('change')
   }
 
   // update UI
-  update_required_label(id, value);
+  update_required_label(id, value)
 }
 
 
@@ -492,25 +492,25 @@ function update_required_label(id, value) {
 
 
 function add_form_container(html, label, required, id, description, custom, multiple) {
-  var required_str, custom_mult_str, description_str;
+  var required_str, custom_mult_str, description_str
   if (required)
-    required_str = '<span id="required-alert-' + id + '" class="required alert alert-danger" role="alert">(Required)</span>';
+    required_str = '<span id="required-alert-' + id + '" class="required alert alert-danger" role="alert">(Required)</span>'
   else
-    required_str = '';
+    required_str = ''
 
   if (custom && multiple)
-    custom_mult_str = ' (Choose one or more, including custom values)';
+    custom_mult_str = ' (Choose one or more, including custom values)'
   else if (custom)
-    custom_mult_str = ' (Choose or enter a new value)';
+    custom_mult_str = ' (Choose or enter a new value)'
   else if (multiple)
-    custom_mult_str = ' (Choose one or more)';
+    custom_mult_str = ' (Choose one or more)'
   else
-    custom_mult_str = '';
+    custom_mult_str = ''
 
   if (description)
-    description_str = '<div>' + description + '</div>';
+    description_str = '<div>' + description + '</div>'
   else
-    description_str = '';
+    description_str = ''
 
   return '<div class="form-group row"><div class="col-sm-6"><label>' + label + '</label>' + custom_mult_str +
     required_str + description_str +
@@ -519,18 +519,18 @@ function add_form_container(html, label, required, id, description, custom, mult
 
 
 function add_dropdown_options(input_sel, options, options_data, def, select_options) {
-  var options_html = '';
+  var options_html = ''
   for (var i = 0; i < options.length; i++) {
     var opt = options[i],
-        selected_str = opt === def ? ' selected="selected"' : '';
+        selected_str = opt === def ? ' selected="selected"' : ''
     options_html += '<option value="'+ opt + '"' + selected_str + '>' + opt + '</option>'
   }
 
-  input_sel.html(options_html);
+  input_sel.html(options_html)
   if (options_data) {
     select_options['templateResult'] = function(state) {
       return state.id + ': ' + options_data[state.id]
-    };
+    }
     select_options['matcher'] = function (params, data) {
       // check both the 3-letter-id and the explanation text
       if ($.trim(params.term) === '' ||
@@ -543,7 +543,7 @@ function add_dropdown_options(input_sel, options, options_data, def, select_opti
   }
 
   // initialize select2
-  input_sel.select2(select_options);
+  input_sel.select2(select_options)
 
   // to avoid the default tag
   if (!def) input_sel.val([]).trigger('change')
@@ -553,12 +553,12 @@ function add_dropdown_options(input_sel, options, options_data, def, select_opti
 function extract_concentrations(vals) {
   /** Get the ids and concentrations from strings like "Glucose(2)" */
 
-  var out = [];
+  var out = []
   for (var i=0, l=vals.length; i<l; i++) {
     var t = vals[i],
-        res = /(.*)\(([0-9.]+)\)/.exec(t);
+        res = /(.*)\(([0-9.]+)\)/.exec(t)
     if (_.isNull(res))
-      out.push({ id: t, concentration: null });
+      out.push({ id: t, concentration: null })
     else
       out.push({ id: res[1], concentration: res[2] })
   }
@@ -567,18 +567,18 @@ function extract_concentrations(vals) {
 
 
 function draw_concentrations(id, def, value_dict) {
-  if (_.isUndefined(value_dict)) value_dict = {};
+  if (_.isUndefined(value_dict)) value_dict = {}
 
   var sel = d3.select(d3.select('#' + id).node().parentNode)
         .selectAll('.concentration-input')
-        .data(get_value(id, true), function(d) { return d; });
+        .data(get_value(id, true), function(d) { return d; })
   var div = sel.enter()
         .append('div')
-        .attr('class', 'concentration-input');
+        .attr('class', 'concentration-input')
   if(id == "antibiotic")
-      div.append('span').text(function(d) { return d + ' concentration (ug/mL)'; });
+      div.append('span').text(function(d) { return d + ' concentration (ug/mL)'; })
   else
-      div.append('span').text(function(d) { return d + ' concentration (g/L)'; });
+      div.append('span').text(function(d) { return d + ' concentration (g/L)'; })
   div.append('input').attr('type', 'number')
     .attr('id', function(d) { return d; })
     .attr('class', 'form-control')
@@ -586,7 +586,7 @@ function draw_concentrations(id, def, value_dict) {
     .attr('max', '1000')
     .attr('value', function(d) {
       return (d in value_dict) ? value_dict[d] : def
-    });
+    })
 
   sel.exit().remove()
 }
@@ -608,27 +608,27 @@ function create_input(data, parent_sel, autofocus) {
       min = data['min'],
       html = '',
       autofocus_str = autofocus ? ' autofocus' : '',
-      after_append;
+      after_append
 
   // check for some required attributes
-  if (!id) console.error('No ID for ' + label);
+  if (!id) console.error('No ID for ' + label)
   if (options && (type !== 'dropdown'))
-    console.error('Has "options" with a type that is not "dropdown" for ' + label);
+    console.error('Has "options" with a type that is not "dropdown" for ' + label)
   if (min && (type !== 'number'))
-    console.error('Has "min" with a type that is not "number" for ' + label);
+    console.error('Has "min" with a type that is not "number" for ' + label)
 
   if (type == 'dropdown') {
     var select_options = {
       'allowClear': true,
       'placeholder': ''
-    };
+    }
     // multiple selections
     if (multiple) {
       select_options['multiple'] = true
     }
     // custom options
     if (custom) {
-      select_options['tags'] = true;
+      select_options['tags'] = true
       select_options['createTag'] = function(query) {
         return {
           id: query.term,
@@ -640,7 +640,7 @@ function create_input(data, parent_sel, autofocus) {
     if (!required) {
 
     }
-    html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '></select>';
+    html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '></select>'
 
     after_append = function() {
       // prefer options to options_function
@@ -658,9 +658,9 @@ function create_input(data, parent_sel, autofocus) {
       }
       // when clearing, close the menu
       $('#' + id).on('select2:unselecting', function (e) {
-        $(this).select2('val', '');
-        e.preventDefault();
-      });
+        $(this).select2('val', '')
+        e.preventDefault()
+      })
     }
   } else if (type === 'date') {
     html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
@@ -672,7 +672,7 @@ function create_input(data, parent_sel, autofocus) {
     html = '<textarea id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" ></textarea>'
   } else if (type === 'number' ){
     html = '<input id="' + id + '" type="number" class="form-control" min="' + min + '"' +
-      ' value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >';
+      ' value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >'
     after_append = function() {
       $('#' + id).bootstrapNumber()
     }
@@ -681,10 +681,10 @@ function create_input(data, parent_sel, autofocus) {
   }
 
   // create and run
-  parent_sel.append(add_form_container(html, label, required, id, description, custom, multiple));
+  parent_sel.append(add_form_container(html, label, required, id, description, custom, multiple))
   // toggle the required label
   $('#' + id).on('change', function() {
-    update_required_label(id, this.value);
-  });
+    update_required_label(id, this.value)
+  })
   if (after_append) after_append()
 }
