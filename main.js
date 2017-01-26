@@ -200,6 +200,7 @@ var data = [
 
 var data_as_object = {}
 data.forEach(function(d) { data_as_object[d.id] = d })
+var workflow = 'Generic'
 
 
 $(document).ready(function(){
@@ -213,7 +214,11 @@ $(document).ready(function(){
   $('#submit').click(function(){
     if (!check_required()) return
     var data_array = get_data_array()
-    save_sample_metadata_file(data_array )
+    if (workflow == 'Generic') {
+      save_generic_metadata(data_array)
+    } else {
+      save_ale_metadata(data_array)
+    }
   })
 
   $('#download_example').click(function(){
@@ -227,6 +232,8 @@ $(document).ready(function(){
 
 function create_form(form_type) {
 
+  workflow = form_type
+
   var center_column = $('#center-column')
 
   // Remove all child elements of center-column to start with blank sheet.
@@ -238,9 +245,11 @@ function create_form(form_type) {
   if(form_type == 'Generic') {
     document.getElementById('csv_drag_and_drop').style.display = 'none'
     document.getElementById('generic_instructions').style.display = 'block'
+    document.getElementById('folder-name-panel').style.display = 'block'
   } else {
     document.getElementById('csv_drag_and_drop').style.display = 'block'
     document.getElementById('generic_instructions').style.display = 'none'
+    document.getElementById('folder-name-panel').style.display = 'none'
   }
 
   // add the form
@@ -372,6 +381,11 @@ function folder_name() {
 }
 
 
+function update_folder_name() {
+  $('#folder-name').val(folder_name())
+}
+
+
 function get_lib_prep_code(lib_prep_manufacturer) {
   lib_prep_code = ''
   if (lib_prep_manufacturer == 'Kapa')
@@ -382,11 +396,19 @@ function get_lib_prep_code(lib_prep_manufacturer) {
 }
 
 
-function save_sample_metadata_file(array) {
+function save_ale_metadata(array) {
   file_name = get_file_name()
   var csv_data = [new CSV(array).encode()]
-  var file = new Blob(csv_data, { type: 'text/plain;charset=utf-8' })
+  var file = new Blob(csv_data, {type: 'text/plain;charset=utf-8'})
   saveAs(file, file_name + '.csv')
+}
+
+
+function save_generic_metadata(array) {
+  var label = folder_name(),
+    csv = [new CSV(array).encode()],
+    file = new Blob(csv, {type: 'text/plain;charset=utf-8'})
+  saveAs(file, label + '.csv')
 }
 
 
@@ -474,6 +496,7 @@ function set_value(id, value) {
 
   // update UI
   update_required_label(id, value)
+  update_folder_name()
 }
 
 
@@ -685,6 +708,7 @@ function create_input(data, parent_sel, autofocus) {
   // toggle the required label
   $('#' + id).on('change', function() {
     update_required_label(id, this.value)
+    update_folder_name()
   })
   if (after_append) after_append()
 }
