@@ -173,7 +173,7 @@ var data = [
   { label: 'Read Length',
     id: 'read-length',
     type: 'dropdown',
-    options: ['31', '62', '76', '151', '301'],
+    options: ['31', '36', '50', '62', '76', '100', '151', '301'],
     custom: true },
   { label: 'Sample Preparation and Experiment Details',
     id: 'expertiment-details',
