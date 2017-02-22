@@ -176,7 +176,7 @@ var data = [
     options: ['31', '36', '50', '62', '76', '100', '151', '301'],
     custom: true },
   { label: 'Sample Preparation and Experiment Details',
-    id: 'experitment-details',
+    id: 'experiment-details',
     type: 'textarea' },
   { label: 'Environment',
     description: 'Describe any other environmental parameters.',
