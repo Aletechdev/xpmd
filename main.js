@@ -161,6 +161,11 @@ var data = [
     type: 'dropdown',
     custom: true,
     options: ['Illumina', 'Kapa'] },
+  { label: 'Library Prep Kit',
+    id: 'library-prep-kit',
+    type: 'dropdown',
+    custom: true,
+    options: ['Nextera XT', 'KAPA HyperPlus', 'KAPA Stranded RNA-seq'] },
   { label: 'Library Prep Kit Cycles',
     id: 'library-prep-kit-cycles',
     type: 'dropdown',
@@ -316,7 +321,7 @@ function get_zip_name() {
 
 
 function get_file_name() {
-  lib_prep = get_lib_prep_code(get_value('library-prep-kit-manufacturer').toString())
+  lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
   if (lib_prep != '')
     lib_prep = '_' + lib_prep
 
@@ -386,12 +391,14 @@ function update_folder_name() {
 }
 
 
-function get_lib_prep_code(lib_prep_manufacturer) {
+function get_lib_prep_code(lib_prep_kit) {
   lib_prep_code = ''
-  if (lib_prep_manufacturer == 'Kapa')
-    lib_prep_code = 'KHP'
-  else if (lib_prep_manufacturer == 'Illumina')
+  if (lib_prep_kit == 'Nextera XT')
     lib_prep_code = 'NXT'
+  else if (lib_prep_kit == 'KAPA HyperPlus')
+    lib_prep_code = 'KHP'
+  else if (lib_prep_kit == 'KAPA Stranded RNA-seq')
+    lib_prep_code = 'KSR'
   return lib_prep_code
 }
 
