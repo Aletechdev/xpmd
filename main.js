@@ -321,9 +321,7 @@ function get_zip_name() {
 
 
 function get_file_name() {
-  console.log(get_value('library-prep-kit').toString())
   lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
-  console.log(lib_prep)
   if (lib_prep != '')
     lib_prep = '_' + lib_prep
 
