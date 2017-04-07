@@ -314,18 +314,16 @@ function handle_upload(e, file) {
 
 
 function get_zip_name() {
-
-  return file_name = get_value('project').toString()
-    + '_' + folder_name()
+  return get_value('project').toString() + '_' + folder_name()
 }
 
 
 function get_file_name() {
-  lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
+  var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
   if (lib_prep != '')
     lib_prep = '_' + lib_prep
 
-  return file_name = get_value('project').toString()
+  return get_value('project').toString()
     + lib_prep
     + '_'
     + get_value('ALE-number').toString()
@@ -359,7 +357,7 @@ function handle_name_upload(e, file) {
     set_value('Isolate-number', variable_file_name_array[name_idx][ISOLATE_NUMBER_IDX])
     set_value('technical-replicate-number',variable_file_name_array[name_idx][TECHNICAL_REPLICATE_IDX])
 
-    file_name = get_file_name() + '.csv'
+    var file_name = get_file_name() + '.csv'
     output_sample_name_array.push([file_name])
 
     var output_sample_csv_data = [new CSV(get_data_array()).encode()]
@@ -392,7 +390,7 @@ function update_folder_name() {
 
 
 function get_lib_prep_code(lib_prep_kit) {
-  lib_prep_code = ''
+  var lib_prep_code = ''
   if (lib_prep_kit == 'Nextera XT')
     lib_prep_code = 'NXT'
   else if (lib_prep_kit == 'KAPA HyperPlus')
@@ -404,7 +402,7 @@ function get_lib_prep_code(lib_prep_kit) {
 
 
 function save_ale_metadata(array) {
-  file_name = get_file_name()
+  var file_name = get_file_name()
   var csv_data = [new CSV(array).encode()]
   var file = new Blob(csv_data, {type: 'text/plain;charset=utf-8'})
   saveAs(file, file_name + '.csv')
@@ -494,8 +492,15 @@ function set_value(id, value) {
                           concentrations)
     }
   } else if (data_as_object[id]['type'] == 'date') {
-    var date = new Date(value),
-        date_str = [date.getFullYear(), date.getMonth(), date.getDate()].join('-')
+    var date = new Date(value)
+    var date_str = [
+      // Year in local time
+      date.getFullYear(),
+      // Month is given between 0-11
+      date.getMonth() + 1,
+      // Day is given between 0-30
+      date.getDate() + 1
+    ].join('-')
     sel.val(date_str).trigger('change')
   } else {
     sel.val(value).trigger('change')
