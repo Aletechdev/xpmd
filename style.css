@@ -1,7 +1,7 @@
 .panel-default>.panel-heading {
   color: #fafafa;
   border-color: #333;
-  background: url(https://ak5.picdn.net/shutterstock/videos/18199831/thumb/2.jpg);
+  background-image: linear-gradient(90deg, #0b2e50, rgba(0, 84, 150, 0.68));
 }
 
 code {
@@ -36,16 +36,27 @@ button#download_example.btn.btn-default {
 
 label.btn.btn-primary.toggle-on {
   color: #fff;
-  background-color: #133d39;
-  border-color: #333;
+  background-color: #0d3154;
+  border-color: #0d3154;
 }
 
 label.btn.btn-success.active.toggle-off {
   color: #fff;
-  background-color: #308977;
-  border-color: #333;
+  background-color: #3b6e97;
+  border-color: #3b6e97;
 }
 
+.btn-success {
+   border-color: #3b6e97;
+}
+
+.btn-success:hover {
+    border-color: #28d67b;
+}
+
+.btn-primary:hover {
+    border-color: #28d67b;
+}
 .h1, h1 {
   font-size: 40px;
 }
@@ -54,9 +65,8 @@ label.btn.btn-success.active.toggle-off {
   font-family: inherit;
   font-weight: 500;
   line-height: 1.1;
-  color: #133d39;
+  color: #1d466b;
 }
-
 
 #center-column {
   padding-bottom: 0;
@@ -94,7 +104,7 @@ label.btn.btn-success.active.toggle-off {
 }
 
 #file-upload.drag {
-  background-color: #dff0d8;
+  background-color: #d6e6fd;
 }
 
 #name-file-upload{
