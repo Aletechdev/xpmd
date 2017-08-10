@@ -704,10 +704,8 @@ function save_generic_metadata(array) {
 
      zip.generateAsync({type:"blob"}).then(function (content) {
        saveAs(content, get_zip_name() + '.zip');
-     })
-      
-  }
-  
+     })    
+  } 
 }
 
 
