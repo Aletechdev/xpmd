@@ -448,36 +448,23 @@ function get_file_name() {
      var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
     if (lib_prep != '')
       lib_prep = '_' + lib_prep
-    if (get_value('serial-number') != "") {
-      return get_value('serial-number').toString() + '_' + get_value('project').toString() + '_' + label
-    }
-    if (get_value('serial-number') == "") {
-      return get_value('project').toString() + '_' + label
-    }
+    
+    return get_value('project').toString() + '_' + label
 
   }
   else {
     var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
-    if (lib_prep != '')
+    if (lib_prep != '') {
       lib_prep = '_' + lib_prep
-    if (get_value('serial-number') != "") {
-      return get_value('serial-number').toString() + '_' + get_value('project').toString()
-      + lib_prep
-      + '_'
-      + get_value('ALE-number').toString()
-      + '-' + get_value('Flask-number').toString()
-      + '-' + get_value('Isolate-number').toString()
-      + '-' + get_value('technical-replicate-number').toString()
     }
-    if (get_value('serial-number') == "") {
-      return get_value('project').toString()
-      + lib_prep
-      + '_'
-      + get_value('ALE-number').toString()
-      + '-' + get_value('Flask-number').toString()
-      + '-' + get_value('Isolate-number').toString()
-      + '-' + get_value('technical-replicate-number').toString()
-    }
+    
+    return get_value('project').toString()
+    + lib_prep
+    + '_'
+    + get_value('ALE-number').toString()
+    + '-' + get_value('Flask-number').toString()
+    + '-' + get_value('Isolate-number').toString()
+    + '-' + get_value('technical-replicate-number').toString()
   }
 }
 
@@ -621,17 +608,12 @@ function save_ale_metadata(array) {
     var file_name = get_file_name()
     var csv_data = [new CSV(array).encode()]
     var file = new Blob(csv_data, {type: 'text/plain;charset=utf-8'})
-     if (get_value('serial-number').toString() != '') {
-       saveAs(file, get_value('serial-number').toString()  + '_' + get_value('ALE-number').toString() + '_' + get_value('Flask-number').toString()
-           + '_' + get_value('Isolate-number').toString() + '_' + get_value('technical-replicate-number').toString()
-            + '.csv');
-     } 
-     if (get_value('serial-number').toString() == '') {
-       saveAs(file, get_value('ALE-number').toString() + '_' + get_value('Flask-number').toString()
-           + '_' + get_value('Isolate-number').toString() + '_' + get_value('technical-replicate-number').toString()
-            + '.csv');
-     }
+     
+    saveAs(file, get_value('ALE-number').toString() + '_' + get_value('Flask-number').toString()
+       + '_' + get_value('Isolate-number').toString() + '_' + get_value('technical-replicate-number').toString()
+       + '.csv');
   }
+
    if (files.length > 1) {
     var ALE_numb = ''
     var Flask_numb = ''
@@ -656,15 +638,8 @@ function save_ale_metadata(array) {
                  tech_rep_numb = new_files[x][y][1]
             }
        }
-         if (get_value('serial-number').toString() != '') {
-          zip.file(get_value('serial-number').toString() + '_' + ALE_numb + '_' + Flask_numb
-           + '_' + Iso_numb+ '_' + tech_rep_numb + '_' + get_value('project').toString() + '.csv', file);
-         }
-         if (get_value('serial-number').toString() == '') {
-          zip.file(ALE_numb + '_' + Flask_numb + '_' + Iso_numb+ '_' + tech_rep_numb 
-            + '_' + get_value('project').toString() + '.csv', file);
-
-         }
+       zip.file(ALE_numb + '_' + Flask_numb + '_' + Iso_numb+ '_' + tech_rep_numb 
+       + '_' + get_value('project').toString() + '.csv', file);
      }
 
     zip.generateAsync({type:"blob"}).then(function (content) {
@@ -681,25 +656,15 @@ function save_generic_metadata(array) {
      var label = folder_name();
      var csv = [new CSV(array).encode()];
      var file = new Blob(csv, {type: 'text/plain;charset=utf-8'});
-     if (get_value('serial-number').toString() != '') {
-       saveAs(file, get_value('serial-number').toString() + '_' + label + '.csv');
-     } 
-     if (get_value('serial-number').toString() == '') {
-       saveAs(file, label + '.csv');
-     }
+      saveAs(file, label + '.csv');
+     
   }
   if (files.length > 1) {
      for (var x = 0; x < new_files.length; x++) {
        var label = folder_name();
        var csv = [new CSV(new_files[x]).encode()];
        var file = new Blob(csv, {type: 'text/plain;charset=utf-8'});
-       if (get_value('serial-number').toString() != '') {
-          zip.file(get_value('serial-number').toString() + '_' + 
-            get_value('project').toString() + '_' + label + x + '.csv', file);
-       }
-       if (get_value('serial-number').toString() == '') {
-          zip.file(get_value('project').toString() + '_' + label + x + '.csv', file);
-       }     
+       zip.file(get_value('project').toString() + '_' + label + x + '.csv', file);   
      }
 
      zip.generateAsync({type:"blob"}).then(function (content) {
