@@ -229,7 +229,6 @@ $(document).ready(function(){
 
   create_form('Generic')
 
-
   // submit
   $('#submit').click(function(){
     if (!check_required()) 
@@ -240,13 +239,6 @@ $(document).ready(function(){
     } else {
       save_ale_metadata(data_array)
     }
-  })
-
-  $('#download_example').click(function(){
-    var output_file_name = "ale_sample_names",
-        example_output = [["1","1","0","1","serial-number"],["\n1","1","1","1","serial-number"],["\n1","1","2","1","serial-number"]],
-        file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
-    saveAs(file, output_file_name + '.csv')
   })
 
   $('#download_example_spreadsheet').click(function(){
@@ -268,6 +260,10 @@ $(document).ready(function(){
 })
 
 function create_form(form_type) {
+  files = [];
+  new_files = []
+  original_file_content = []
+  example_output = []
 
   workflow = form_type
 
@@ -281,12 +277,10 @@ function create_form(form_type) {
   // Hide/show the Optional: Ale Specific Drag and drop CSV box
   if(form_type == 'Generic') {    
     document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
-    document.getElementById('csv_drag_and_drop').style.display = 'none'
     document.getElementById('generic_instructions').style.display = 'block'
     document.getElementById('folder-name-panel').style.display = 'block'
   } else {
     document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
-    document.getElementById('csv_drag_and_drop').style.display = 'block'
     document.getElementById('generic_instructions').style.display = 'none'
     document.getElementById('folder-name-panel').style.display = 'none'
   }
@@ -395,13 +389,6 @@ function create_uploaders() {
     readAsDefault: 'Text',
     on: {
       load: handle_upload
-    }
-  });
-  $('#name-file-upload').fileReaderJS({
-    dragClass: 'drag',
-    readAsDefault: 'Text',
-    on: {
-      load: handle_name_upload
     }
   });
 }
@@ -532,51 +519,6 @@ function handle_upload_spreadsheet(e, file) {
   
 }
 
-
-const ALE_NUMBER_IDX = 0
-const FLASK_NUMBER_IDX = 1
-const ISOLATE_NUMBER_IDX = 2
-const TECHNICAL_REPLICATE_IDX = 3
-const SERIAL_NUMBER_IDX = 4
-
-function handle_name_upload(e, file) {
-
-  // fast fail
-  if (!check_required())
-    return
-
-  var input_csv_data = e.target.result,
-      variable_file_name_array = new CSV(input_csv_data).parse()
-
-  var output_sample_name_array = []
-
-  var zip = new JSZip()
-  for (var name_idx = 0; name_idx < variable_file_name_array.length; name_idx++) {
-    set_value('ALE-number', variable_file_name_array[name_idx][ALE_NUMBER_IDX])
-    set_value('Flask-number', variable_file_name_array[name_idx][FLASK_NUMBER_IDX])
-    set_value('Isolate-number', variable_file_name_array[name_idx][ISOLATE_NUMBER_IDX])
-    set_value('technical-replicate-number',variable_file_name_array[name_idx][TECHNICAL_REPLICATE_IDX])
-    set_value('serial-number',variable_file_name_array[name_idx][SERIAL_NUMBER_IDX])
-
-    var file_name = get_file_name() + '.csv'
-
-    output_sample_name_array.push([file_name])
-
-    var output_sample_csv_data = [new CSV(get_data_array()).encode()]
-    var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' })
-    zip.folder("samples").file(file_name, output_sample_metadata_file)
-  }
-
-  var output_sample_name_csv_data = [new CSV(output_sample_name_array, {header: ["samples"]}).encode()]
-  var output_sample_name_file = new Blob(output_sample_name_csv_data, { type: 'text/plain;charset=utf-8' })
-  zip.file('samples.csv', output_sample_name_file)
-
-  zip.generateAsync({type:"blob"})
-    .then(function (blob) {
-      saveAs(blob, get_zip_name() + '.zip')
-    })
-}
-
 function folder_name() {
   var l = ['run-date', 'data-type'].map(function(el) {
     return get_value(el).replace(' ', '').replace(/\//g, '-')
@@ -609,9 +551,7 @@ function save_ale_metadata(array) {
     var csv_data = [new CSV(array).encode()]
     var file = new Blob(csv_data, {type: 'text/plain;charset=utf-8'})
      
-    saveAs(file, get_value('ALE-number').toString() + '_' + get_value('Flask-number').toString()
-       + '_' + get_value('Isolate-number').toString() + '_' + get_value('technical-replicate-number').toString()
-       + '.csv');
+    saveAs(file, file_name + '.csv');
   }
 
    if (files.length > 1) {

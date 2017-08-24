@@ -141,18 +141,6 @@ label.btn.btn-success.active.toggle-off {
   background-color: #d6e6fd;
 }
 
-#name-file-upload{
-  height: 60px;
-  border: 2px solid #fff;
-  padding: 20px;
-  border: 2px dashed #46748e;
-  text-align: center;
-}
-
-#name-file-upload.drag {
-  background-color: #dff0d8;
-}
-
 .concentration-input {
   margin-top: 2px;
 }
