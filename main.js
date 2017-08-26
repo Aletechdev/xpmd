@@ -26,9 +26,10 @@ var data = [
     custom: true,
     default: 'DNA-seq',
     options: ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq'] },
-   { label: 'Read Files',
+  { label: 'Read Files',
     id: 'read-files',
     type: 'tags',
+    ALErequired: true,
     description: 'Input associated read files names. Select "enter" per file name to build list.' },
   { label: 'Experiment Date (YYYY-MM-DD)',
     id: 'run-date',
@@ -134,11 +135,13 @@ var data = [
     id: 'ALE-number',
     type: 'number',
     default: 1,
+    required: true,
     min: 1,
     max: 100,
     form: 'ALE'},
   { label: 'Flask number',
     id: 'Flask-number',
+    required: true,
     type: 'number',
     default: 1,
     min: 1,
@@ -146,6 +149,7 @@ var data = [
     form: 'ALE'},
   { label: 'Isolate number',
     id: 'Isolate-number',
+    required: true,
     type: 'number',
     default: 1,
     min: 1,
@@ -153,6 +157,7 @@ var data = [
     form: 'ALE'},
   { label: 'Technical replicate number',
     id: 'technical-replicate-number',
+    required: true,
     type: 'number',
     default: 1,
     min: 1,
@@ -217,7 +222,6 @@ var files = [];
 var new_files = []
 var original_file_content = []
 var example_output = []
-var spreadsheet = false;
 
 $(document).ready(function(){
 
@@ -263,9 +267,9 @@ function create_form(form_type) {
   example_output = []
 
   workflow = form_type
-
+  
   var center_column = $('#center-column')
-
+  
   // Remove all child elements of center-column to start with blank sheet.
   while (center_column[0].firstChild) {
     center_column[0].removeChild(center_column[0].firstChild)
@@ -453,7 +457,6 @@ function get_file_name() {
 }
 
 function handle_upload_spreadsheet(e, file) {
-  spreadsheet = true;
   example_output = [["creator"],["creator-email"],["serial-number"],["project"],
         ["data-type"],["read-files"],["run-date"],["taxonomy-id"],["strain-description"],
         ["growth-stage"],["sample-time"],["antibody"],["temperature"],["base-media"],
@@ -486,7 +489,13 @@ function handle_upload_spreadsheet(e, file) {
     } 
         
   };
-  var required_input = [["creator"],["creator-email"],["serial-number"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"]]
+  if (workflow == 'Generic') {
+     var required_input = [["creator"],["creator-email"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"]]
+  }
+  else {
+    var required_input = [["creator"],["creator-email"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],
+        ["Flask-number"],["Isolate-number"],["technical-replicate-number"]]
+  }
   for (var name_idx = 1; name_idx < variable_file_name_array.length; name_idx++) {
     for (var i = 0; i < variable_file_name_array[0].length; i++) {
       for (var x = 0; x < required_input.length; x++) {
@@ -651,8 +660,6 @@ function set_value(id, value) {
     console.warn('Unrecognized key ' + id)
     return
   }
-  console.log($('#read-files').tagsinput('items'))
-
   var sel = $('#' + id)
   if (sel.data('select2')) {
     
@@ -710,9 +717,10 @@ function update_required_label(id, value) {
 }
 
 
-function add_form_container(html, label, required, id, description, custom, multiple, none) {
+function add_form_container(html, label, required, id, description, custom, multiple, none, ALErequired) {
   var required_str, custom_mult_str, description_str
-  if (required)
+  console.log(ALErequired)
+  if (required || ALErequired)
     required_str = '<span id="required-alert-' + id + '" class="required alert alert-danger" role="alert">(Required)</span>'
   else
     required_str = ''
@@ -816,6 +824,7 @@ function create_input(data, parent_sel, autofocus) {
   var label = data['label'],
       id = data['id'],
       required = data['required'],
+      ALErequired = data['ALErequired'],
       description = data['description'],
       tags = data['tags'],
       type = data['type'],
@@ -874,6 +883,7 @@ function create_input(data, parent_sel, autofocus) {
     if (!required) {
 
     }
+
     html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '></select>'
 
     after_append = function() {
@@ -897,7 +907,7 @@ function create_input(data, parent_sel, autofocus) {
       })
     }
   } else if (type === 'tags') {
-    html = '<input class="tagsinput" id="' + id + '" type="text" placeholder="add..." value="" data-role="tagsinput"></input>';
+      html = '<input class="tagsinput" id="' + id + '" type="text" placeholder="add..." value="" data-role="tagsinput"></input>';
   }
   else if (type === 'date') {
     html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
@@ -916,9 +926,11 @@ function create_input(data, parent_sel, autofocus) {
   } else {
     html = '<input id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >'
   }
-
+  if (workflow == 'Generic') {
+      ALErequired = false
+  }
   // create and run
-  parent_sel.append(add_form_container(html, label, required, id, description, custom, multiple, none))
+  parent_sel.append(add_form_container(html, label, required, id, description, custom, multiple, none, ALErequired))
 
   $('.tagsinput').tagsinput();
   // toggle the required label
