@@ -255,9 +255,7 @@ $(document).ready(function(){
         [,"technical-replicates"]],
         file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
         saveAs(file, output_file_name + '.csv')
-
   })
-
 })
 
 function create_form(form_type) {
@@ -493,7 +491,7 @@ function handle_upload_spreadsheet(e, file) {
      var required_input = [["creator"],["creator-email"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"]]
   }
   else {
-    var required_input = [["creator"],["creator-email"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],
+     var required_input = [["creator"],["creator-email"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],
         ["Flask-number"],["Isolate-number"],["technical-replicate-number"]]
   }
   for (var name_idx = 1; name_idx < variable_file_name_array.length; name_idx++) {
@@ -719,7 +717,6 @@ function update_required_label(id, value) {
 
 function add_form_container(html, label, required, id, description, custom, multiple, none, ALErequired) {
   var required_str, custom_mult_str, description_str
-  console.log(ALErequired)
   if (required || ALErequired)
     required_str = '<span id="required-alert-' + id + '" class="required alert alert-danger" role="alert">(Required)</span>'
   else
