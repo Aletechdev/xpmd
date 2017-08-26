@@ -28,12 +28,9 @@ var data = [
     options: ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq'] },
   { label: 'Read Files',
     id: 'read-files',
-    type: 'dropdown',
-    multiple: true,
-    custom: true,
-    none: true,
-    description: 'Input associated read files names. Select "enter" per file name to build list.',
-    options: [' '] },
+    required: true,
+    type: 'tags',
+    description: 'Input associated read files names. Select "enter" per file name to build list.' },
   { label: 'Experiment Date (YYYY-MM-DD)',
     id: 'run-date',
     required: true,
@@ -221,6 +218,7 @@ var files = [];
 var new_files = []
 var original_file_content = []
 var example_output = []
+var spreadsheet = false;
 
 $(document).ready(function(){
 
@@ -456,7 +454,7 @@ function get_file_name() {
 }
 
 function handle_upload_spreadsheet(e, file) {
-
+  spreadsheet = true;
   example_output = [["creator"],["creator-email"],["serial-number"],["project"],
         ["data-type"],["read-files"],["run-date"],["taxonomy-id"],["strain-description"],
         ["growth-stage"],["sample-time"],["antibody"],["temperature"],["base-media"],
@@ -489,7 +487,7 @@ function handle_upload_spreadsheet(e, file) {
     } 
         
   };
-  var required_input = [["creator"],["creator-email"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"]]
+  var required_input = [["creator"],["creator-email"],["serial-number"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"]]
   for (var name_idx = 1; name_idx < variable_file_name_array.length; name_idx++) {
     for (var i = 0; i < variable_file_name_array[0].length; i++) {
       for (var x = 0; x < required_input.length; x++) {
@@ -500,12 +498,12 @@ function handle_upload_spreadsheet(e, file) {
            }
         }
       }
-   
     set_value(variable_file_name_array[0][i], variable_file_name_array[name_idx][i])
     }
-    var file_name = get_file_name() + '.csv'
-
+    var file_name = get_file_name() + "(" + name_idx + ")" + '.csv';
     output_sample_name_array.push([file_name])
+    
+    
 
     var output_sample_csv_data = [new CSV(get_data_array()).encode()]
     var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' })
@@ -579,7 +577,7 @@ function save_ale_metadata(array) {
             }
        }
        zip.file(ALE_numb + '_' + Flask_numb + '_' + Iso_numb+ '_' + tech_rep_numb 
-       + '_' + get_value('project').toString() + '.csv', file);
+       + '_' + get_value('project').toString() + '(' + (x + 1) + ')' +  '.csv', file);
      }
 
     zip.generateAsync({type:"blob"}).then(function (content) {
@@ -604,7 +602,7 @@ function save_generic_metadata(array) {
        var label = folder_name();
        var csv = [new CSV(new_files[x]).encode()];
        var file = new Blob(csv, {type: 'text/plain;charset=utf-8'});
-       zip.file(get_value('project').toString() + '_' + label + x + '.csv', file);   
+       zip.file(get_value('project').toString() + '_' + label + '(' + (x + 1) + ')' + '.csv', file);   
      }
 
      zip.generateAsync({type:"blob"}).then(function (content) {
@@ -626,9 +624,9 @@ function get_value(id, input_only) {
         val = $(this).val()
     if (val) concentrations[el.attr('id')] = val
   })
-
   // get the value
   var vals = $('#' + id).val()
+
   if ((typeof vals === 'undefined') || (vals === null))
     return ''
 
@@ -674,19 +672,19 @@ function set_value(id, value) {
         sel.append('<option value="' + val + '">' + val + '</option>')
       // for the input
       input_val.push(val)
-
       // for the concentrations
       if (val_obj.concentration)
         concentrations[val] = val_obj.concentration
+
     })
     sel.val(input_val).trigger('change')
-
-    // update the concentration
-    if (Object.keys(concentrations).length > 0) {
-      draw_concentrations(id,
+    
+      // update the concentration
+      if (Object.keys(concentrations).length > 0) {
+        draw_concentrations(id,
                           data_as_object[id]['concentration_with_default'],
                           concentrations)
-    }
+      }
   } 
     sel.val(value).trigger('change')
   
@@ -789,6 +787,7 @@ function extract_concentrations(vals) {
 
 function draw_concentrations(id, def, value_dict) {
   if (_.isUndefined(value_dict)) value_dict = {}
+  
 
   var sel = d3.select(d3.select('#' + id).node().parentNode)
         .selectAll('.concentration-input')
@@ -807,8 +806,8 @@ function draw_concentrations(id, def, value_dict) {
     .attr('max', '1000')
     .attr('value', function(d) {
       return (d in value_dict) ? value_dict[d] : def
-    })
 
+    })
   sel.exit().remove()
 }
 
@@ -816,6 +815,7 @@ function draw_concentrations(id, def, value_dict) {
 function create_input(data, parent_sel, autofocus) {
   var label = data['label'],
       id = data['id'],
+      tags = data['tags'],
       required = data['required'],
       description = data['description'],
       type = data['type'],
@@ -838,6 +838,10 @@ function create_input(data, parent_sel, autofocus) {
     console.error('Has "options" with a type that is not "dropdown" for ' + label)
   if (min && (type !== 'number'))
     console.error('Has "min" with a type that is not "number" for ' + label)
+
+  if (type == 'tags') {
+
+  }
 
   if (type == 'dropdown') {
     var select_options = {
@@ -896,7 +900,9 @@ function create_input(data, parent_sel, autofocus) {
         e.preventDefault()
       })
     }
-  } else if (type === 'date') {
+  } 
+
+    else if (type === 'date') {
     html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
       ' placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >',
     after_append = function() {
