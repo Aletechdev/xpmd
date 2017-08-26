@@ -4,6 +4,22 @@
   background-image: linear-gradient(90deg, #0b2e50, rgba(0, 84, 150, 0.68));
 }
 
+
+span.tag.label.label-info {
+    background-color: #2d5c83;
+}
+
+html .bootstrap-tagsinput input {
+    border: none;
+    box-shadow: none;
+    outline: none;
+    background-color: transparent;
+    padding: 0 10px;
+    margin: 0;
+    width: 1000px;
+    max-width: inherit;
+}
+
 code {
   padding: 2px 4px;
   font-size: 90%;

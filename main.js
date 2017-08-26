@@ -26,9 +26,8 @@ var data = [
     custom: true,
     default: 'DNA-seq',
     options: ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq'] },
-  { label: 'Read Files',
+   { label: 'Read Files',
     id: 'read-files',
-    required: true,
     type: 'tags',
     description: 'Input associated read files names. Select "enter" per file name to build list.' },
   { label: 'Experiment Date (YYYY-MM-DD)',
@@ -652,6 +651,8 @@ function set_value(id, value) {
     console.warn('Unrecognized key ' + id)
     return
   }
+  console.log($('#read-files').tagsinput('items'))
+
   var sel = $('#' + id)
   if (sel.data('select2')) {
     
@@ -811,13 +812,12 @@ function draw_concentrations(id, def, value_dict) {
   sel.exit().remove()
 }
 
-
 function create_input(data, parent_sel, autofocus) {
   var label = data['label'],
       id = data['id'],
-      tags = data['tags'],
       required = data['required'],
       description = data['description'],
+      tags = data['tags'],
       type = data['type'],
       def = data['default'] || '',
       example = data['example'] || '',
@@ -838,10 +838,6 @@ function create_input(data, parent_sel, autofocus) {
     console.error('Has "options" with a type that is not "dropdown" for ' + label)
   if (min && (type !== 'number'))
     console.error('Has "min" with a type that is not "number" for ' + label)
-
-  if (type == 'tags') {
-
-  }
 
   if (type == 'dropdown') {
     var select_options = {
@@ -900,9 +896,10 @@ function create_input(data, parent_sel, autofocus) {
         e.preventDefault()
       })
     }
-  } 
-
-    else if (type === 'date') {
+  } else if (type === 'tags') {
+    html = '<input class="tagsinput" id="' + id + '" type="text" placeholder="add..." value="" data-role="tagsinput"></input>';
+  }
+  else if (type === 'date') {
     html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
       ' placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >',
     after_append = function() {
@@ -922,6 +919,8 @@ function create_input(data, parent_sel, autofocus) {
 
   // create and run
   parent_sel.append(add_form_container(html, label, required, id, description, custom, multiple, none))
+
+  $('.tagsinput').tagsinput();
   // toggle the required label
   $('#' + id).on('change', function() {
     update_required_label(id, this.value)
