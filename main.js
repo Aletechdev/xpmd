@@ -483,7 +483,7 @@ function handle_upload_spreadsheet(e, file) {
           }
     }
     if (found == false) {
-      alert(example_output[j] + " is a required feild");
+      alert(example_output[j] + " is a required field");
       return;
     } 
         
@@ -500,7 +500,7 @@ function handle_upload_spreadsheet(e, file) {
       for (var x = 0; x < required_input.length; x++) {
         if (variable_file_name_array[0][i] == required_input[x]) {
            if (variable_file_name_array[name_idx][i] == "") {
-             alert(required_input[x] + " feild requires input")
+             alert(required_input[x] + " field requires input")
              return; 
            }
         }
