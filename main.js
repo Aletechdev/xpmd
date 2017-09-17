@@ -222,7 +222,11 @@ var workflow = 'Generic'
 var files = [];
 var new_files = []
 var original_file_content = []
-var example_output = []
+var ifSpreadsheet = false;
+var example_output = [];
+var saved_val = [];
+var id_arr = []
+var new_arr = {};
 
 $(document).ready(function(){
 
@@ -245,33 +249,16 @@ $(document).ready(function(){
 
   $('#download_example_spreadsheet').click(function(){
     var output_file_name = "Metadata_spreadsheet",
-        example_output = [["creator"],[,"creator-email"],[,"serial-number"],[,"project"],
-        [,"data-type"],[,"read-files"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
-        [,"growth-stage"],[,"sample-time"],[,"antibody"],[,"temperature"],[,"base-media"],
-        [,"isolate-type"],[,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],
-        [,"Sulfur-source"],[,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"ALE-number"],
-        [,"Flask-number"],[,"Isolate-number"],[,"technical-replicate-number"],[,"machine"],
+        example_output = [["creator"],[,"creator-email"],[,"project"],
+        [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
+        [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
+        [,"Isolate-number"],[,"technical-replicate-number"],[,"read-files"],
+        [,"serial-number"],[,"growth-stage"],[,"sample-time"],[,"antibody"],[,"temperature"],
+        [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"Sulfur-source"],
+        [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
         [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
-        [,"read-type"],[,"read-length"],[,"experiment-details"],[,"environment"],[,"biological-replicates"],
-        [,"technical-replicates"],
-        ["\n" + "Example-Input name"],[,"email"],[,"1000ABC"],[,"ProjectXYZ"],
-        [,"DNA-seq"],[,'"file1,file2,file3,file#"'],[,"8/22/17"],[,"58389230"],[,"BOP27_ubiC"],
-        [,"mid-log"],[,"10min"],[,"anti-CRP"],[,"37"],[,"M9"],
-        [,"Clonal"],[,"Glucose-4g/L"],[,"NH4Cl"],[,"Na2HPO4-KH2PO4"],
-        [,"MgSO4"],[,"O2"],[,"Supplement 1g/L"],[,"Ampicillin"],[,"0"],
-        [,"1"],[,"2"],[,"3"],[,"HiSeq 4000"],
-        [,"Kapa Biosystems"],[,"Kapa HyperPlus"],[,"50"],
-        [,"Paired"],[,"100/100"],[,""],[,""],[,""],
-        [,""],
-        ["\n" + "Example-Input name"],[,"email"],[,"123cdf"],[,"ProjectABC"],
-        [,"RNA-seq"],[,'"file10,file23,file43,file#"'],[,"8/20/17"],[,"98219"],[,"BOP27_ubiC"],
-        [,"mid-log"],[,""],[,""],[,"37"],[,"M9"],
-        [,"Clonal"],[,"Glucose-4g/L"],[,"NH4Cl"],[,"Na2HPO4-KH2PO4"],
-        [,"MgSO4"],[,"O2"],[,""],[,""],[,"0"],
-        [,"1"],[,"2"],[,"3"],[,"HiSeq 4000"],
-        [,"Kapa Biosystems"],[,"Kapa HyperPlus"],[,"70"],
-        [,"Paired"],[,"100/100"],[,"details on experiment"],[,"Humid"],[,"2"],
-        [,"3"]],
+        [,"read-type"],[,"read-length"],[,"experiment-details"],[,"environment"],
+        [,"biological-replicates"],[,"technical-replicates"]],
         file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
         saveAs(file, output_file_name + '.csv')
   })
@@ -282,7 +269,6 @@ function create_form(form_type) {
   new_files = []
   original_file_content = []
   example_output = []
-
   workflow = form_type
   
   var center_column = $('#center-column')
@@ -474,6 +460,7 @@ function get_file_name() {
 }
 
 function handle_upload_spreadsheet(e, file) {
+  ifSpreadsheet = true;
   example_output = [["creator"],["creator-email"],["serial-number"],["project"],
         ["data-type"],["read-files"],["run-date"],["taxonomy-id"],["strain-description"],
         ["growth-stage"],["sample-time"],["antibody"],["temperature"],["base-media"],
@@ -514,6 +501,9 @@ function handle_upload_spreadsheet(e, file) {
         ["Flask-number"],["Isolate-number"],["technical-replicate-number"]]
   }
   for (var name_idx = 1; name_idx < variable_file_name_array.length; name_idx++) {
+    saved_val = [];
+    id_arr = []
+    new_arr = {};
     for (var i = 0; i < variable_file_name_array[0].length; i++) {
       for (var x = 0; x < required_input.length; x++) {
         if (variable_file_name_array[0][i] == required_input[x]) {
@@ -636,39 +626,72 @@ function save_generic_metadata(array) {
   } 
 }
 
-
-function get_value(id, input_only) {
+function get_value(id, input_only, value) {
   /** Get the value for the given input id */
   if (_.isUndefined(input_only))
     input_only = false
 
   // try to get concentrations
   var concentrations = {}
+
   $('#' + id).parent().find('.concentration-input>input').each(function() {
     var el = $(this),
         val = $(this).val()
+
     if (val) concentrations[el.attr('id')] = val
   })
+ 
   // get the value
+
   var vals = $('#' + id).val()
+  if (ifSpreadsheet) {
+    if ((typeof vals === 'undefined') || (vals === null)) {
+      if (value != undefined && value != '') {
+         saved_val.push(value)
+         console.log(saved_val)
+      }
+      if (id_arr.indexOf(id) < 0) {
+         id_arr.push(id)
+      }
 
-  if ((typeof vals === 'undefined') || (vals === null))
+      for (var i = 0; i < saved_val.length; i++) {
+        new_arr[saved_val[i]] = id_arr[i]
+      };
+      
+      for (const [key, val] of Object.entries(new_arr)) {
+        if (val == id) {
+           return key
+        }
+      }
+    }
+  }
+  else {
+      if ((typeof vals === 'undefined') || (vals === null))
     return ''
+  }
 
-  if (input_only)
-    return vals
-   
+  if (input_only) {
+    return vals;
+  }
+  
+
   // add concentrations to val
   if (_.isArray(vals)) {
     return vals.map(function(val) {
-      if (val in concentrations)
-        return val + '(' + concentrations[val] + ')'
+      if (val in concentrations) {
+        if (!ifSpreadsheet) {
+            return val + '(' + concentrations[val] + ')'
+        }
+        else
+          return val
+      }
       else
         return val
     })
   } else {
     return vals
   }
+  
 }
 
 
@@ -678,9 +701,10 @@ function set_value(id, value) {
     return
   }
   var sel = $('#' + id)
+
   if (sel.data('select2')) {
     
-
+    
     var split_val = value.split(',').filter(function(x) {
       return x.replace(' ', '') !== ''
     }),
@@ -698,21 +722,24 @@ function set_value(id, value) {
       // for the input
       input_val.push(val)
       // for the concentrations
-      if (val_obj.concentration)
-        concentrations[val] = val_obj.concentration
-
+        if (val_obj.concentration )
+         concentrations[val] = val_obj.concentration
     })
+
     sel.val(input_val).trigger('change')
-    
-      // update the concentration
-      if (Object.keys(concentrations).length > 0) {
-        draw_concentrations(id,
-                          data_as_object[id]['concentration_with_default'],
-                          concentrations)
-      }
+
+    // update the concentration
+    if (Object.keys(concentrations).length > 0) {
+          draw_concentrations(id,
+                        data_as_object[id]['concentration_with_default'],
+                        concentrations)
+    }
   } 
-    sel.val(value).trigger('change')
-  
+  sel.val(value).trigger('change')
+
+  if (ifSpreadsheet) {
+     get_value(id,false,value)
+  }
 
   // update UI
   update_required_label(id, value)
@@ -809,14 +836,15 @@ function extract_concentrations(vals) {
   return out
 }
 
-
 function draw_concentrations(id, def, value_dict) {
   if (_.isUndefined(value_dict)) value_dict = {}
   
 
+  if (!ifSpreadsheet) {
   var sel = d3.select(d3.select('#' + id).node().parentNode)
         .selectAll('.concentration-input')
         .data(get_value(id, true), function(d) { return d })
+
   var div = sel.enter()
         .append('div')
         .attr('class', 'concentration-input')
@@ -833,7 +861,10 @@ function draw_concentrations(id, def, value_dict) {
       return (d in value_dict) ? value_dict[d] : def
 
     })
+  
+
   sel.exit().remove()
+  }
 }
 
 function create_input(data, parent_sel, autofocus) {
@@ -910,12 +941,16 @@ function create_input(data, parent_sel, autofocus) {
         })
       } else {
         add_dropdown_options($('#' + id), options, null, def, select_options)
-      }
+      } 
+ 
       if (!_.isUndefined(data['concentration_with_default'])) {
         $('#' + id).on('change', function() {
-          draw_concentrations(id, data['concentration_with_default'])
+            draw_concentrations(id, data['concentration_with_default'])
         })
       }
+
+      
+      
       // when clearing, close the menu
       $('#' + id).on('select2:unselecting', function (e) {
         $(this).select2('val', '')
@@ -951,8 +986,8 @@ function create_input(data, parent_sel, autofocus) {
   $('.tagsinput').tagsinput();
   // toggle the required label
   $('#' + id).on('change', function() {
-    update_required_label(id, this.value)
-    update_folder_name()
+      update_required_label(id, this.value)
+      update_folder_name()
   })
   if (after_append) after_append()
 }
