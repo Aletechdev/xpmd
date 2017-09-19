@@ -224,9 +224,10 @@ var new_files = []
 var original_file_content = []
 var ifSpreadsheet = false;
 var example_output = [];
-var saved_val = [];
-var id_arr = []
-var new_arr = {};
+var spreadsheet_val = [];
+var spreadsheet_id = [];
+var spreadsheet_data_array = [];
+var spreadsheet_dict = {};
 
 $(document).ready(function(){
 
@@ -432,6 +433,71 @@ function get_zip_name() {
   return get_value('project').toString() + '_' + folder_name()
 }
 
+function get_zip_name_spreadsheet() {
+  var project;
+  var rundate;
+  var datatype;
+
+  for (const [key, val] of Object.entries(spreadsheet_dict)) {
+      if (key == 'project') {
+        project = val
+      }
+      if (key == 'run-date') {
+        rundate = val
+      }
+      if (key == 'data-type') {
+        datatype = val
+      }
+  }
+  return (project + '_' + rundate + '_' + datatype)
+
+}
+
+function get_file_name_spreadsheet() {
+  
+  var project;
+  var rundate;
+  var datatype;
+  var ALE_numb;
+  var Flask_numb;
+  var Isolate_numb;
+  var tech_rep_numb;
+
+  for (const [key, val] of Object.entries(spreadsheet_dict)) {
+      if (key == 'project') {
+        project = val
+      }
+      if (key == 'run-date') {
+        rundate = val
+      }
+      if (key == 'data-type') {
+        datatype = val
+      }
+      if (key == 'ALE-number') {
+        ALE_numb = val
+      }
+      if (key == 'Flask-number') {
+        Flask_numb = val
+      }
+      if (key == 'Isolate-number') {
+        Isolate_numb = val
+      }
+      if (key == 'technical-replicate-number') {
+        tech_rep_numb = val
+      }
+     
+  }
+  rundate = rundate.replace(' ', '').replace(/\//g, '-')
+ 
+  if (workflow == 'Generic') {
+    return (project + '_' + rundate + '_' + datatype)
+
+  }
+  else {
+    return (project + '_' + ALE_numb + '_' + Flask_numb 
+      + '_' + Isolate_numb + '_' + tech_rep_numb)
+  }
+}
 
 function get_file_name() {
   var label = folder_name();
@@ -441,7 +507,7 @@ function get_file_name() {
       lib_prep = '_' + lib_prep
     
     return get_value('project').toString() + '_' + label
-
+    
   }
   else {
     var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
@@ -461,18 +527,7 @@ function get_file_name() {
 
 function handle_upload_spreadsheet(e, file) {
   ifSpreadsheet = true;
-  example_output = [["creator"],["creator-email"],["serial-number"],["project"],
-        ["data-type"],["read-files"],["run-date"],["taxonomy-id"],["strain-description"],
-        ["growth-stage"],["sample-time"],["antibody"],["temperature"],["base-media"],
-        ["isolate-type"],["carbon-source"],["nitrogen-source"],["phosphorous-source"],
-        ["Sulfur-source"],["electron-acceptor"],["supplement"],["antibiotic"],["ALE-number"],
-        ["Flask-number"],["Isolate-number"],["technical-replicate-number"],["machine"],
-        ["library-prep-kit-manufacturer"],["library-prep-kit"],["library-prep-kit-cycles"],
-        ["read-type"],["read-length"],["experiment-details"],["environment"],["biological-replicates"],
-        ["technical-replicates"]]
-
   var zip = new JSZip()
-
   var input_csv_data = e.target.result,
       variable_file_name_array = new CSV(input_csv_data).parse()
   var output_sample_name_array = []
@@ -501,9 +556,10 @@ function handle_upload_spreadsheet(e, file) {
         ["Flask-number"],["Isolate-number"],["technical-replicate-number"]]
   }
   for (var name_idx = 1; name_idx < variable_file_name_array.length; name_idx++) {
-    saved_val = [];
-    id_arr = []
-    new_arr = {};
+    spreadsheet_val = [];
+    spreadsheet_id = [];
+    spreadsheet_data_array = [];
+    spreadsheet_dict = {};
     for (var i = 0; i < variable_file_name_array[0].length; i++) {
       for (var x = 0; x < required_input.length; x++) {
         if (variable_file_name_array[0][i] == required_input[x]) {
@@ -513,24 +569,26 @@ function handle_upload_spreadsheet(e, file) {
            }
         }
       }
-    set_value(variable_file_name_array[0][i], variable_file_name_array[name_idx][i])
+    spreadsheet_val.push(variable_file_name_array[name_idx][i])
+    spreadsheet_id.push(variable_file_name_array[0][i])
+    spreadsheet_data_array = get_value_spreadsheet(spreadsheet_id,spreadsheet_val)
     }
-    var file_name = get_file_name() + "(" + name_idx + ")" + '.csv';
-    output_sample_name_array.push([file_name])
-    
-    
 
-    var output_sample_csv_data = [new CSV(get_data_array()).encode()]
+    var file_name = get_file_name_spreadsheet() + "(" + name_idx + ")" + '.csv';
+    //output_sample_name_array.push([file_name])
+    console.log(file_name)
+    var output_sample_csv_data = [new CSV(spreadsheet_data_array).encode()]
     var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' })
     zip.folder("MetaData Files").file(file_name, output_sample_metadata_file)
   }
-
-  zip.generateAsync({type:"blob"})
+  
+    zip.generateAsync({type:"blob"})
     .then(function (blob) {
-      saveAs(blob, get_zip_name() + '.zip')
+      saveAs(blob, get_zip_name_spreadsheet() + '.zip')
     })
   
 }
+
 
 function folder_name() {
   var l = ['run-date', 'data-type'].map(function(el) {
@@ -602,7 +660,6 @@ function save_ale_metadata(array) {
   }
 }
 
-
 function save_generic_metadata(array) {
   var zip = new JSZip();
   if (files.length <= 1) {
@@ -625,75 +682,49 @@ function save_generic_metadata(array) {
      })    
   } 
 }
+function get_value_spreadsheet(spreadsheet_id, spreadsheet_val) {
+  var data_array = []
+  for(var i = 0; i < spreadsheet_id.length; i++){
+    data_array.push([spreadsheet_id[i], spreadsheet_val[i]])
+    spreadsheet_dict[spreadsheet_id[i]] = spreadsheet_val[i]
+  }
 
-function get_value(id, input_only, value) {
+  return data_array
+}
+
+function get_value(id, input_only) {
   /** Get the value for the given input id */
   if (_.isUndefined(input_only))
     input_only = false
 
   // try to get concentrations
   var concentrations = {}
-
   $('#' + id).parent().find('.concentration-input>input').each(function() {
     var el = $(this),
         val = $(this).val()
-
     if (val) concentrations[el.attr('id')] = val
   })
- 
   // get the value
-
   var vals = $('#' + id).val()
-  if (ifSpreadsheet) {
-    if ((typeof vals === 'undefined') || (vals === null)) {
-      if (value != undefined && value != '') {
-         saved_val.push(value)
-         console.log(saved_val)
-      }
-      if (id_arr.indexOf(id) < 0) {
-         id_arr.push(id)
-      }
 
-      for (var i = 0; i < saved_val.length; i++) {
-        new_arr[saved_val[i]] = id_arr[i]
-      };
-      
-      for (const [key, val] of Object.entries(new_arr)) {
-        if (val == id) {
-           return key
-        }
-      }
-    }
-  }
-  else {
-      if ((typeof vals === 'undefined') || (vals === null))
+  if ((typeof vals === 'undefined') || (vals === null))
     return ''
-  }
 
-  if (input_only) {
-    return vals;
-  }
-  
-
-  // add concentrations to val
+  if (input_only)
+    return vals
+   
+    // add concentrations to val
   if (_.isArray(vals)) {
     return vals.map(function(val) {
-      if (val in concentrations) {
-        if (!ifSpreadsheet) {
-            return val + '(' + concentrations[val] + ')'
-        }
-        else
-          return val
-      }
+      if (val in concentrations)
+        return val + '(' + concentrations[val] + ')'
       else
         return val
     })
   } else {
     return vals
   }
-  
 }
-
 
 function set_value(id, value) {
  if (!(id in data_as_object)) {
@@ -701,10 +732,9 @@ function set_value(id, value) {
     return
   }
   var sel = $('#' + id)
-
   if (sel.data('select2')) {
     
-    
+
     var split_val = value.split(',').filter(function(x) {
       return x.replace(' ', '') !== ''
     }),
@@ -722,24 +752,21 @@ function set_value(id, value) {
       // for the input
       input_val.push(val)
       // for the concentrations
-        if (val_obj.concentration )
-         concentrations[val] = val_obj.concentration
+      if (val_obj.concentration)
+        concentrations[val] = val_obj.concentration
+
     })
-
     sel.val(input_val).trigger('change')
-
-    // update the concentration
-    if (Object.keys(concentrations).length > 0) {
-          draw_concentrations(id,
-                        data_as_object[id]['concentration_with_default'],
-                        concentrations)
-    }
+    
+      // update the concentration
+      if (Object.keys(concentrations).length > 0) {
+        draw_concentrations(id,
+                          data_as_object[id]['concentration_with_default'],
+                          concentrations)
+      }
   } 
-  sel.val(value).trigger('change')
-
-  if (ifSpreadsheet) {
-     get_value(id,false,value)
-  }
+    sel.val(value).trigger('change')
+  
 
   // update UI
   update_required_label(id, value)
@@ -836,15 +863,14 @@ function extract_concentrations(vals) {
   return out
 }
 
+
 function draw_concentrations(id, def, value_dict) {
   if (_.isUndefined(value_dict)) value_dict = {}
   
 
-  if (!ifSpreadsheet) {
   var sel = d3.select(d3.select('#' + id).node().parentNode)
         .selectAll('.concentration-input')
         .data(get_value(id, true), function(d) { return d })
-
   var div = sel.enter()
         .append('div')
         .attr('class', 'concentration-input')
@@ -861,10 +887,7 @@ function draw_concentrations(id, def, value_dict) {
       return (d in value_dict) ? value_dict[d] : def
 
     })
-  
-
   sel.exit().remove()
-  }
 }
 
 function create_input(data, parent_sel, autofocus) {
@@ -941,16 +964,12 @@ function create_input(data, parent_sel, autofocus) {
         })
       } else {
         add_dropdown_options($('#' + id), options, null, def, select_options)
-      } 
- 
+      }
       if (!_.isUndefined(data['concentration_with_default'])) {
         $('#' + id).on('change', function() {
-            draw_concentrations(id, data['concentration_with_default'])
+          draw_concentrations(id, data['concentration_with_default'])
         })
       }
-
-      
-      
       // when clearing, close the menu
       $('#' + id).on('select2:unselecting', function (e) {
         $(this).select2('val', '')
@@ -986,8 +1005,10 @@ function create_input(data, parent_sel, autofocus) {
   $('.tagsinput').tagsinput();
   // toggle the required label
   $('#' + id).on('change', function() {
-      update_required_label(id, this.value)
+    update_required_label(id, this.value)
+    if (!ifSpreadsheet) {
       update_folder_name()
+    }
   })
   if (after_append) after_append()
 }
