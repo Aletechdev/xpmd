@@ -575,8 +575,7 @@ function handle_upload_spreadsheet(e, file) {
     }
 
     var file_name = get_file_name_spreadsheet() + "(" + name_idx + ")" + '.csv';
-    //output_sample_name_array.push([file_name])
-    console.log(file_name)
+    
     var output_sample_csv_data = [new CSV(spreadsheet_data_array).encode()]
     var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' })
     zip.folder("MetaData Files").file(file_name, output_sample_metadata_file)
