@@ -22,7 +22,7 @@ var data = [
     type: 'dropdown',
     custom: true,
     required: true,
-    default: 'DNA-seq',
+    example: 'DNA-seq',
     options: ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq'] },
   { label: 'Experiment Date (YYYY-MM-DD)',
     id: 'run-date',
@@ -60,35 +60,23 @@ var data = [
     options: ['clonal', 'population'] },
   { label: 'ALE number',
     id: 'ALE-number',
-    type: 'number',
-    default: 1,
+    type: 'input',
     required: true,
-    min: 1,
-    max: 100,
     form: 'ALE'},
   { label: 'Flask number',
     id: 'Flask-number',
+    type: 'input',
     required: true,
-    type: 'number',
-    default: 1,
-    min: 1,
-    max: 100,
     form: 'ALE'},
   { label: 'Isolate number',
     id: 'Isolate-number',
     required: true,
-    type: 'number',
-    default: 1,
-    min: 1,
-    max: 100,
+    type: 'input',
     form: 'ALE'},
   { label: 'Technical replicate number',
-    id: 'technical-replicate-number',
     required: true,
-    type: 'number',
-    default: 1,
-    min: 1,
-    max: 100,
+    id: 'technical-replicate-number',
+    type: 'input',
     form: 'ALE'},
   { label: 'Read Files',
     id: 'read-files',
@@ -135,7 +123,7 @@ var data = [
     concentration_with_default: 3,
     options: ['KH2PO4'] },
   { label: 'Sulfur Source(s)',
-    id: 'Sulfur-source',
+    id: 'sulfur-source',
     type: 'dropdown',
     multiple: true,
     custom: true,
@@ -151,6 +139,7 @@ var data = [
   { label: 'Other supplement(s)',
     id: 'supplement',
     type: 'dropdown',
+    custom: true,
     options: [],
     concentration_with_default: 1,
     multiple: true,
@@ -258,10 +247,10 @@ $(document).ready(function(){
         [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
         [,'"Input associated Read File names. e.g. file1,file2,file3,file4"'],
         [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],[,"Sample time is the minutes from the start of experiment"],
-        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Glucose, Fructose, Acetate, or Galactose"'],
-        [,'"Nitrogen Source, Input one of the folowing: NH4Cl, Glutamine, or Glutamate"'],[,'"Phosphorous Source, e.g. KH2PO4"'],
-        [,'"Sulfur Source, e.g. MgSO4"'],[,'"Electron Source, Input one of the folowing: O2, NO3, or SO4"'],
-        [,"Input any Other supplement(s)"],[,'"Input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol"'],
+        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Glucose, Fructose, Acetate, or Galactose Followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
+        [,'"Nitrogen Source, Input one of the folowing: NH4Cl, Glutamine, or Glutamate Followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"'],[,'"Phosphorous Source, e.g. KH2PO4 Followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"'],
+        [,'"Sulfur Source, e.g. MgSO4 Followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"'],[,'"Electron Source, Input one of the folowing: O2, NO3, or SO4 Followed by the concentration in (g/L) EXAMPLE: O2(6)"'],
+        [,"Input any Other supplement(s) Followed by the concentration in (g/L) EXAMPLE: supplement(0)"],[,'"Input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol Followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"'],
         [,'"Machine, Input one of the folowing: MiSeq, NextSeq, or HiSeq"'],[,'"Library Prep Kit Manufacturer, Input one of the folowing: Illumina, or Kapa"'],
         [,'"Library Prep Kit, Input one of the folowing: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq"'],
         [,'"Library Prep Kit Cycles, Input one of the folowing: 50 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle"'],[,'"Read Type, Input one of the folowing: Single-end reads, or Paired-end reads"'],
@@ -272,7 +261,7 @@ $(document).ready(function(){
         [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
         [,"Isolate-number"],[,"technical-replicate-number"],[,"read-files"],
         [,"serial-number"],[,"growth-stage"],[,"sample-time"],[,"antibody"],[,"temperature"],
-        [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"Sulfur-source"],
+        [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
         [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
         [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
         [,"read-type"],[,"read-length"],[,"experiment-details"],[,"environment"],
@@ -362,6 +351,10 @@ function update_files(form_data) {
        }
     new_files.push(form_data);
     }; 
+}
+
+function test(){
+  return 1;
 }
 
 function file_differences(array) {
@@ -549,7 +542,7 @@ function handle_upload_spreadsheet(e, file) {
         ["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],
         ["Isolate-number"],["technical-replicate-number"],["read-files"],
         ["serial-number"],["growth-stage"],["sample-time"],["antibody"],["temperature"],
-        ["carbon-source"],["nitrogen-source"],["phosphorous-source"],["Sulfur-source"],
+        ["carbon-source"],["nitrogen-source"],["phosphorous-source"],["sulfur-source"],
         ["electron-acceptor"],["supplement"],["antibiotic"],["machine"],
         ["library-prep-kit-manufacturer"],["library-prep-kit"],["library-prep-kit-cycles"],
         ["read-type"],["read-length"],["experiment-details"],["environment"],
@@ -558,7 +551,7 @@ function handle_upload_spreadsheet(e, file) {
   var zip = new JSZip()
   var input_csv_data = e.target.result,
       variable_file_name_array = new CSV(input_csv_data).parse()
-  console.log(variable_file_name_array)
+  //console.log(variable_file_name_array) // could possibly change so spreadsheet starts anywhere but for now start inputing info from second line
   var output_sample_name_array = []
   found = false;
   for (var j = 0; j < header.length; j++) {
@@ -578,6 +571,8 @@ function handle_upload_spreadsheet(e, file) {
     } 
         
   };
+
+
   if (workflow == 'Generic') {
      var required_input = [["creator"],["creator-email"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"]]
   }
@@ -589,12 +584,34 @@ function handle_upload_spreadsheet(e, file) {
     alert("Spreadsheet requires input")
              return; 
   }
+  filecounter = 0
   for (var name_idx = 2; name_idx < variable_file_name_array.length; name_idx++) {
+    filecounter++;
     spreadsheet_val = [];
     spreadsheet_id = [];
     spreadsheet_data_array = [];
     spreadsheet_dict = {};
     for (var i = 0; i < variable_file_name_array[1].length; i++) {
+      //console.log(variable_file_name_array[1][i])
+      if(variable_file_name_array[1][i] == "data-type") {
+        if((variable_file_name_array[name_idx][i]).endsWith("seq") == false) {
+          alert("Data type Feild, Input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
+          return;
+        }
+      }
+      if(variable_file_name_array[1][i] == "run-date") {
+        if(!(moment(variable_file_name_array[name_idx][i], 'MM/DD/YY',true).isValid()) && 
+           !(moment(variable_file_name_array[name_idx][i], 'M/DD/YY',true).isValid()) &&
+           !(moment(variable_file_name_array[name_idx][i], 'MM/D/YY',true).isValid()) &&
+           !(moment(variable_file_name_array[name_idx][i], 'M/D/YY',true).isValid())) {
+           alert("Enter Valid Experiment Date (YYYY-MM-DD)")
+           return;
+        }
+
+      }
+
+
+
       for (var x = 0; x < required_input.length; x++) {
         if (variable_file_name_array[1][i] == required_input[x]) {
            if (variable_file_name_array[name_idx][i] == "") {
@@ -608,7 +625,7 @@ function handle_upload_spreadsheet(e, file) {
     spreadsheet_data_array = get_value_spreadsheet(spreadsheet_id,spreadsheet_val)
     }
 
-    var file_name = get_file_name_spreadsheet() + "(" + name_idx + ")" + '.csv';
+    var file_name = get_file_name_spreadsheet() + "(" + filecounter + ")" + '.csv';
 
     var output_sample_csv_data = [new CSV(spreadsheet_data_array).encode()]
     var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' })
@@ -808,6 +825,7 @@ function set_value(id, value) {
 
 
 function update_required_label(id, value) {
+  //console.log(JSON.stringify(value))
   if (value === '') {
     $('#required-alert-' + id)
       .addClass('alert-danger')
@@ -817,6 +835,7 @@ function update_required_label(id, value) {
       .addClass('alert-success')
       .removeClass('alert-danger')
   }
+  //add code that analyses the value for the Ale Numbers what makes them different
   check_required()
 }
 
@@ -829,9 +848,9 @@ function add_form_container(html, label, required, id, description, custom, mult
     required_str = ''
   if (none)
     custom_mult_str = ''
-  else if (custom && multiple)
+  else if (custom && multiple && (workflow == 'Generic'))
     custom_mult_str = ' (Choose one or more, including custom values)'
-  else if (custom)
+  else if (custom && (workflow == 'Generic'))
     custom_mult_str = ' (Choose or enter a new value)'
   else if (multiple)
     custom_mult_str = ' (Choose one or more)'
@@ -952,16 +971,24 @@ function create_input(data, parent_sel, autofocus) {
     console.error('Has "min" with a type that is not "number" for ' + label)
 
   if (type == 'dropdown') {
-    var select_options = {
-      'allowClear': true,
-      'placeholder': ''
+    if (id != 'data-type') {
+      var select_options = {
+        'allowClear': true,
+        'placeholder': ''
+      }
+    }
+    else {
+      var select_options = {
+        'allowClear': true,
+        'placeholder': 'DNA-seq'
+      }
     }
     // multiple selections
     if (multiple) {
       select_options['multiple'] = true
     }
     // custom options
-    if (custom) {
+    if ((custom && (workflow == 'Generic')) || (custom && (id == 'supplement'))) {
       if (none) {
         select_options['tags'] = true
           select_options['createTag'] = function(query) {
