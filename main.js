@@ -245,12 +245,13 @@ $(document).ready(function(){
         [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
         [,'"Base media, Input one of the folowing: M9, or LB"'],[,'"Isolate type, Input one of the folowing: clonal, or population"'],
         [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
-        [,'"Input associated Read File names. e.g. file1,file2,file3,file4"'],
+        [,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
         [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],[,"Sample time is the minutes from the start of experiment"],
-        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Glucose, Fructose, Acetate, or Galactose Followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
-        [,'"Nitrogen Source, Input one of the folowing: NH4Cl, Glutamine, or Glutamate Followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"'],[,'"Phosphorous Source, e.g. KH2PO4 Followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"'],
-        [,'"Sulfur Source, e.g. MgSO4 Followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"'],[,'"Electron Source, Input one of the folowing: O2, NO3, or SO4 Followed by the concentration in (g/L) EXAMPLE: O2(6)"'],
-        [,"Input any Other supplement(s) Followed by the concentration in (g/L) EXAMPLE: supplement(0)"],[,'"Input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol Followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"'],
+        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
+        [,'"Nitrogen Source, Input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"'],[,'"Phosphorous Source, Input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"'],
+        [,'"Sulfur Source, Input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"'],[,'"Electron Acceptor, Input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)"'],
+        [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
+        [,'"Input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"'],
         [,'"Machine, Input one of the folowing: MiSeq, NextSeq, or HiSeq"'],[,'"Library Prep Kit Manufacturer, Input one of the folowing: Illumina, or Kapa"'],
         [,'"Library Prep Kit, Input one of the folowing: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq"'],
         [,'"Library Prep Kit Cycles, Input one of the folowing: 50 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle"'],[,'"Read Type, Input one of the folowing: Single-end reads, or Paired-end reads"'],
@@ -551,7 +552,7 @@ function handle_upload_spreadsheet(e, file) {
   var zip = new JSZip()
   var input_csv_data = e.target.result,
       variable_file_name_array = new CSV(input_csv_data).parse()
-  //console.log(variable_file_name_array) // could possibly change so spreadsheet starts anywhere but for now start inputing info from second line
+
   var output_sample_name_array = []
   found = false;
   for (var j = 0; j < header.length; j++) {
@@ -594,11 +595,13 @@ function handle_upload_spreadsheet(e, file) {
     for (var i = 0; i < variable_file_name_array[1].length; i++) {
       //console.log(variable_file_name_array[1][i])
       if(variable_file_name_array[1][i] == "data-type") {
-        if((variable_file_name_array[name_idx][i]).endsWith("seq") == false) {
-          alert("Data type Feild, Input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
-          return;
-        }
+         list_datatype = ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq']
+         if (!dropdown_validation(list_datatype,variable_file_name_array[name_idx][i])) {           
+            alert("Data type Feild ERROR, Please input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
+            return;
+         }
       }
+
       if(variable_file_name_array[1][i] == "run-date") {
         if(!(moment(variable_file_name_array[name_idx][i], 'MM/DD/YY',true).isValid()) && 
            !(moment(variable_file_name_array[name_idx][i], 'M/DD/YY',true).isValid()) &&
@@ -607,7 +610,153 @@ function handle_upload_spreadsheet(e, file) {
            alert("Enter Valid Experiment Date (YYYY-MM-DD)")
            return;
         }
+      }
 
+      if(variable_file_name_array[1][i] == "taxonomy-id") {
+          list_taxonomy = ['243274', '511145', '511693', '668369', '679895']
+          if (!dropdown_validation(list_taxonomy,variable_file_name_array[name_idx][i])) {           
+            alert("NCBI Taxonomy ID ERROR, Please input one of the folowing: 243274, 511145, 511693, 668369, or 679895")
+            return;
+          }
+      }
+      if(variable_file_name_array[1][i] == "base-media") {
+          list_basemedia= ['M9', 'LB']
+          if (!dropdown_validation(list_basemedia,variable_file_name_array[name_idx][i])) {           
+            alert("Base media, Input one of the folowing: M9, or LB"
+)
+            return;
+          }
+      }
+      if(variable_file_name_array[1][i] == "isolate-type") {
+          list_isolate = ['colnal', 'population']
+          if (!dropdown_validation(list_isolate,variable_file_name_array[name_idx][i])) {           
+            alert("Isolate type, Input one of the folowing: clonal, or population")
+            return;
+          }
+      }
+     if(variable_file_name_array[1][i] == "machine") {
+          list_machine= ['MiSeq', 'NextSeq', 'HiSeq']
+          if (!dropdown_validation(list_machine,variable_file_name_array[name_idx][i])) {           
+            alert("Machine ERROR, Please input one of the folowing: MiSeq, NextSeq, or HiSeq")
+            return;
+          }
+      }  
+      if(variable_file_name_array[1][i] == "library-prep-kit-manufacturer") {
+          list_libprepman= ['Illumina', 'Kapa']
+          if (!dropdown_validation(list_libprepman,variable_file_name_array[name_idx][i])) {           
+            alert("Library Prep Kit Manufacturer ERROR, Please input one of the folowing: Illumina, or Kapa")
+            return;
+          }
+      }  
+      if(variable_file_name_array[1][i] == "library-prep-kit") {
+          list_libprepkit = ['Nextera XT', 'KAPA HyperPlus', 'KAPA Stranded RNA-seq']
+          if (!dropdown_validation(list_libprepkit,variable_file_name_array[name_idx][i])) {           
+            alert("Library Prep Kit, Input one of the folowing: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq")
+            return;
+          }
+      }
+      if(variable_file_name_array[1][i] == "library-prep-kit-cycles") {
+          list_libprepcycle = ['50 Cycles', '150 Cycle', '300 Cycle', '500 Cycle', '600 Cycle']
+          if (!dropdown_validation(list_libprepcycle,variable_file_name_array[name_idx][i])) {           
+            alert("Library Prep Kit Cycles ERROR, Please input one of the folowing: 50 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle")
+            return;
+          }
+      }
+      if(variable_file_name_array[1][i] == "read-type") {
+          list_readtype = ['Single-end reads', 'Paired-end reads']
+          if (!dropdown_validation(list_readtype,variable_file_name_array[name_idx][i])) {           
+            alert("Read Type ERROR, Please input one of the folowing: Single-end reads, or Paired-end reads")
+            return;
+          }
+      }
+      if(variable_file_name_array[1][i] == "read-length") {
+          list_readlength = ['31', '36', '50', '62', '76', '100', '151', '301']
+          if (!dropdown_validation(list_readlength,variable_file_name_array[name_idx][i])) {                 
+            alert("Read Length ERROR, Please input one of the folowing: 31, 36, 50, 62, 76, 100, 151, or 301")
+            return;
+          }
+      }
+
+      if((variable_file_name_array[1][i] == "ALE-number") || (variable_file_name_array[1][i] == "Flask-number") 
+        || (variable_file_name_array[1][i] == "technical-replicate-number") || (variable_file_name_array[1][i] == "Isolate-number")) {
+        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i]))) {           
+            alert("ERROR, Please insert a numerical value for the ALE-number, Isolate-number, Flask-number or Technical-replicate-number")
+            return;
+          }
+      }
+      if(variable_file_name_array[1][i] == "temperature") {
+        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i]))) {           
+            alert("ERROR, Please insert Temperature in Celcius. e.g. 37")
+            return;
+          }
+      }
+      if(variable_file_name_array[1][i] == "biological-replicates") {
+        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i]))) {           
+            alert("ERROR, Please insert Biological replicates number")
+            return;
+          }
+      }
+      if(variable_file_name_array[1][i] == "technical-replicates") {
+        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i]))) {           
+            alert("ERROR, Please insert Technical replicates number")
+            return;
+          }
+      }
+      if(variable_file_name_array[1][i] == "read-files") {
+        if (!(/^(\w+\.?\w+)(,\s*\w+\.?\w+)*$/.test(variable_file_name_array[name_idx][i]))) {           
+            alert("ERROR, Please input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq")
+            return;
+          }
+      }
+      
+      if(variable_file_name_array[1][i] == "carbon-source") {
+          list_carbon_source = ['Glucose', 'Fructose', 'Galactose', 'Acetate']
+          if (!source_validation(list_carbon_source,variable_file_name_array[name_idx][i])) {
+            alert("Carbon Source ERROR, Please input one of the folowing: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
+            return;
+          }  
+      }
+      if(variable_file_name_array[1][i] == "nitrogen-source") {
+          list_nitrogen_source = ['NH4Cl', 'Glutamine', 'Glutamate']
+          if (!source_validation(list_nitrogen_source,variable_file_name_array[name_idx][i])) {
+            alert("Nitrogen Source ERROR, Please input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
+            return;
+          }  
+      }
+      if(variable_file_name_array[1][i] == "phosphorous-source") {
+          list_phosphorous_source = ['KH2PO4']
+          if (!source_validation(list_phosphorous_source,variable_file_name_array[name_idx][i])) {
+            alert("Phosphorous Source ERROR, Please input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)")
+            return;
+          }  
+      }
+      if(variable_file_name_array[1][i] == "sulfur-source") {
+          list_sulfur_source = ['MgSO4']
+          if (!source_validation(list_sulfur_source,variable_file_name_array[name_idx][i])) {
+            alert("Sulfur Source ERROR, Please input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)")
+            return;
+          }  
+      }
+      if(variable_file_name_array[1][i] == "electron-acceptor") {
+          list_electron_acceptor= ['O2', 'NO3', 'SO4']
+          if (!source_validation(list_electron_acceptor,variable_file_name_array[name_idx][i])) {
+            alert("Electron Acceptor ERROR, Please input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)")
+            return;
+          }  
+      }
+      if(variable_file_name_array[1][i] == "supplement") {
+          list_supplment = ['\\w+']
+          if (!source_validation(list_supplment,variable_file_name_array[name_idx][i])) {
+            alert("ERROR, Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
+            return;
+          }  
+      }
+      if(variable_file_name_array[1][i] == "antibiotic") {
+          list_antibiotic = ['Kanamycin', 'Spectinomycin', 'Streptomycin', 'Ampicillin', 'Carbenicillin', 'Bleomycin', 'Erythromycin', 'Polymyxin B', 'Tetracycline', 'Chloramphenicol']
+          if (!source_validation(list_antibiotic,variable_file_name_array[name_idx][i])) {
+            alert("ERROR, Please input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)")
+            return;
+          }  
       }
 
 
@@ -637,6 +786,30 @@ function handle_upload_spreadsheet(e, file) {
       saveAs(blob, get_zip_name_spreadsheet() + '.zip')
     })
   
+}
+
+function source_validation(list, index) {
+  alert_call = false;
+  for (var i = 0; i < list.length; i++) {
+    regex_sources = '(?:^|\\b)(' + list[i] + ')(?=\\b|$)\\(\\d*\\.?\\d*\\)$'
+    newregex = new RegExp(regex_sources, 'i')
+    if(newregex.test(index) == true) {
+        alert_call = true;
+    }
+  };
+  return alert_call;
+}
+
+function dropdown_validation(list, index) {
+  error_call = false;
+  for (var i = 0; i < list.length; i++) {
+    regex_sources = '(?:^|\\b)(' + list[i] + ')(?=\\b|$)'
+    newregex = new RegExp(regex_sources, 'i')
+    if(newregex.test(index) == true) {
+        error_call = true;
+    }
+  };
+  return error_call;  
 }
 
 
@@ -732,13 +905,16 @@ function save_generic_metadata(array) {
      })    
   } 
 }
+header = ['header1']
+  data_val = ['data1']
+  get_value_spreadsheet(header,data_val)
 function get_value_spreadsheet(spreadsheet_id, spreadsheet_val) {
   var data_array = []
   for(var i = 0; i < spreadsheet_id.length; i++){
     data_array.push([spreadsheet_id[i], spreadsheet_val[i]])
     spreadsheet_dict[spreadsheet_id[i]] = spreadsheet_val[i]
   }
-
+  console.log(data_array)
   return data_array
 }
 
