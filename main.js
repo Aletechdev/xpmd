@@ -802,8 +802,6 @@ function addAlert(message) {
         '</div>');
 }
 
-
-
 function source_validation(list, index) {
   alert_call = false;
   for (var i = 0; i < list.length; i++) {
