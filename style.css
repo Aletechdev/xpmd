@@ -4,6 +4,12 @@
   background-image: linear-gradient(90deg, #0b2e50, rgba(0, 84, 150, 0.68));
 }
 
+div#alertdivs.alert.alert-danger.alert-dismissable.fade.in {
+    padding: 5px;
+    margin-bottom: 10px;
+    padding-right: 30px;
+}
+
 
 span.tag.label.label-info {
     background-color: #2d5c83;
