@@ -357,9 +357,6 @@ function update_files(form_data) {
     }; 
 }
 
-function test(){
-  return 1;
-}
 
 function file_differences(array) {
     var the_differences = []
