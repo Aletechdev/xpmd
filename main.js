@@ -569,13 +569,8 @@ function handle_upload_spreadsheet(e, file) {
           }
     }
     if (found == false) {
-<<<<<<< HEAD
       addAlert(header[j] + " is a required feild");
       alert = true;
-=======
-      alert(example_output[j] + " is a required field");
-      return;
->>>>>>> bf04ffe304e516d1302a4ffbb60edb7afeb05e89
     } 
         
   };
