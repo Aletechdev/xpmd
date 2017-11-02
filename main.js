@@ -707,7 +707,7 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
       if(variable_file_name_array[1][i] == "read-files") {
-        if (!(/^(\w+\.?\w+)(,\s*\w+\.?\w+)*$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {           
+        if (!(/^(\w+\.?\w+)(,\s*(\w+\.?\w+)+)*$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {           
             addAlert("ERROR [Line " + (name_idx+1) + "], Please input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq")
             alert = true;
           }
