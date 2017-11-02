@@ -278,6 +278,7 @@ function create_form(form_type) {
   original_file_content = []
   header = []
   workflow = form_type
+
   
   var center_column = $('#center-column')
   $(".alert").remove();
@@ -594,6 +595,11 @@ function handle_upload_spreadsheet(e, file) {
     spreadsheet_id = [];
     spreadsheet_data_array = [];
     spreadsheet_dict = {};
+    var myRE = new RegExp (['^((0?[13578]|10|12)(-|\/)(([1-9])|(0[1-9])|([12])',
+      '([0-9]?)|(3[01]?))(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])',
+      '(\d{1}))|(0?[2469]|11)(-|\/)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[0]?))',
+      '(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1})))$'].join(''));
+    
     for (var i = 0; i < variable_file_name_array[1].length; i++) {
       if(variable_file_name_array[1][i] == "data-type") {
          list_datatype = ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq', '']
@@ -604,12 +610,9 @@ function handle_upload_spreadsheet(e, file) {
       }
 
       if(variable_file_name_array[1][i] == "run-date") {
-        if(!(moment(variable_file_name_array[name_idx][i], 'MM/DD/YY',true).isValid()) && 
-           !(moment(variable_file_name_array[name_idx][i], 'M/DD/YY',true).isValid()) &&
-           !(moment(variable_file_name_array[name_idx][i], 'MM/D/YY',true).isValid()) &&
-           variable_file_name_array[name_idx][i] != '' &&
-           !(moment(variable_file_name_array[name_idx][i], 'M/D/YY',true).isValid())) {
-           addAlert("Enter Valid Experiment Date (YYYY-MM-DD) [Line " + (name_idx+1) + "]")
+        if(myRE.test(variable_file_name_array[name_idx][i])
+         && (variable_file_name_array[name_idx][i]) != '') {
+          addAlert("Enter Valid Experiment Date (YYYY-MM-DD) [Line " + (name_idx+1) + "]")
           alert = true;
         }
       }
