@@ -241,7 +241,7 @@ $(document).ready(function(){
     var output_file_name = "Metadata_spreadsheet",
         example_output = [["Name"],[,"Email"],[,"Title of Project"],
         [,'"Data type, Input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq"'],
-        [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the folowing: 243274, 511145, 511693, 668369, or 679895"'],
+        [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the folowing: 413997, 243274, 511145, 511693, 668369, or 679895"'],
         [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
         [,'"Base media, Input one of the folowing: M9, or LB"'],[,'"Isolate type, Input one of the folowing: clonal, or population"'],
         [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
@@ -618,7 +618,7 @@ function handle_upload_spreadsheet(e, file) {
       }
 
       if(variable_file_name_array[1][i] == "taxonomy-id") {
-          list_taxonomy = ['243274', '511145', '511693', '668369', '679895', '']
+          list_taxonomy = ['413997', '243274', '511145', '511693', '668369', '679895', '']
           if (!dropdown_validation(list_taxonomy,variable_file_name_array[name_idx][i])) {           
             addAlert("NCBI Taxonomy ID ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: 243274, 511145, 511693, 668369, or 679895")
             alert = true;
