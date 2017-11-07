@@ -240,22 +240,22 @@ $(document).ready(function(){
   $('#download_example_spreadsheet').click(function(){
     var output_file_name = "Metadata_spreadsheet",
         example_output = [["Name"],[,"Email"],[,"Title of Project"],
-        [,'"Data type, Input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq"'],
-        [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the folowing: 413997, 243274, 511145, 511693, 668369, or 679895"'],
+        [,'"Data type, Input one of the following: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq"'],
+        [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: 413997, 243274, 511145, 511693, 668369, or 679895"'],
         [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
-        [,'"Base media, Input one of the folowing: M9, or LB"'],[,'"Isolate type, Input one of the folowing: clonal, or population"'],
+        [,'"Base media, Input one of the following: M9, or LB"'],[,'"Isolate type, Input one of the following: clonal, or population"'],
         [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
         [,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
         [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],[,"Sample time is the minutes from the start of experiment"],
-        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
-        [,'"Nitrogen Source, Input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"'],[,'"Phosphorous Source, Input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"'],
-        [,'"Sulfur Source, Input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"'],[,'"Electron Acceptor, Input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)"'],
+        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the following: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
+        [,'"Nitrogen Source, Input one of the following: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"'],[,'"Phosphorous Source, Input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"'],
+        [,'"Sulfur Source, Input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"'],[,'"Electron Acceptor, Input one of the following: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)"'],
         [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
         [,'"Input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"'],
-        [,'"Machine, Input one of the folowing: MiSeq, NextSeq, or HiSeq"'],[,'"Library Prep Kit Manufacturer, Input one of the folowing: Illumina, or Kapa"'],
-        [,'"Library Prep Kit, Input one of the folowing: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq"'],
-        [,'"Library Prep Kit Cycles, Input one of the folowing: 50 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle"'],[,'"Read Type, Input one of the folowing: Single-end reads, or Paired-end reads"'],
-        [,'"Read Length, Input one of the folowing: 31, 36, 50, 62, 76, 100, 151, or 301"'],[,"Input Sample Preparation and Experiment Details"],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
+        [,'"Machine, Input one of the following: MiSeq, NextSeq, or HiSeq"'],[,'"Library Prep Kit Manufacturer, Input one of the following: Illumina, or Kapa"'],
+        [,'"Library Prep Kit, Input one of the following: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq"'],
+        [,'"Library Prep Kit Cycles, Input one of the following: 50 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle"'],[,'"Read Type, Input one of the following: Single-end reads, or Paired-end reads"'],
+        [,'"Read Length, Input one of the following: 31, 36, 50, 62, 76, 100, 151, or 301"'],[,"Input Sample Preparation and Experiment Details"],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
         [,"Insert Technical replicates number"],
         [,"\n" + "creator"],[,"creator-email"],[,"project"],
         [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
@@ -604,7 +604,7 @@ function handle_upload_spreadsheet(e, file) {
       if(variable_file_name_array[1][i] == "data-type") {
          list_datatype = ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq', '']
          if (!dropdown_validation(list_datatype,variable_file_name_array[name_idx][i])) {           
-            addAlert("Data type Feild ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
+            addAlert("Data type Feild ERROR [Line " + (name_idx+1) + "], Please input one of the following: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
             alert = true;
          }
       }
@@ -620,63 +620,63 @@ function handle_upload_spreadsheet(e, file) {
       if(variable_file_name_array[1][i] == "taxonomy-id") {
           list_taxonomy = ['413997', '243274', '511145', '511693', '668369', '679895', '']
           if (!dropdown_validation(list_taxonomy,variable_file_name_array[name_idx][i])) {           
-            addAlert("NCBI Taxonomy ID ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: 243274, 511145, 511693, 668369, or 679895")
+            addAlert("NCBI Taxonomy ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: 243274, 511145, 511693, 668369, or 679895")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "base-media") {
           list_basemedia= ['M9', 'LB', '']
           if (!dropdown_validation(list_basemedia,variable_file_name_array[name_idx][i])) {           
-            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: M9, or LB")
+            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the following: M9, or LB")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "isolate-type") {
           list_isolate = ['colnal', 'population', '']
           if (!dropdown_validation(list_isolate,variable_file_name_array[name_idx][i])) {           
-            addAlert("Isolate type ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: clonal, or population")
+            addAlert("Isolate type ERROR [Line " + (name_idx+1) + "], Please input one of the following: clonal, or population")
             alert = true;
           }
       }
      if(variable_file_name_array[1][i] == "machine") {
           list_machine= ['MiSeq', 'NextSeq', 'HiSeq', '']
           if (!dropdown_validation(list_machine,variable_file_name_array[name_idx][i])) {           
-            addAlert("Machine ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: MiSeq, NextSeq, or HiSeq")
+            addAlert("Machine ERROR [Line " + (name_idx+1) + "], Please input one of the following: MiSeq, NextSeq, or HiSeq")
             alert = true;
           }
       }  
       if(variable_file_name_array[1][i] == "library-prep-kit-manufacturer") {
           list_libprepman= ['Illumina', 'Kapa', '']
           if (!dropdown_validation(list_libprepman,variable_file_name_array[name_idx][i])) {           
-            addAlert("Library Prep Kit Manufacturer ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Illumina, or Kapa")
+            addAlert("Library Prep Kit Manufacturer ERROR [Line " + (name_idx+1) + "], Please input one of the following: Illumina, or Kapa")
             alert = true;
           }
       }  
       if(variable_file_name_array[1][i] == "library-prep-kit") {
           list_libprepkit = ['Nextera XT', 'KAPA HyperPlus', 'KAPA Stranded RNA-seq', '']
           if (!dropdown_validation(list_libprepkit,variable_file_name_array[name_idx][i])) {           
-            addAlert("Library Prep Kit ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq")
+            addAlert("Library Prep Kit ERROR [Line " + (name_idx+1) + "], Please input one of the following: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "library-prep-kit-cycles") {
           list_libprepcycle = ['50 Cycles', '150 Cycle', '300 Cycle', '500 Cycle', '600 Cycle', '']
           if (!dropdown_validation(list_libprepcycle,variable_file_name_array[name_idx][i])) {           
-            addAlert("Library Prep Kit Cycles ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: 50 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle")
+            addAlert("Library Prep Kit Cycles ERROR [Line " + (name_idx+1) + "], Please input one of the following: 50 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "read-type") {
           list_readtype = ['Single-end reads', 'Paired-end reads', '']
           if (!dropdown_validation(list_readtype,variable_file_name_array[name_idx][i])) {           
-            addAlert("Read Type ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Single-end reads, or Paired-end reads")
+            addAlert("Read Type ERROR [Line " + (name_idx+1) + "], Please input one of the following: Single-end reads, or Paired-end reads")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "read-length") {
           list_readlength = ['31', '36', '50', '62', '76', '100', '151', '301', '']
           if (!dropdown_validation(list_readlength,variable_file_name_array[name_idx][i])) {                 
-            addAlert("Read Length ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: 31, 36, 50, 62, 76, 100, 151, or 301")
+            addAlert("Read Length ERROR [Line " + (name_idx+1) + "], Please input one of the following: 31, 36, 50, 62, 76, 100, 151, or 301")
             alert = true;
           }
       }
@@ -716,14 +716,14 @@ function handle_upload_spreadsheet(e, file) {
       if(variable_file_name_array[1][i] == "carbon-source") {
           list_carbon_source = ['Glucose', 'Fructose', 'Galactose', 'Acetate']
           if (!source_validation(list_carbon_source,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
+            addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
             alert = true;
           }  
       }
       if(variable_file_name_array[1][i] == "nitrogen-source") {
           list_nitrogen_source = ['NH4Cl', 'Glutamine', 'Glutamate']
           if (!source_validation(list_nitrogen_source,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
+            addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
             alert = true;
           }  
       }
@@ -744,7 +744,7 @@ function handle_upload_spreadsheet(e, file) {
       if(variable_file_name_array[1][i] == "electron-acceptor") {
           list_electron_acceptor= ['O2', 'NO3', 'SO4']
           if (!source_validation(list_electron_acceptor,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Electron Acceptor ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)")
+            addAlert("Electron Acceptor ERROR [Line " + (name_idx+1) + "], Please input one of the following: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)")
             alert = true;
           }  
       }
