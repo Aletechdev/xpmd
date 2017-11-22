@@ -112,7 +112,7 @@ var data = [
     multiple: true,
     custom: true,
     concentration_with_default: 2,
-    options: ['Glucose', 'Fructose', 'Acetate', 'Galactose'] },
+    options: ['Acetate', 'Fructose', 'Glucose', 'Galactose', 'Glycerol', 'Xylose'] },
   { label: 'Nitrogen Source(s)',
     id: 'nitrogen-source',
     type: 'dropdown',
@@ -253,7 +253,7 @@ $(document).ready(function(){
         [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
         [,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
         [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],[,"Sample time is the minutes from the start of experiment"],
-        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
+        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Acetate, Fructose, Galactose, Glucose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
         [,'"Nitrogen Source, Input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"'],[,'"Phosphorous Source, Input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"'],
         [,'"Sulfur Source, Input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"'],[,'"Electron Acceptor, Input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)"'],
         [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
@@ -681,9 +681,9 @@ function handle_upload_spreadsheet(e, file) {
       }
       
       if(variable_file_name_array[1][i] == "carbon-source") {
-          list_carbon_source = ['Glucose', 'Fructose', 'Galactose', 'Acetate']
+          list_carbon_source = ['Acetate', 'Fructose', 'Glucose', 'Galactose', 'Glycerol', 'Xylose']
           if (!source_validation(list_carbon_source,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
+            addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
             alert = true;
           }  
       }
@@ -842,7 +842,7 @@ function save_ale_metadata(array) {
         [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
         [,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
         [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],[,"Sample time is the minutes from the start of experiment"],
-        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
+        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
         [,'"Nitrogen Source, Input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"'],[,'"Phosphorous Source, Input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"'],
         [,'"Sulfur Source, Input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"'],[,'"Electron Acceptor, Input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)"'],
         [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
@@ -900,7 +900,7 @@ function save_generic_metadata(array) {
         [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
         [,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
         [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],[,"Sample time is the minutes from the start of experiment"],
-        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Glucose, Fructose, Acetate, or Galactose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
+        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
         [,'"Nitrogen Source, Input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"'],[,'"Phosphorous Source, Input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"'],
         [,'"Sulfur Source, Input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"'],[,'"Electron Acceptor, Input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)"'],
         [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
