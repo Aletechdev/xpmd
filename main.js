@@ -22,37 +22,6 @@ var lib_prep_cycle_options = ['50 Cycles', '150 Cycle', '300 Cycle', '500 Cycle'
 var read_type_options = ['Single-end reads', 'Paired-end reads', '']
 var read_length_options = ['31', '36', '50', '62', '76', '100', '151', '301', '']
 
-var output_file_name = "Metadata_spreadsheet"
-    example_output = [["Name"],[,"Email"],[,"Title of Project"],
-        [,'"Data type, Input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq"'],
-        [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the folowing: "' + "[" + taxonomy_id_strings.replace(/[^\w\s]/gi, ']-[') + "]" ],
-        [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
-        [,'"Base media, Input one of the folowing: M9, or LB"'],[,'"Isolate type, Input one of the folowing: clonal, or population"'],
-        [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
-        [,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
-        [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],[,"Sample time is the minutes from the start of experiment"],
-        [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: Acetate, Fructose, Galactose, Glucose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)"'],
-        [,'"Nitrogen Source, Input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"'],[,'"Phosphorous Source, Input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"'],
-        [,'"Sulfur Source, Input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"'],[,'"Electron Acceptor, Input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)"'],
-        [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
-        [,'"Input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"'],
-        [,'"Machine, Input one of the folowing: MiSeq, NextSeq, or HiSeq"'],[,'"Library Prep Kit Manufacturer, Input one of the folowing: Illumina, or Kapa"'],
-        [,'"Library Prep Kit, Input one of the folowing: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq"'],
-        [,'"Library Prep Kit Cycles, Input one of the folowing: 50 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle"'],[,'"Read Type, Input one of the folowing: Single-end reads, or Paired-end reads"'],
-        [,'"Read Length, Input one of the folowing: 31, 36, 50, 62, 76, 100, 151, or 301"'],[,"Input Sample Preparation and Experiment Details"],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
-        [,"Insert Technical replicates number"],
-        [,"\n" + "creator"],[,"creator-email"],[,"project"],
-        [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
-        [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
-        [,"Isolate-number"],[,"technical-replicate-number"],[,"read-files"],
-        [,"serial-number"],[,"growth-stage"],[,"sample-time"],[,"antibody"],[,"temperature"],
-        [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
-        [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
-        [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
-        [,"read-type"],[,"read-length"],[,"experiment-details"],[,"environment"],
-        [,"biological-replicates"],[,"technical-replicates"]]
-
-
 var data = [
   { label: 'Creator (Name)',
     id: 'creator',
@@ -270,6 +239,8 @@ var spreadsheet_data_array = [];
 var spreadsheet_dict = {};
 var correct_format_files = [];
 
+
+
 $(document).ready(function(){
 
   // add the uploader
@@ -322,8 +293,10 @@ $(document).ready(function(){
         [,"biological-replicates"],[,"technical-replicates"]],
         file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
         saveAs(file, output_file_name + '.csv')
+
   })
 })
+
 
 function create_form(form_type) {
   files = [];
