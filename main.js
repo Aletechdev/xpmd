@@ -58,7 +58,7 @@ var data = [
       $.getJSON('ncbi_taxon_ids.json')
         .success(function(d) { callback(Object.keys(d), d) })
         .fail(function(e) { console.log(e) })
-        .done( function(json) { 
+        .done( function(json) {
           taxonomy_id_list = Object.keys(json);
           taxonomy_id_strings = taxonomy_id_list.join();})
     } },
@@ -266,7 +266,7 @@ $(document).ready(function(){
 
   // submit
   $('#submit').click(function(){
-    if (!check_required()) 
+    if (!check_required())
       return
     var data_array = get_data_array()
     if (workflow == 'Generic') {
@@ -339,7 +339,6 @@ $(document).ready(function(){
           file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
           saveAs(file, output_file_name + '.csv')
     }
-
   })
 })
 
@@ -360,7 +359,7 @@ function create_form(form_type) {
   }
 
   // Hide/show the Optional: Ale Specific Drag and drop CSV box
-  if(form_type == 'Generic') {    
+  if(form_type == 'Generic') {
     document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
     document.getElementById('generic_instructions').style.display = 'block'
     document.getElementById('folder-name-panel').style.display = 'block'
@@ -402,7 +401,7 @@ function check_required() {
   }
 }
 
-function create_uploaders() {  
+function create_uploaders() {
   $('#spreadsheet-upload').fileReaderJS({
     dragClass: 'drag',
     readAsDefault: 'Text',
@@ -491,7 +490,7 @@ function get_zip_name_spreadsheet() {
 }
 
 function get_file_name_spreadsheet() {
-  
+
   var project;
   var rundate;
   var datatype;
@@ -525,19 +524,19 @@ function get_file_name_spreadsheet() {
       }
       if (key == 'serial-number') {
         serial_num = val
-      } 
+      }
 
-     
+
   }
   rundate = rundate.replace(' ', '').replace(/\//g, '-')
- 
-  if (serial_num != '') { 
+
+  if (serial_num != '') {
     if (workflow == 'Generic') {
      return (serial_num + '_' + project + '_' + rundate + '_' + datatype)
 
     }
     else {
-      return (serial_num + '_' + project + '_' + ALE_numb + '_' + Flask_numb 
+      return (serial_num + '_' + project + '_' + ALE_numb + '_' + Flask_numb
        + '_' + Isolate_numb + '_' + tech_rep_numb)
     }
   }
@@ -548,7 +547,7 @@ function get_file_name_spreadsheet() {
 
     }
     else {
-      return (project + '_' + ALE_numb + '_' + Flask_numb 
+      return (project + '_' + ALE_numb + '_' + Flask_numb
        + '_' + Isolate_numb + '_' + tech_rep_numb)
     }
   }
@@ -560,16 +559,16 @@ function get_file_name() {
      var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
     if (lib_prep != '')
       lib_prep = '_' + lib_prep
-    
+
     return get_value('project').toString() + '_' + label
-    
+
   }
   else {
     var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
     if (lib_prep != '') {
       lib_prep = '_' + lib_prep
     }
-    
+
     return get_value('project').toString()
     + lib_prep
     + '_'
@@ -615,8 +614,8 @@ function handle_upload_spreadsheet(e, file) {
     if (found == false) {
       addAlert(header[j] + " is a required feild");
       alert = true;
-    } 
-        
+    }
+
   };
 
 
@@ -642,10 +641,10 @@ function handle_upload_spreadsheet(e, file) {
       '([0-9]?)|(3[01]?))(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])',
       '(\d{1}))|(0?[2469]|11)(-|\/)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[0]?))',
       '(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1})))$'].join(''));
-    
+
     for (var i = 0; i < variable_file_name_array[1].length; i++) {
       if(variable_file_name_array[1][i] == "data-type") {
-         if (!dropdown_validation(data_type_options ,variable_file_name_array[name_idx][i])) {           
+         if (!dropdown_validation(data_type_options ,variable_file_name_array[name_idx][i])) {
             addAlert("Data type Feild ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
             alert = true;
          }
@@ -660,20 +659,20 @@ function handle_upload_spreadsheet(e, file) {
       }
 
       if(variable_file_name_array[1][i] == "taxonomy-id") {
-          
-          if (!dropdown_validation(taxonomy_id_list,variable_file_name_array[name_idx][i])) {           
+
+          if (!dropdown_validation(taxonomy_id_list,variable_file_name_array[name_idx][i])) {
             addAlert("NCBI Taxonomy ID ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: 243274, 511145, 511693, 668369, or 679895")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "base-media") {
-          if (!dropdown_validation(base_media_options,variable_file_name_array[name_idx][i])) {           
+          if (!dropdown_validation(base_media_options,variable_file_name_array[name_idx][i])) {
             addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: M9, or LB")
             alert = true;
           }
       }
-      if(variable_file_name_array[1][i] == "isolate-type") {    
-          if (!dropdown_validation(isolate_options,variable_file_name_array[name_idx][i])) {           
+      if(variable_file_name_array[1][i] == "isolate-type") {
+          if (!dropdown_validation(isolate_options,variable_file_name_array[name_idx][i])) {
             addAlert("Isolate type ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: clonal, or population")
             alert = true;
           }
@@ -683,13 +682,13 @@ function handle_upload_spreadsheet(e, file) {
             addAlert("Machine ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: MiSeq, NextSeq, or HiSeq")
             alert = true;
           }
-      }  
+      }
       if(variable_file_name_array[1][i] == "library-prep-kit-manufacturer") {
           if (!dropdown_validation(lib_prep_manufacturer_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {           
             addAlert("Library Prep Kit Manufacturer ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Illumina, or Kapa")
             alert = true;
           }
-      }  
+      }
       if(variable_file_name_array[1][i] == "library-prep-kit") {
           if (!dropdown_validation(lib_prep_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {           
             addAlert("Library Prep Kit ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq")
@@ -715,27 +714,27 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
 
-      if((variable_file_name_array[1][i] == "ALE-number") || (variable_file_name_array[1][i] == "Flask-number") 
+      if((variable_file_name_array[1][i] == "ALE-number") || (variable_file_name_array[1][i] == "Flask-number")
         || (variable_file_name_array[1][i] == "technical-replicate-number") || (variable_file_name_array[1][i] == "Isolate-number")) {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {           
+        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please insert a numerical value for the ALE-number, Isolate-number, Flask-number or Technical-replicate-number")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "temperature") {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {           
+        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Temperature in Celcius. e.g. 37")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "biological-replicates") {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {           
+        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Biological replicates number")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "technical-replicates") {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {           
+        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Technical replicates number")
             alert = true;
           }
@@ -746,49 +745,49 @@ function handle_upload_spreadsheet(e, file) {
             alert = true;
           }
       }
-      
+
       if(variable_file_name_array[1][i] == "carbon-source") {
           if (!source_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
             alert = true;
-          }  
+          }
       }
       if(variable_file_name_array[1][i] == "nitrogen-source") {
           if (!source_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
             alert = true;
-          }  
+          }
       }
       if(variable_file_name_array[1][i] == "phosphorous-source") {
           if (!source_validation(phosphorous_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Phosphorous Source ERROR [Line " + (name_idx+1) + "], Please input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)")
             alert = true;
-          }  
+          }
       }
       if(variable_file_name_array[1][i] == "sulfur-source") {
           if (!source_validation(sulfur_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Sulfur Source ERROR [Line " + (name_idx+1) + "], Please input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)")
             alert = true;
-          }  
+          }
       }
       if(variable_file_name_array[1][i] == "electron-acceptor") {
           if (!source_validation(electron_acceptor_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Electron Acceptor ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)")
             alert = true;
-          }  
+          }
       }
       if(variable_file_name_array[1][i] == "supplement") {
           list_supplment = ['\\w+']
           if (!source_validation(list_supplment,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
             alert = true;
-          }  
+          }
       }
       if(variable_file_name_array[1][i] == "antibiotic") {
           if (!source_validation(antibiotic_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)")
             alert = true;
-          }  
+          }
       }
 
 
@@ -797,7 +796,7 @@ function handle_upload_spreadsheet(e, file) {
         if (variable_file_name_array[1][i] == required_input[x]) {
            if (variable_file_name_array[name_idx][i] == "") {
              addAlert("[Line " + (name_idx+1) + "], " + required_input[x] + " feild requires input")
-             alert = true; 
+             alert = true;
            }
         }
       }
@@ -815,18 +814,18 @@ function handle_upload_spreadsheet(e, file) {
     if (alert == true) {
       return;
     }
-  
+
     zip.generateAsync({type:"blob"})
     .then(function (blob) {
       saveAs(blob, get_zip_name_spreadsheet() + '.zip')
     })
-  
+
 }
 
 function addAlert(message) {
     $('#alert').append('<div class="alert alert-danger alert-dismissable fade in" id="alertdivs">' +
         '<a href="#" class="close" data-dismiss="alert"' +
-        'aria-label="close">&times;</a>' + message + 
+        'aria-label="close">&times;</a>' + message +
         '</div>');
 }
 
@@ -851,7 +850,7 @@ function dropdown_validation(list, index) {
         error_call = true;
     }
   };
-  return error_call;  
+  return error_call;
 }
 
 
@@ -886,7 +885,7 @@ function save_ale_metadata(array) {
     var file_name = get_file_name()
     var csv_data = [new CSV(array).encode()]
     var file = new Blob(csv_data, {type: 'text/plain;charset=utf-8'})
-     
+
     saveAs(file, file_name + '.csv');
   }
 
@@ -931,11 +930,11 @@ function save_ale_metadata(array) {
         Spreadsheet_data.push("\n")
         Spreadsheet_data.push(filearray)
         filearray = []
-      };   
+      };
 
       var file = new Blob(Spreadsheet_data, { type: 'text/plain;charset=utf-8' })
       saveAs(file, output_file_name + '.csv')
-      
+
   }
 }
 
@@ -989,7 +988,7 @@ function save_generic_metadata(array) {
         Spreadsheet_data.push("\n")
         Spreadsheet_data.push(filearray)
         filearray = []
-      };   
+      };
 
       var file = new Blob(Spreadsheet_data, { type: 'text/plain;charset=utf-8' })
       saveAs(file, output_file_name + '.csv')
@@ -1049,7 +1048,7 @@ function get_value(id, input_only) {
 
   if (input_only)
     return vals
-   
+
     // add concentrations to val
   if (_.isArray(vals)) {
     return vals.map(function(val) {
@@ -1085,7 +1084,7 @@ function set_value(id, value) {
   }
   var sel = $('#' + id)
   if (sel.data('select2')) {
-    
+
 
     var split_val = value.split(',').filter(function(x) {
       return x.replace(' ', '') !== ''
@@ -1109,14 +1108,14 @@ function set_value(id, value) {
 
     })
     sel.val(input_val).trigger('change')
-    
+
       // update the concentration
       if (Object.keys(concentrations).length > 0) {
         draw_concentrations(id,
                           data_as_object[id]['concentration_with_default'],
                           concentrations)
       }
-  } 
+  }
     sel.val(value).trigger('change')
 
   // update UI
@@ -1217,7 +1216,7 @@ function extract_concentrations(vals) {
 
 function draw_concentrations(id, def, value_dict) {
   if (_.isUndefined(value_dict)) value_dict = {}
-  
+
 
   var sel = d3.select(d3.select('#' + id).node().parentNode)
         .selectAll('.concentration-input')

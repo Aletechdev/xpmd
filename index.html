@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <title>Experiment Metadata</title>
-    
+
     <!-- JS -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -105,36 +105,43 @@
           <strong>Fill out this form</strong>, save the CSV file, and put it
           in your folder.
         </li>
-        <li>
-        <strong>QUnit testing</strong>,
-        Download main.js, tests.js and unittest.html from the SBRG git hub and use your internet browser to open unittest.html.
-      </li>
+        </ol>
+      </p>
+      <p>
+        <i>Creating metadata for multiple samples:</i>
+        <ol>
       <li>
-        <strong>(Spreadsheet to MetaData Specific)</strong> <u>download template spreadsheet and fill out all required information under the required field names.</u>
+        <strong>Spreadsheet to Metadata</strong>: <u>download template spreadsheet and fill out all required information under the required field names.</u>
         <ul>
             <li><strong> Warning: Do not change format of template spreadsheet. Input data starting from row 3</strong></li>
             <li>Each row represents a new sample metadata file.</li>
             <li>Examples of <u>valid</u> input located on row 1 of template spreadsheet.</li>
-            <li>Drag-and-drop filled out spreadsheet to generate metadata CSV's.</li>
         </ul>
       </li>
       <li>
-        <strong>(Metadata to Spreadsheet / Metadata to Metadata)</strong> <u> Edit one or more existing metadata files. </u>
-        <ul>
-            <li>Drag-and-drop one Metadata CSV File then edit on the form below, when finished <strong>click "Download CSV or SpreadSheet File"</strong> to generate and edited CSV File. </li>
-            <li>Drag-and-drop two or more Metadata CSV Files and <strong>click "Download CSV or SpreadSheet File"</strong> to generate Metadata spreadsheet of the CSV Files. The spreadsheet can then be edited and Dragged-and-Dropped into the <strong>(Spreadsheet to MetaData Specific)</strong> drag-and-drop to generate metadata CSV's. </li>
-        </ul>
+        Drag-and-drop spreadsheet containing your sample's data to generate metadata CSV's.
       </li>
       </ol>
-      </p
+    </p>
+    <p>
+      <i>Creating a spreadsheet from multiple metadata files or automatically populating this form with 1 metadata file:</i>
+      <ol>
+      <li>
+        <strong>Metadata to Spreadsheet / Metadata to Metadata</strong>: <u> Edit one or more existing metadata files. </u>
+        <ul>
+            <li>Drag-and-drop one Metadata CSV File then edit on the form below, when finished <strong>click "Download CSV or SpreadSheet File"</strong> to generate and edited CSV File. </li>
+            <li>Drag-and-drop two or more Metadata CSV Files and <strong>click "Download CSV or SpreadSheet File"</strong> to generate Metadata spreadsheet of the CSV Files. The spreadsheet can then be edited and Dragged-and-Dropped into the <strong>Spreadsheet to MetaData</strong> drag-and-drop to generate metadata CSV's. </li>
+        </ul>
+      </li>
+    </ol>
+    </p>
       <hr/>
       </div>
-
       <div class="panel panel-default"id="csv_drag_and_drop_spreadsheet">
         <div class="panel-heading">
-          <strong>(Spreadsheet to MetaData Specific)</strong> CSV with required metadata field names.
+          <strong>Spreadsheet to MetaData</strong>: CSV with required metadata field names.
           <button id="download_example_spreadsheet" type="submit" class="btn btn-default">
-            Download Template 
+            Download Template
           </button>
         </div>
         <div class="panel-body">
@@ -144,10 +151,10 @@
       </div>
       <div class="panel panel-default">
         <div class="panel-heading">
-          <strong>(Metadata to Spreadsheet / Metadata to Metadata)</strong> Load existing CSV file(s) to edit existing CSV(s).
+          <strong>Metadata to Spreadsheet / Metadata to Metadata</strong>: Load existing CSV file(s) to edit existing CSV(s).
         </div>
         <div class="panel-body">
-          <div id="file-upload">Drag and drop CSV file(s).</div> 
+          <div id="file-upload">Drag and drop CSV file(s).</div>
         </div>
       </div>
       <div class="panel panel-default">
