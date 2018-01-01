@@ -27,7 +27,7 @@ var data = [
     id: 'creator',
     required: true,
     type: 'input',
-    example: 'Ify Aniefuna' },
+    example: 'Ify Aniefuna'},
   { label: 'Creator Email',
     id: 'creator-email',
     required: true,
@@ -1008,6 +1008,7 @@ var saved_ALE_number;
 var saved_Flask_number;
 var saved_Isolate_number;
 var saved_technical_replicate_number;
+var saved_ = false;
 function get_value(id, input_only) {
   /** Get the value for the given input id */
   if (_.isUndefined(input_only))
@@ -1021,17 +1022,22 @@ function get_value(id, input_only) {
     if (val) concentrations[el.attr('id')] = val
   })
   // get the value
-  if (id == 'ALE-number') {
+  if (saved_ == true) {
+    if (id == 'ALE-number' ) {
       var vals = saved_ALE_number;
-  }
-  else if (id == 'Flask-number') {
+    }
+    else if (id == 'Flask-number') {
       var vals = saved_Flask_number;
-  }
-  else if (id == 'Isolate-number') {
+    }
+    else if (id == 'Isolate-number') {
       var vals = saved_Isolate_number;
-  }
-  else if (id == 'technical-replicate-number') {
+    }
+    else if (id == 'technical-replicate-number') {
       var vals = saved_technical_replicate_number;
+    }
+    else {
+      var vals = $('#' + id).val()
+    }
   }
   else {
       var vals = $('#' + id).val()
@@ -1057,6 +1063,7 @@ function get_value(id, input_only) {
 }
 
 function set_value(id, value) {
+ saved_ = true;
  if (id == 'ALE-number') {
       saved_ALE_number = value;
  }
