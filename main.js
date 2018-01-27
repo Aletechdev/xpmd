@@ -765,7 +765,7 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
       if (found == false) {
-        addAlert(header[j] + " is a required feild");
+        addAlert(header[j] + " is a required field");
         alert = true;
       }
   };
@@ -797,7 +797,7 @@ function handle_upload_spreadsheet(e, file) {
     for (var i = 0; i < variable_file_name_array[1].length; i++) {
       if(variable_file_name_array[1][i] == "data-type") {
          if (!dropdown_validation(data_type_options ,variable_file_name_array[name_idx][i])) {
-            addAlert("Data type Feild ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
+            addAlert("Data type Field ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
             alert = true;
          }
       }
@@ -939,6 +939,7 @@ function handle_upload_spreadsheet(e, file) {
           if (!source_validation(list_supplment,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
             alert = true;
+            
           }
       }
       if(variable_file_name_array[1][i] == "antibiotic") {
@@ -951,7 +952,7 @@ function handle_upload_spreadsheet(e, file) {
       for (var x = 0; x < required_input.length; x++) {
         if (variable_file_name_array[1][i] == required_input[x]) {
            if (variable_file_name_array[name_idx][i] == "") {
-             addAlert("[Line " + (name_idx+1) + "], " + required_input[x] + " feild requires input")
+             addAlert("[Line " + (name_idx+1) + "], " + required_input[x] + " field requires input")
              alert = true;
            }
         }
