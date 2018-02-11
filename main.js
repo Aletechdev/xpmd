@@ -240,10 +240,6 @@ var data = [
   { label: 'Genome reference file',
     id: 'genome-reference-file',
     type: 'input' },
-  { label: 'File Checksum',
-    id: 'File-Checksum',
-    description: 'm5sum per file',
-    type: 'input' },
   { label: 'Archive link',
     id: 'archive-link',
     description: 'Data on growth curve',
@@ -728,7 +724,7 @@ function handle_upload_spreadsheet(e, file) {
         ["electron-acceptor"],["supplement"],["antibiotic"],["machine"],
         ["library-prep-kit-manufacturer"],["library-prep-kit"],["library-prep-kit-cycles"],
         ["read-type"],["read-length"],["experiment-details"],["Pre-culture-details"],["Cultivation-details"],["environment"],
-        ["biological-replicates"],["technical-replicates"],["genome-reference-file"],["File-Checksum"],["archive-link"]]
+        ["biological-replicates"],["technical-replicates"],["genome-reference-file"],["archive-link"]]
   }
   else {
     header = [["creator"],["creator-email"],["project"],
@@ -740,7 +736,7 @@ function handle_upload_spreadsheet(e, file) {
         ["electron-acceptor"],["supplement"],["antibiotic"],["machine"],
         ["library-prep-kit-manufacturer"],["library-prep-kit"],["library-prep-kit-cycles"],
         ["read-type"],["read-length"],["experiment-details"],["Pre-culture-details"],["Cultivation-details"],["environment"],
-        ["genome-reference-file"],["File-Checksum"],["archive-link"]]
+        ["genome-reference-file"],["archive-link"]]
   }
 
 
