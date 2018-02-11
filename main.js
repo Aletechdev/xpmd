@@ -908,7 +908,7 @@ function handle_upload_spreadsheet(e, file) {
       }
       if(variable_file_name_array[1][i] == "nitrogen-source") {
           if (!source_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
+            addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: (NH4)2SO4, NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
             alert = true;
           }
       }
