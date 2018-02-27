@@ -780,11 +780,11 @@ function handle_upload_spreadsheet(e, file) {
 
 
   if (workflow == 'Generic') {
-     var required_input = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["sample-time"],["Link-to-reference-sequence"]]
+     var required_input = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["Link-to-reference-sequence"]]
   }
   else {
      var required_input = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],
-        ["Flask-number"],["Isolate-number"],["technical-replicate-number"],["sample-time"],["Link-to-reference-sequence"]]
+        ["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"]]
   }
   if (variable_file_name_array.length == 2) {
     addAlert("Spreadsheet requires input")
@@ -881,12 +881,12 @@ function handle_upload_spreadsheet(e, file) {
             alert = true;
           }
       }
-      if(variable_file_name_array[1][i] == "sample-time") {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert numerical value for Sample time (hours from start of experiment) e.g. 4")
-            alert = true;
-          }
-      }
+      // if(variable_file_name_array[1][i] == "sample-time") {
+      //   if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
+      //       addAlert("ERROR [Line " + (name_idx+1) + "], Please insert numerical value for Sample time (hours from start of experiment) e.g. 4")
+      //       alert = true;
+      //     }
+      // }
       if(variable_file_name_array[1][i] == "temperature") {
         if (!(/^[+-]?(?:\d*\.)?\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Temperature in Celcius. e.g. 37")
@@ -912,50 +912,50 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
 
-      if(variable_file_name_array[1][i] == "carbon-source") {
-          if (!source_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "nitrogen-source") {
-          if (!source_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: (NH4)2SO4, NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "phosphorous-source") {
-          if (!source_validation(phosphorous_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Phosphorous Source ERROR [Line " + (name_idx+1) + "], Please input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "sulfur-source") {
-          if (!source_validation(sulfur_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Sulfur Source ERROR [Line " + (name_idx+1) + "], Please input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)")
-            alert = true;
-          }
-      }
+      // if(variable_file_name_array[1][i] == "carbon-source") {
+      //     if (!source_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+      //       addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
+      //       alert = true;
+      //     }
+      // }
+      // if(variable_file_name_array[1][i] == "nitrogen-source") {
+      //     if (!source_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+      //       addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: (NH4)2SO4, NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
+      //       alert = true;
+      //     }
+      // }
+      // if(variable_file_name_array[1][i] == "phosphorous-source") {
+      //     if (!source_validation(phosphorous_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+      //       addAlert("Phosphorous Source ERROR [Line " + (name_idx+1) + "], Please input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)")
+      //       alert = true;
+      //     }
+      // }
+      // if(variable_file_name_array[1][i] == "sulfur-source") {
+      //     if (!source_validation(sulfur_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+      //       addAlert("Sulfur Source ERROR [Line " + (name_idx+1) + "], Please input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)")
+      //       alert = true;
+      //     }
+      // }
       if(variable_file_name_array[1][i] == "electron-acceptor") {
          if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Electron Acceptor ERROR [Line " + (name_idx+1) + "], Please input one of the following: O2, NO3, or SO4")
             alert = true;
           }
       }
-      if(variable_file_name_array[1][i] == "supplement") {
-          list_supplment = ['\\w+']
-          if (!source_validation(list_supplment,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
-            alert = true;
-
-          }
-      }
-      if(variable_file_name_array[1][i] == "antibiotic") {
-          if (!source_validation(antibiotic_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)")
-            alert = true;
-          }
-      }
+      // if(variable_file_name_array[1][i] == "supplement") {
+      //     list_supplment = ['\\w+']
+      //     if (!source_validation(list_supplment,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+      //       addAlert("ERROR [Line " + (name_idx+1) + "], Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
+      //       alert = true;
+      //
+      //     }
+      // }
+      // if(variable_file_name_array[1][i] == "antibiotic") {
+      //     if (!source_validation(antibiotic_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+      //       addAlert("ERROR [Line " + (name_idx+1) + "], Please input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)")
+      //       alert = true;
+      //     }
+      // }
 
       for (var x = 0; x < required_input.length; x++) {
         if (variable_file_name_array[1][i] == required_input[x]) {
