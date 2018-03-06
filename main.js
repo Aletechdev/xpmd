@@ -752,24 +752,6 @@ function handle_upload_spreadsheet(e, file) {
   found = false;
 
 
-  // for (var j = 0; j < header.length; j++) {
-  //     for (var k = 0; k < variable_file_name_array[1].length; k++) {
-  //
-  //         if(header[j] == variable_file_name_array[1][k]) {
-  //           found = true;
-  //           break;
-  //         }
-  //         else{
-  //           found = false;
-  //         }
-  //     }
-  //     if (found == false) {
-  //       addAlert(header[j] + " is a required field");
-  //       alert = true;
-  //     }
-  // };
-
-
   if (workflow == 'Generic') {
      var required_input = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["Link-to-reference-sequence"]]
   }
