@@ -7,7 +7,7 @@ var taxonomy_id_strings;
 
 //Spreadsheet validation values
 var data_type_options = ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq']
-var base_media_options = ['M9', 'LB', 'DM25', 'RPMI']
+var base_media_options = ['M9', 'LB', 'DM25', 'RPMI', 'MHB']
 var isolate_options = ['clonal', 'population']
 var machine_options = ['MiSeq', 'NextSeq', 'HiSeq']
 var carbon_source_options = ['Acetate', 'Fructose', 'Glucose', 'Galactose', 'Glycerol', 'Xylose','Sucrose']
@@ -799,7 +799,7 @@ function handle_upload_spreadsheet(e, file) {
       }
       if(variable_file_name_array[1][i] == "base-media") {
           if (!dropdown_validation(base_media_options,variable_file_name_array[name_idx][i])) {
-            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the following: M9, LB, DM25, RPMI")
+            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the following: M9, LB, DM25, RPMI, MHB")
             alert = true;
           }
       }
