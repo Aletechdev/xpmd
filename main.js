@@ -241,6 +241,7 @@ var data_as_object = {}
 var multiplefiles = false;
 var workflow = 'Generic'
 var files = [];
+var Dragfile = false
 var SIZEOFFILES = 0
 var new_files = []
 var original_file_content = []
@@ -359,7 +360,6 @@ $(document).ready(function(){
     })
 })
 
-
 function create_form(form_type) {
   files = [];
   new_files = []
@@ -394,6 +394,8 @@ function create_form(form_type) {
     }
   }
 }
+
+
 
 function get_data_array() {
 
@@ -438,6 +440,7 @@ function create_uploaders() {
   });
 }
 function getsizeoffiles(e,file) {
+  Dragfile = true
   SIZEOFFILES = e.files.length
 }
 
@@ -472,6 +475,8 @@ function format_metadata() {
     var array_data = []
     for(var i = 0; i < data.length; i++){
       var val = get_value(data[i]['id'])
+      val = val.toString()
+
       array_data.push([data[i]['id'], val])
     }
     correct_format_files_Generic.push(array_data)
@@ -480,6 +485,8 @@ function format_metadata() {
     var array_data = []
     for(var i = 0; i < data.length; i++){
       var val = get_value(data[i]['id'])
+      val = val.toString()
+
       array_data.push([data[i]['id'], val])
     }
     correct_format_files_ALE.push(array_data)
@@ -531,9 +538,6 @@ function format_metadata() {
           Spreadsheet_data.push(filearray)
           filearray = []
         };
-
-        console.log(SIZEOFFILES)
-        console.log(files.length)
 
         if (files.length == SIZEOFFILES) {
           var file = new Blob(Spreadsheet_data, { type: 'text/plain;charset=utf-8' })
@@ -753,10 +757,10 @@ function handle_upload_spreadsheet(e, file) {
 
 
   if (workflow == 'Generic') {
-     var required_input = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["Link-to-reference-sequence"]]
+     var required_input = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["Link-to-reference-sequence"],["sample-time"]]
   }
   else {
-     var required_input = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"]]
+     var required_input = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["sample-time"]]
   }
   if (variable_file_name_array.length == 2) {
     addAlert("Spreadsheet requires input")
@@ -845,7 +849,6 @@ function handle_upload_spreadsheet(e, file) {
             alert = true;
           }
       }
-
       if((variable_file_name_array[1][i] == "ALE-number") || (variable_file_name_array[1][i] == "Flask-number")
         || (variable_file_name_array[1][i] == "technical-replicate-number") || (variable_file_name_array[1][i] == "Isolate-number")) {
         if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
@@ -853,12 +856,12 @@ function handle_upload_spreadsheet(e, file) {
             alert = true;
           }
       }
-      // if(variable_file_name_array[1][i] == "sample-time") {
-      //   if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-      //       addAlert("ERROR [Line " + (name_idx+1) + "], Please insert numerical value for Sample time (hours from start of experiment) e.g. 4")
-      //       alert = true;
-      //     }
-      // }
+      if(variable_file_name_array[1][i] == "sample-time") {
+         if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert numerical value for Sample time (hours from start of experiment) e.g. 4")
+            alert = true;
+         }
+      }
       if(variable_file_name_array[1][i] == "temperature") {
         if (!(/^[+-]?(?:\d*\.)?\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Temperature in Celcius. e.g. 37")
@@ -883,51 +886,49 @@ function handle_upload_spreadsheet(e, file) {
             alert = true;
           }
       }
-
-      // if(variable_file_name_array[1][i] == "carbon-source") {
-      //     if (!source_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-      //       addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
-      //       alert = true;
-      //     }
-      // }
-      // if(variable_file_name_array[1][i] == "nitrogen-source") {
-      //     if (!source_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-      //       addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: (NH4)2SO4, NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
-      //       alert = true;
-      //     }
-      // }
-      // if(variable_file_name_array[1][i] == "phosphorous-source") {
-      //     if (!source_validation(phosphorous_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-      //       addAlert("Phosphorous Source ERROR [Line " + (name_idx+1) + "], Please input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)")
-      //       alert = true;
-      //     }
-      // }
-      // if(variable_file_name_array[1][i] == "sulfur-source") {
-      //     if (!source_validation(sulfur_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-      //       addAlert("Sulfur Source ERROR [Line " + (name_idx+1) + "], Please input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)")
-      //       alert = true;
-      //     }
-      // }
+      if(variable_file_name_array[1][i] == "carbon-source") {
+          if (!source_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+             addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
+             alert = true;
+          }
+      }
+      if(variable_file_name_array[1][i] == "nitrogen-source") {
+         if (!source_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+             addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: (NH4)2SO4, NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
+             alert = true;
+          }
+      }
+      if(variable_file_name_array[1][i] == "phosphorous-source") {
+          if (!source_validation(phosphorous_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("Phosphorous Source ERROR [Line " + (name_idx+1) + "], Please input KH2PO4 followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)")
+            alert = true;
+          }
+      }
+      if(variable_file_name_array[1][i] == "sulfur-source") {
+          if (!source_validation(sulfur_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("Sulfur Source ERROR [Line " + (name_idx+1) + "], Please input MgSO4 followed by the concentration in (g/L) EXAMPLE: MgSO4(3)")
+            alert = true;
+          }
+      }
       if(variable_file_name_array[1][i] == "electron-acceptor") {
-         if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Electron Acceptor ERROR [Line " + (name_idx+1) + "], Please input one of the following: O2, NO3, or SO4")
             alert = true;
           }
       }
-      // if(variable_file_name_array[1][i] == "supplement") {
-      //     list_supplment = ['\\w+']
-      //     if (!source_validation(list_supplment,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-      //       addAlert("ERROR [Line " + (name_idx+1) + "], Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
-      //       alert = true;
-      //
-      //     }
-      // }
-      // if(variable_file_name_array[1][i] == "antibiotic") {
-      //     if (!source_validation(antibiotic_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-      //       addAlert("ERROR [Line " + (name_idx+1) + "], Please input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)")
-      //       alert = true;
-      //     }
-      // }
+      if(variable_file_name_array[1][i] == "supplement") {
+          list_supplment = ['\\w+']
+          if (!source_validation(list_supplment,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("ERROR [Line " + (name_idx+1) + "], Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
+            alert = true;
+          }
+      }
+      if(variable_file_name_array[1][i] == "antibiotic") {
+          if (!source_validation(antibiotic_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("ERROR [Line " + (name_idx+1) + "], Please input one of the following Antibiotic(s) added: Kanamycin, Spectinomycin, Streptomycin, Ampicillin, Carbenicillin, Bleomycin, Erythromycin, Polymyxin B, Tetracycline, or Chloramphenicol followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)")
+            alert = true;
+          }
+      }
 
       for (var x = 0; x < required_input.length; x++) {
         if (variable_file_name_array[1][i] == required_input[x]) {
@@ -966,22 +967,16 @@ function addAlert(message) {
         '</div>');
 }
 
+function regExpEscape(literal_string) {
+    return literal_string.replace(/[^A-Za-z0-9_]/g, '\\$&');
+}
+
 function source_validation(list, index) {
-  changed = false
   alert_call = false;
   for (var i = 0; i < list.length; i++) {
-
-    if (list[i].indexOf(')') != -1) {
-      list[i] = list[i].replace(/["'()]/g, "}")
-      changed = true
-
-    }
-    regex_sources = '(?:^|\\b)(' + list[i] + ')(?=\\b|).[+-]?(?:\d*\.)?\\d+.$'
+   
+    regex_sources = '(?:^|\\\b)(' + regExpEscape(list[i]) + ')(?=\\\b|)\\(-?[0-9]\\d*(\\.\\d+)?\\)$'
     newregex = new RegExp(regex_sources, 'i')
-    if (changed == true) {
-      index = index.replace(/["'()]/g, "}")
-      changed = false
-    }
     if(newregex.test(index) == true) {
         alert_call = true;
     }
@@ -1080,14 +1075,16 @@ function get_value(id, input_only) {
   if (_.isUndefined(input_only))
     input_only = false
 
-  // try to get concentrations
+  // Get concentrations
   var concentrations = {}
   $('#' + id).parent().find('.concentration-input>input').each(function() {
     var el = $(this),
         val = $(this).val()
     if (val) concentrations[el.attr('id')] = val
   })
-  // get the value
+
+
+  // get the value ale
   if (saved_ == true) {
     if (id == 'ALE-number' ) {
       var vals = saved_ALE_number;
@@ -1118,7 +1115,7 @@ function get_value(id, input_only) {
     // add concentrations to val
   if (_.isArray(vals)) {
     return vals.map(function(val) {
-      if (val in concentrations)
+      if (val in concentrations && Dragfile == false)
         return val + '(' + concentrations[val] + ')'
       else
         return val
@@ -1308,7 +1305,7 @@ function draw_concentrations(id, def, value_dict) {
   sel.exit().remove()
 }
 
-function create_input(data, parent_sel, autofocus) {
+function create_input(data, parent_sel) {
   var label = data['label'],
       id = data['id'],
       required = data['required'],
@@ -1325,7 +1322,6 @@ function create_input(data, parent_sel, autofocus) {
       concentrations = data['concentrations'],
       min = data['min'],
       html = '',
-      autofocus_str = autofocus ? ' autofocus' : '',
       none = data['none'],
       after_append
 
@@ -1380,7 +1376,9 @@ function create_input(data, parent_sel, autofocus) {
 
     }
 
-    html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '></select>'
+
+
+    html = '<select id="' + id + '" style="width: 100%" ' + '></select>'
 
     after_append = function() {
       // prefer options to options_function
@@ -1407,20 +1405,20 @@ function create_input(data, parent_sel, autofocus) {
   }
   else if (type === 'date') {
     html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
-      ' placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >',
+      ' placeholder="' + example + '" ' + ' style="width: 100%" >',
     after_append = function() {
       $('#' + id).datepicker({ format: 'yyyy-mm-dd' })
     }
   } else if (type === 'textarea') {
-    html = '<textarea id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" ></textarea>'
+    html = '<textarea id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" ></textarea>'
   } else if (type === 'number' ){
     html = '<input id="' + id + '" type="number" class="form-control" min="' + min + '"' +
-      ' value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >'
+      ' value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
     after_append = function() {
       $('#' + id).bootstrapNumber()
     }
   } else {
-    html = '<input id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >'
+    html = '<input id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
   }
   if (workflow == 'Generic') {
       ALErequired = false
