@@ -85,22 +85,22 @@ var data = [
     id: 'ALE-number',
     type: 'input',
     required: true,
-    form: 'ALE'},
+    form: 'ale_single'},
   { label: 'Flask number',
     id: 'Flask-number',
     type: 'input',
     required: true,
-    form: 'ALE'},
+    form: 'ale_single'},
   { label: 'Isolate number',
     id: 'Isolate-number',
     required: true,
     type: 'input',
-    form: 'ALE'},
+    form: 'ale_single'},
   { label: 'Technical replicate number',
     required: true,
     id: 'technical-replicate-number',
     type: 'input',
-    form: 'ALE'},
+    form: 'ale_single'},
    { label: 'Sample Time',
     id: 'sample-time',
     type: 'time-hours',
@@ -129,7 +129,7 @@ var data = [
     description: 'Temperature in Celcius',
     id: 'temperature',
     example: '37',
-    form: 'ALE'},
+    form: 'ale_single'},
   { label: 'Carbon Source(s)',
     id: 'carbon-source',
     type: 'dropdown',
@@ -227,7 +227,7 @@ var data = [
     default: 1,
     min: 1,
     max: 100,
-    form: 'Generic'},
+    form: 'generic_single'},
   { label: 'Technical replicates',
     id: 'technical-replicates',
     type: 'number',
@@ -246,7 +246,7 @@ var data = [
 var data_as_object = {}
     data.forEach(function(d) { data_as_object[d.id] = d })
 var multiplefiles = false;
-var workflow = 'Generic'
+//var workflow = 'Generic'
 var files = [];
 var Dragfile = false
 var SIZEOFFILES = 0
@@ -279,26 +279,34 @@ var read_length_options_strings = read_length_options.join()
 
 
 $(document).ready(function(){
+    //single metadata form
+    document.getElementById('single_metadata_sheet').style.display = 'none'
+    document.getElementById('single_file_instructions').style.display = 'none'
+    document.getElementById('folder-name-panel').style.display = 'none'
+    document.getElementById('Save_metadata').style.display = 'none'
 
-  // add the uploader
+    //metadata spreadsheet
+    document.getElementById('spreadsheet_instructions').style.display = 'none'
+    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'none'
+
+  //add the uploader
   create_uploaders()
 
-  create_form('Generic')
-
-  // submit
+  //submit
   $('#submit').click(function(){
     if (!check_required())
       return
     var data_array = get_data_array()
-    if (workflow == 'Generic') {
+    if (workflow == 'generic_single') {
       save_generic_metadata(data_array)
-    } else {
+    } 
+    if (workflow == 'ale_single') {
       save_ale_metadata(data_array)
     }
   })
 
   $('#download_example_spreadsheet').click(function(){
-    if (workflow == 'Generic') {
+    if (workflow == 'generic_spreadsheet') {
 
       var output_file_name = "Metadata_spreadsheet",
           example_output = [["Name"],[,"Email"],[,"Title of Project"],
@@ -330,9 +338,11 @@ $(document).ready(function(){
           [,"biological-replicates"],[,"technical-replicates"],[,"genome-reference-file"],[,"archive-link"]],
           file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
           saveAs(file, output_file_name + '.csv')
-        }
-        else{
-           var output_file_name = "Metadata_spreadsheet",
+    }
+
+    if  (workflow == 'ale_spreadsheet') {
+
+        var output_file_name = "Metadata_spreadsheet",
           example_output = [["Name"],[,"Email"],[,"Title of Project"],
           [,'"Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
@@ -361,13 +371,15 @@ $(document).ready(function(){
           [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
           [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],[,"genome-reference-file"],[,"archive-link"]],
           file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
-          saveAs(file, output_file_name + '.csv')
+          saveAs(file, output_file_name + '.csv') 
 
-        }
-    })
+    }
+  }) 
 })
 
 function create_form(form_type) {
+  
+  document.getElementById('intropage').style.display = 'none'
   files = [];
   new_files = []
   original_file_content = []
@@ -383,15 +395,17 @@ function create_form(form_type) {
   }
 
   // Hide/show the Optional: Ale Specific Drag and drop CSV box
-  if(form_type == 'Generic') {
-    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
-    document.getElementById('generic_instructions').style.display = 'block'
+  if ( (form_type == 'generic_single') || (form_type == 'ale_single') ){
+    document.getElementById('single_metadata_sheet').style.display = 'block'
+    document.getElementById('single_file_instructions').style.display = 'block'
     document.getElementById('folder-name-panel').style.display = 'block'
-  } else {
-    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
-    document.getElementById('generic_instructions').style.display = 'block'
-    document.getElementById('folder-name-panel').style.display = 'none'
+    document.getElementById('Save_metadata').style.display = 'block'
   }
+  if ( (form_type == 'generic_spreadsheet') || (form_type == 'ale_spreadsheet') ) {
+    document.getElementById('spreadsheet_instructions').style.display = 'block'
+    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
+  }
+ 
 
   // add the form
   for(var i = 0; i < data.length; i++) {
@@ -478,7 +492,7 @@ function handle_upload(e, file) {
 }
 
 function format_metadata() {
-  if (workflow == 'Generic') {
+  if (workflow == 'generic_single') {
     var array_data = []
     for(var i = 0; i < data.length; i++){
       var val = get_value(data[i]['id'])
@@ -500,7 +514,7 @@ function format_metadata() {
   }
 
   if (multiplefiles == true) {
-    if (workflow == 'Generic') {
+    if (workflow == 'generic_spreadsheet') {
 
       var Spreadsheet_data = [];
       var filearray = [];
@@ -551,7 +565,7 @@ function format_metadata() {
           saveAs(file, output_file_name + '.csv')
         }
     }
-    else{
+    if (workflow == 'ale_spreadsheet') {
 
       var Spreadsheet_data = [];
       var filearray = [];
@@ -680,7 +694,7 @@ function get_file_name_spreadsheet() {
   rundate = rundate.replace(' ', '').replace(/\//g, '-')
 
   if (serial_num != '') {
-    if (workflow == 'Generic') {
+    if ((workflow == 'generic_single') || (workflow == 'generic_spreadsheet')) {
      return (serial_num + '_' + project + '_' + rundate + '_' + datatype)
 
     }
@@ -691,7 +705,7 @@ function get_file_name_spreadsheet() {
   }
 
   else {
-    if (workflow == 'Generic') {
+    if ((workflow == 'generic_single') || (workflow == 'generic_spreadsheet')) {
      return (project + '_' + rundate + '_' + datatype)
 
     }
@@ -704,7 +718,7 @@ function get_file_name_spreadsheet() {
 
 function get_file_name() {
   var label = folder_name();
-  if (workflow == 'Generic') {
+  if ((workflow == 'generic_single') || (workflow == 'generic_spreadsheet')) {
      var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
     if (lib_prep != '')
       lib_prep = '_' + lib_prep
@@ -731,7 +745,7 @@ function get_file_name() {
 function handle_upload_spreadsheet(e, file) {
   $(".alert").remove();
   ifSpreadsheet = true;
-  if (workflow == 'Generic') {
+  if (workflow == 'generic_spreadsheet') {
     header = [["creator"],["creator-email"],["project"],
         ["data-type"],["run-date"],["taxonomy-id"],["strain-description"],
         ["base-media"],["isolate-type"],["sample-time"],["Link-to-reference-sequence"],["read-files"],
@@ -742,7 +756,7 @@ function handle_upload_spreadsheet(e, file) {
         ["read-type"],["read-length"],["experiment-details"],["Pre-culture-details"],["Cultivation-details"],["environment"],
         ["biological-replicates"],["technical-replicates"],["genome-reference-file"],["archive-link"]]
   }
-  else {
+  if (workflow = 'ale_spreadsheet') {
     header = [["creator"],["creator-email"],["project"],
         ["data-type"],["run-date"],["taxonomy-id"],["strain-description"],
         ["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],
@@ -783,10 +797,10 @@ function handle_upload_spreadsheet(e, file) {
   };
 
 
-  if (workflow == 'Generic') {
+  if (workflow == 'generic_spreadsheet') {
      var required_input = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["Link-to-reference-sequence"],["sample-time"]]
   }
-  else {
+  if (workflow == 'ale_spreadsheet') {
      var required_input = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],
         ["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["sample-time"]]
   }
@@ -1239,9 +1253,9 @@ function add_form_container(html, label, required, id, description, custom, mult
     required_str = ''
   if (none)
     custom_mult_str = ''
-  else if (custom && multiple && (workflow == 'Generic'))
+  else if (custom && multiple && (workflow == 'generic_single') && (workflow == 'generic_spreadsheet'))
     custom_mult_str = ' (Choose one or more, including custom values)'
-  else if (custom && (workflow == 'Generic'))
+  else if ((custom && (workflow == 'generic_single')) || (custom && (workflow == 'generic_spreadsheet')))
     custom_mult_str = ' (Choose or enter a new value)'
   else if (multiple)
     custom_mult_str = ' (Choose one or more)'
@@ -1378,7 +1392,7 @@ function create_input(data, parent_sel) {
       select_options['multiple'] = true
     }
     // custom options
-    if ((custom && (workflow == 'Generic')) || (custom && (id == 'supplement'))) {
+    if ((custom && (workflow == 'generic_single')) || (custom && (workflow == 'generic_spreadsheet')) || (custom && (id == 'supplement'))) {
       if (none) {
         select_options['tags'] = true
           select_options['createTag'] = function(query) {
@@ -1448,7 +1462,7 @@ function create_input(data, parent_sel) {
   } else {
     html = '<input id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
   }
-  if (workflow == 'Generic') {
+  if (workflow == 'generic_single' || workflow == 'generic_spreadsheet') {
       ALErequired = false
   }
   // create and run
