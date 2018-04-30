@@ -7,18 +7,18 @@ var taxonomy_id_strings;
 
 //Spreadsheet validation values
 var data_type_options = ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq']
-var base_media_options = ['M9', 'LB']
+var base_media_options = ['M9', 'LB', 'DM25']
 var isolate_options = ['clonal', 'population']
 var machine_options = ['MiSeq', 'NextSeq', 'HiSeq']
 var carbon_source_options = ['Acetate', 'Fructose', 'Glucose', 'Galactose', 'Glycerol', 'Xylose','Sucrose']
-var nitrogen_source_options = ['NH4Cl', 'Glutamine', 'Glutamate']
+var nitrogen_source_options = ['NH4Cl', '(NH4)2SO4', 'Glutamine', 'Glutamate']
 var phosphorous_source_options = ['KH2PO4']
 var sulfur_source_options = ['MgSO4']
 var electron_acceptor_options= ['O2', 'NO3', 'SO4']
 var antibiotic_options = ['Kanamycin', 'Spectinomycin', 'Streptomycin', 'Ampicillin', 'Carbenicillin', 'Bleomycin', 'Erythromycin', 'Polymyxin B', 'Tetracycline', 'Chloramphenicol']
 var lib_prep_options = ['Nextera XT', 'KAPA HyperPlus', 'KAPA Stranded RNA-seq']
 var lib_prep_manufacturer_options = ['Illumina', 'Kapa']
-var lib_prep_cycle_options = ['50 Cycles', '150 Cycle', '300 Cycle', '500 Cycle', '600 Cycle']
+var lib_prep_cycle_options = ['50 Cycle', '76 Cycle', '150 Cycle', '300 Cycle', '500 Cycle', '600 Cycle']
 var read_type_options = ['Single-end reads', 'Paired-end reads']
 var read_length_options = ['31', '36', '50', '62', '76', '100', '151', '301']
 
@@ -85,22 +85,22 @@ var data = [
     id: 'ALE-number',
     type: 'input',
     required: true,
-    form: 'ALE'},
+    form: 'ale_single'},
   { label: 'Flask number',
     id: 'Flask-number',
     type: 'input',
     required: true,
-    form: 'ALE'},
+    form: 'ale_single'},
   { label: 'Isolate number',
     id: 'Isolate-number',
     required: true,
     type: 'input',
-    form: 'ALE'},
+    form: 'ale_single'},
   { label: 'Technical replicate number',
     required: true,
     id: 'technical-replicate-number',
     type: 'input',
-    form: 'ALE'},
+    form: 'ale_single'},
    { label: 'Sample Time',
     id: 'sample-time',
     type: 'time-hours',
@@ -129,7 +129,7 @@ var data = [
     description: 'Temperature in Celcius',
     id: 'temperature',
     example: '37',
-    form: 'ALE'},
+    form: 'ale_single'},
   { label: 'Carbon Source(s)',
     id: 'carbon-source',
     type: 'dropdown',
@@ -162,8 +162,6 @@ var data = [
     id: 'electron-acceptor',
     type: 'dropdown',
     options: electron_acceptor_options,
-    concentration_with_default: 0,
-    multiple: true,
     custom: true },
   { label: 'Other supplement(s)',
     id: 'supplement',
@@ -214,12 +212,13 @@ var data = [
     type: 'textarea' },
   { label: 'Pre-culture details',
     id: 'Pre-culture-details',
+    description: 'Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc.',
     type: 'textarea' },
   { label: 'Cultivation details',
     id: 'Cultivation-details',
     type: 'textarea' },
   { label: 'Environment',
-    
+
     id: 'environment',
     form: 'Generic'},
   { label: 'Biological replicates',
@@ -228,7 +227,7 @@ var data = [
     default: 1,
     min: 1,
     max: 100,
-    form: 'Generic'},
+    form: 'generic_single'},
   { label: 'Technical replicates',
     id: 'technical-replicates',
     type: 'number',
@@ -239,10 +238,6 @@ var data = [
   { label: 'Genome reference file',
     id: 'genome-reference-file',
     type: 'input' },
-  { label: 'File Checksum',
-    id: 'File-Checksum',
-    description: 'm5sum per file',
-    type: 'input' },
   { label: 'Archive link',
     id: 'archive-link',
     description: 'Data on growth curve',
@@ -250,8 +245,11 @@ var data = [
 ]
 var data_as_object = {}
     data.forEach(function(d) { data_as_object[d.id] = d })
-var workflow = 'Generic'
+var multiplefiles = false;
+//var workflow = 'Generic'
 var files = [];
+var Dragfile = false
+var SIZEOFFILES = 0
 var new_files = []
 var original_file_content = []
 var ifSpreadsheet = false;
@@ -281,45 +279,88 @@ var read_length_options_strings = read_length_options.join()
 
 
 $(document).ready(function(){
+    //single metadata form
+    document.getElementById('single_metadata_sheet').style.display = 'none'
+    document.getElementById('single_file_instructions').style.display = 'none'
+    document.getElementById('folder-name-panel').style.display = 'none'
+    document.getElementById('Save_metadata').style.display = 'none'
 
-  // add the uploader
+    //metadata spreadsheet
+    document.getElementById('spreadsheet_instructions').style.display = 'none'
+    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'none'
+
+  //add the uploader
   create_uploaders()
 
-  create_form('Generic')
-
-  // submit
+  //submit
   $('#submit').click(function(){
     if (!check_required())
       return
     var data_array = get_data_array()
-    if (workflow == 'Generic') {
+    if (workflow == 'generic_single') {
       save_generic_metadata(data_array)
-    } else {
+    } 
+    if (workflow == 'ale_single') {
       save_ale_metadata(data_array)
     }
   })
 
   $('#download_example_spreadsheet').click(function(){
-     var output_file_name = "Metadata_spreadsheet",
+    if (workflow == 'generic_spreadsheet') {
+
+      var output_file_name = "Metadata_spreadsheet",
           example_output = [["Name"],[,"Email"],[,"Title of Project"],
-          [,'"Data type, Input one of the folowing:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the folowing: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" ],
+          [,'"Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
           [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
-          [,'"Base media, Input one of the folowing: "' + "[" + base_media_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,'"Isolate type, Input one of the folowing: "' + "[" + isolate_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
+          [,'"Base media, Input one of the following: "' + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Isolate type, Input one of the following: "' + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"Sample time is the hours from the start of experiment"],[,"Link to internal / external accession number; link to sequence file + annotation"],[,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
+          [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
+          [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the following: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
+          [,'"Nitrogen Source, Input one of the following: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
+          [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the following: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
+          [,'"Input one of the following Antibiotic(s) added: "' + "[" + antibiotic_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"],
+          [,'"Machine, Input one of the following: "' + "[" + machine_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Library Prep Kit Manufacturer, Input one of the following: "' + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Library Prep Kit, Input one of the following: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
+          [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
+          [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],[,"Data on growth curve"],
+          [,"\n" + "creator"],[,"creator-email"],[,"project"],
+          [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
+          [,"base-media"],[,"isolate-type"],[,"sample-time"],[,"Link-to-reference-sequence"],[,"read-files"],
+          [,"serial-number"],[,"growth-stage"],[,"antibody"],[,"temperature"],
+          [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
+          [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
+          [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
+          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
+          [,"biological-replicates"],[,"technical-replicates"],[,"genome-reference-file"],[,"archive-link"]],
+          file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
+          saveAs(file, output_file_name + '.csv')
+    }
+
+    if  (workflow == 'ale_spreadsheet') {
+
+        var output_file_name = "Metadata_spreadsheet",
+          example_output = [["Name"],[,"Email"],[,"Title of Project"],
+          [,'"Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
+          [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
+          [,'"Base media, Input one of the following: "' + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Isolate type, Input one of the following: "' + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
           [,"Sample time is the hours from the start of experiment"],[,"Link to internal / external accession number; link to sequence file + annotation"],[,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
           [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
-          [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
-          [,'"Nitrogen Source, Input one of the folowing: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
-          [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the folowing: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: O2(6)"],
+          [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the following: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
+          [,'"Nitrogen Source, Input one of the following: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
+          [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the following: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: O2(6)"],
           [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
-          [,'"Input one of the following Antibiotic(s) added: "' + "[" + antibiotic_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"],
-          [,'"Machine, Input one of the folowing: "' + "[" + machine_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,'"Library Prep Kit Manufacturer, Input one of the folowing: "' + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,'"Library Prep Kit, Input one of the folowing: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,'"Library Prep Kit Cycles, Input one of the folowing: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,'"Read Type, Input one of the folowing: "' + "[" + read_type_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,'"Read Length, Input one of the folowing: "' + "[" + read_length_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: (medium, cultivation volume, cultivation time, inoculated with spores / mycelium from plate / mycelium from liquid culture, inoculation volume)"'],
-          [,'"Data on cultivation: (volume, fermenter/shake flask, baffel?, Springs,  growth curves,‰Û_)"'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
-          [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],[,"m5sum per file"],[,"Data on growth curve"],
+          [,'"Input one of the following Antibiotic(s) added: "' + "[" + antibiotic_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"],
+          [,'"Machine, Input one of the following: "' + "[" + machine_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Library Prep Kit Manufacturer, Input one of the following: "' + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Library Prep Kit, Input one of the following: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
+          [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Input Reference Genome file name"],[,"Data on growth curve"],
           [,"\n" + "creator"],[,"creator-email"],[,"project"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
@@ -328,15 +369,17 @@ $(document).ready(function(){
           [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
           [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
           [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
-          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
-          [,"biological-replicates"],[,"technical-replicates"],[,"genome-reference-file"],[,"File-Checksum"],[,"archive-link"]],
+          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],[,"genome-reference-file"],[,"archive-link"]],
           file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
-          saveAs(file, output_file_name + '.csv')
-    })
+          saveAs(file, output_file_name + '.csv') 
+
+    }
+  }) 
 })
 
-
 function create_form(form_type) {
+  
+  document.getElementById('intropage').style.display = 'none'
   files = [];
   new_files = []
   original_file_content = []
@@ -352,15 +395,17 @@ function create_form(form_type) {
   }
 
   // Hide/show the Optional: Ale Specific Drag and drop CSV box
-  if(form_type == 'Generic') {
-    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
-    document.getElementById('generic_instructions').style.display = 'block'
+  if ( (form_type == 'generic_single') || (form_type == 'ale_single') ){
+    document.getElementById('single_metadata_sheet').style.display = 'block'
+    document.getElementById('single_file_instructions').style.display = 'block'
     document.getElementById('folder-name-panel').style.display = 'block'
-  } else {
-    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
-    document.getElementById('generic_instructions').style.display = 'block'
-    document.getElementById('folder-name-panel').style.display = 'none'
+    document.getElementById('Save_metadata').style.display = 'block'
   }
+  if ( (form_type == 'generic_spreadsheet') || (form_type == 'ale_spreadsheet') ) {
+    document.getElementById('spreadsheet_instructions').style.display = 'block'
+    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
+  }
+ 
 
   // add the form
   for(var i = 0; i < data.length; i++) {
@@ -371,6 +416,8 @@ function create_form(form_type) {
   }
 }
 
+
+
 function get_data_array() {
 
   var data_array = []
@@ -378,6 +425,7 @@ function get_data_array() {
     var val = get_value(data[i]['id'])
     data_array.push([data[i]['id'], val])
   }
+
   return data_array
 
 }
@@ -402,13 +450,19 @@ function create_uploaders() {
       load: handle_upload_spreadsheet
     }
   });
+
   $('#file-upload').fileReaderJS({
     dragClass: 'drag',
     readAsDefault: 'Text',
     on: {
+      groupstart: getsizeoffiles,
       load: handle_upload
     }
   });
+}
+function getsizeoffiles(e,file) {
+  Dragfile = true
+  SIZEOFFILES = e.files.length
 }
 
 function handle_upload(e, file) {
@@ -425,6 +479,11 @@ function handle_upload(e, file) {
   };
 
   files.push(arrays); // data from meta data sheet
+
+  if (files.length > 1) {
+    multiplefiles = true
+  }
+
   for(var i=0; i<files.length; i++) {
      populate_metaform(files[i]);
      original_file_content = files[i]; // ORIGINAL FILE CONTENT
@@ -433,10 +492,12 @@ function handle_upload(e, file) {
 }
 
 function format_metadata() {
-  if (workflow == 'Generic') {
+  if (workflow == 'generic_single') {
     var array_data = []
     for(var i = 0; i < data.length; i++){
       var val = get_value(data[i]['id'])
+      val = val.toString()
+
       array_data.push([data[i]['id'], val])
     }
     correct_format_files_Generic.push(array_data)
@@ -445,16 +506,125 @@ function format_metadata() {
     var array_data = []
     for(var i = 0; i < data.length; i++){
       var val = get_value(data[i]['id'])
+      val = val.toString()
+
       array_data.push([data[i]['id'], val])
     }
     correct_format_files_ALE.push(array_data)
+  }
+
+  if (multiplefiles == true) {
+    if (workflow == 'generic_spreadsheet') {
+
+      var Spreadsheet_data = [];
+      var filearray = [];
+      var output_file_name = "Metadata_spreadsheet",
+          example_output = [["Name"],[,"Email"],[,"Title of Project"],
+          [,'"Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
+          [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
+          [,'"Base media, Input one of the following: "' + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Isolate type, Input one of the following: "' + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
+          [,"Sample time is the hours from the start of experiment"],[,"Link to internal / external accession number; link to sequence file + annotation"],[,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
+          [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
+          [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the following: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
+          [,'"Nitrogen Source, Input one of the following: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
+          [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the following: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: O2(6)"],
+          [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
+          [,'"Input one of the following Antibiotic(s) added: "' + "[" + antibiotic_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"],
+          [,'"Machine, Input one of the following: "' + "[" + machine_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Library Prep Kit Manufacturer, Input one of the following: "' + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Library Prep Kit, Input one of the following: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
+          [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
+          [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],[,"Data on growth curve"],
+          [,"\n" + "creator"],[,"creator-email"],[,"project"],
+          [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
+          [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
+          [,"Isolate-number"],[,"technical-replicate-number"],[,"sample-time"],[,"Link-to-reference-sequence"],[,"read-files"],
+          [,"serial-number"],[,"growth-stage"],[,"antibody"],[,"temperature"],
+          [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
+          [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
+          [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
+          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
+          [,"biological-replicates"],[,"technical-replicates"],[,"genome-reference-file"],[,"archive-link"]],
+
+        Spreadsheet_data = example_output;
+        for (var i = 0; i < correct_format_files_Generic.length; i++) {
+          for (var j = 0; j < correct_format_files_Generic[i].length; j++) {
+            filearray[j] = JSON.stringify(correct_format_files_Generic[i][j][1])
+
+          }
+          Spreadsheet_data.push("\n")
+          Spreadsheet_data.push(filearray)
+          filearray = []
+        };
+
+        if (files.length == SIZEOFFILES) {
+          var file = new Blob(Spreadsheet_data, { type: 'text/plain;charset=utf-8' })
+          saveAs(file, output_file_name + '.csv')
+        }
+    }
+    if (workflow == 'ale_spreadsheet') {
+
+      var Spreadsheet_data = [];
+      var filearray = [];
+      var output_file_name = "Metadata_spreadsheet",
+          example_output = [["Name"],[,"Email"],[,"Title of Project"],
+          [,'"Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
+          [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
+          [,'"Base media, Input one of the following: "' + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Isolate type, Input one of the following: "' + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
+          [,"Sample time is the hours from the start of experiment"],[,"Link to internal / external accession number; link to sequence file + annotation"],[,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
+          [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
+          [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the following: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
+          [,'"Nitrogen Source, Input one of the following: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
+          [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the following: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: O2(6)"],
+          [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
+          [,'"Input one of the following Antibiotic(s) added: "' + "[" + antibiotic_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"],
+          [,'"Machine, Input one of the following: "' + "[" + machine_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Library Prep Kit Manufacturer, Input one of the following: "' + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Library Prep Kit, Input one of the following: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
+          [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Input Reference Genome file name"],[,"Data on growth curve"],
+          [,"\n" + "creator"],[,"creator-email"],[,"project"],
+          [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
+          [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
+          [,"Isolate-number"],[,"technical-replicate-number"],[,"sample-time"],[,"Link-to-reference-sequence"],[,"read-files"],
+          [,"serial-number"],[,"growth-stage"],[,"antibody"],[,"temperature"],
+          [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
+          [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
+          [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
+          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
+          [,"genome-reference-file"],[,"archive-link"]],
+
+        Spreadsheet_data = example_output;
+        for (var i = 0; i < correct_format_files_ALE.length; i++) {
+          for (var j = 0; j < correct_format_files_ALE[i].length; j++) {
+            filearray[j] = JSON.stringify(correct_format_files_ALE[i][j][1])
+          }
+          Spreadsheet_data.push("\n")
+          Spreadsheet_data.push(filearray)
+          filearray = []
+        };
+
+        if (files.length == SIZEOFFILES) {
+          var file = new Blob(Spreadsheet_data, { type: 'text/plain;charset=utf-8' })
+          saveAs(file, output_file_name + '.csv')
+        }
+
+    }
   }
 }
 
 function populate_metaform(file_data) {
   for (var i = 0; i < file_data.length; i++)
     set_value(file_data[i][0], file_data[i][1] + '')
-  check_required()
+
+  if (multiplefiles != true) {
+    check_required()
+  }
 }
 
 
@@ -524,7 +694,7 @@ function get_file_name_spreadsheet() {
   rundate = rundate.replace(' ', '').replace(/\//g, '-')
 
   if (serial_num != '') {
-    if (workflow == 'Generic') {
+    if ((workflow == 'generic_single') || (workflow == 'generic_spreadsheet')) {
      return (serial_num + '_' + project + '_' + rundate + '_' + datatype)
 
     }
@@ -535,7 +705,7 @@ function get_file_name_spreadsheet() {
   }
 
   else {
-    if (workflow == 'Generic') {
+    if ((workflow == 'generic_single') || (workflow == 'generic_spreadsheet')) {
      return (project + '_' + rundate + '_' + datatype)
 
     }
@@ -548,7 +718,7 @@ function get_file_name_spreadsheet() {
 
 function get_file_name() {
   var label = folder_name();
-  if (workflow == 'Generic') {
+  if ((workflow == 'generic_single') || (workflow == 'generic_spreadsheet')) {
      var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
     if (lib_prep != '')
       lib_prep = '_' + lib_prep
@@ -575,7 +745,19 @@ function get_file_name() {
 function handle_upload_spreadsheet(e, file) {
   $(".alert").remove();
   ifSpreadsheet = true;
-  header = [["creator"],["creator-email"],["project"],
+  if (workflow == 'generic_spreadsheet') {
+    header = [["creator"],["creator-email"],["project"],
+        ["data-type"],["run-date"],["taxonomy-id"],["strain-description"],
+        ["base-media"],["isolate-type"],["sample-time"],["Link-to-reference-sequence"],["read-files"],
+        ["serial-number"],["growth-stage"],["antibody"],["temperature"],
+        ["carbon-source"],["nitrogen-source"],["phosphorous-source"],["sulfur-source"],
+        ["electron-acceptor"],["supplement"],["antibiotic"],["machine"],
+        ["library-prep-kit-manufacturer"],["library-prep-kit"],["library-prep-kit-cycles"],
+        ["read-type"],["read-length"],["experiment-details"],["Pre-culture-details"],["Cultivation-details"],["environment"],
+        ["biological-replicates"],["technical-replicates"],["genome-reference-file"],["archive-link"]]
+  }
+  if (workflow = 'ale_spreadsheet') {
+    header = [["creator"],["creator-email"],["project"],
         ["data-type"],["run-date"],["taxonomy-id"],["strain-description"],
         ["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],
         ["technical-replicate-number"],["sample-time"],["Link-to-reference-sequence"],["read-files"],
@@ -584,7 +766,8 @@ function handle_upload_spreadsheet(e, file) {
         ["electron-acceptor"],["supplement"],["antibiotic"],["machine"],
         ["library-prep-kit-manufacturer"],["library-prep-kit"],["library-prep-kit-cycles"],
         ["read-type"],["read-length"],["experiment-details"],["Pre-culture-details"],["Cultivation-details"],["environment"],
-        ["biological-replicates"],["technical-replicates"],["genome-reference-file"],["File-Checksum"],["archive-link"]]
+        ["genome-reference-file"],["archive-link"]]
+  }
 
 
   var zip = new JSZip()
@@ -594,6 +777,7 @@ function handle_upload_spreadsheet(e, file) {
   var output_sample_name_array = []
   var alert = false;
   found = false;
+
 
   for (var j = 0; j < header.length; j++) {
       for (var k = 0; k < variable_file_name_array[1].length; k++) {
@@ -607,20 +791,18 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
       if (found == false) {
-        addAlert(header[j] + " is a required feild");
+        addAlert(header[j] + " is a required field");
         alert = true;
       }
   };
-  
 
 
-
-  if (workflow == 'Generic') {
-     var required_input = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["sample-time"],["Link-to-reference-sequence"]]
+  if (workflow == 'generic_spreadsheet') {
+     var required_input = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["Link-to-reference-sequence"],["sample-time"]]
   }
-  else {
+  if (workflow == 'ale_spreadsheet') {
      var required_input = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],
-        ["Flask-number"],["Isolate-number"],["technical-replicate-number"],["sample-time"],["Link-to-reference-sequence"]]
+        ["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["sample-time"]]
   }
   if (variable_file_name_array.length == 2) {
     addAlert("Spreadsheet requires input")
@@ -641,7 +823,7 @@ function handle_upload_spreadsheet(e, file) {
     for (var i = 0; i < variable_file_name_array[1].length; i++) {
       if(variable_file_name_array[1][i] == "data-type") {
          if (!dropdown_validation(data_type_options ,variable_file_name_array[name_idx][i])) {
-            addAlert("Data type Feild ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
+            addAlert("Data type Field ERROR [Line " + (name_idx+1) + "], Please input one of the following: DNA-seq, RNA-seq, ChIP-seq, ChIP-exo, or Ribo-seq")
             alert = true;
          }
       }
@@ -657,59 +839,58 @@ function handle_upload_spreadsheet(e, file) {
       if(variable_file_name_array[1][i] == "taxonomy-id") {
 
           if (!dropdown_validation(taxonomy_id_list,variable_file_name_array[name_idx][i])) {
-            addAlert("NCBI Taxonomy ID ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: 243274, 511145, 511693, 668369, or 679895")
+            addAlert("NCBI Taxonomy ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: 243274, 511145, 511693, 668369, or 679895")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "base-media") {
           if (!dropdown_validation(base_media_options,variable_file_name_array[name_idx][i])) {
-            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: M9, or LB")
+            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the following: M9, LB, DM25")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "isolate-type") {
           if (!dropdown_validation(isolate_options,variable_file_name_array[name_idx][i])) {
-            addAlert("Isolate type ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: clonal, or population")
+            addAlert("Isolate type ERROR [Line " + (name_idx+1) + "], Please input one of the following: clonal, or population")
             alert = true;
           }
       }
      if(variable_file_name_array[1][i] == "machine") {
-          if (!dropdown_validation(machine_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {           
-            addAlert("Machine ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: MiSeq, NextSeq, or HiSeq")
+          if (!dropdown_validation(machine_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("Machine ERROR [Line " + (name_idx+1) + "], Please input one of the following: MiSeq, NextSeq, or HiSeq")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "library-prep-kit-manufacturer") {
-          if (!dropdown_validation(lib_prep_manufacturer_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {           
-            addAlert("Library Prep Kit Manufacturer ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Illumina, or Kapa")
+          if (!dropdown_validation(lib_prep_manufacturer_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("Library Prep Kit Manufacturer ERROR [Line " + (name_idx+1) + "], Please input one of the following: Illumina, or Kapa")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "library-prep-kit") {
-          if (!dropdown_validation(lib_prep_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {           
-            addAlert("Library Prep Kit ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq")
+          if (!dropdown_validation(lib_prep_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("Library Prep Kit ERROR [Line " + (name_idx+1) + "], Please input one of the following: Nextera XT, KAPA HyperPlus, or KAPA Stranded RNA-seq")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "library-prep-kit-cycles") {
-          if (!dropdown_validation(lib_prep_cycle_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {           
-            addAlert("Library Prep Kit Cycles ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: 50 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle")
+          if (!dropdown_validation(lib_prep_cycle_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("Library Prep Kit Cycles ERROR [Line " + (name_idx+1) + "], Please input one of the following: 50 Cycle, 76 Cycle, 150 Cycle, 300 Cycle, 500 Cycle, or 600 Cycle")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "read-type") {
-          if (!dropdown_validation(read_type_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {           
-            addAlert("Read Type ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Single-end reads, or Paired-end reads")
+          if (!dropdown_validation(read_type_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("Read Type ERROR [Line " + (name_idx+1) + "], Please input one of the following: Single-end reads, or Paired-end reads")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "read-length") {
-          if (!dropdown_validation(read_length_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {                 
-            addAlert("Read Length ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: 31, 36, 50, 62, 76, 100, 151, or 301")
+          if (!dropdown_validation(read_length_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("Read Length ERROR [Line " + (name_idx+1) + "], Please input one of the following: 31, 36, 50, 62, 76, 100, 151, or 301")
             alert = true;
           }
       }
-
       if((variable_file_name_array[1][i] == "ALE-number") || (variable_file_name_array[1][i] == "Flask-number")
         || (variable_file_name_array[1][i] == "technical-replicate-number") || (variable_file_name_array[1][i] == "Isolate-number")) {
         if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
@@ -717,8 +898,14 @@ function handle_upload_spreadsheet(e, file) {
             alert = true;
           }
       }
+      if(variable_file_name_array[1][i] == "sample-time") {
+         if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert numerical value for Sample time (hours from start of experiment) e.g. 4")
+            alert = true;
+         }
+      }
       if(variable_file_name_array[1][i] == "temperature") {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
+        if (!(/^[+-]?(?:\d*\.)?\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Temperature in Celcius. e.g. 37")
             alert = true;
           }
@@ -736,22 +923,21 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
       if(variable_file_name_array[1][i] == "read-files") {
-        if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {           
+        if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq")
             alert = true;
           }
       }
-
       if(variable_file_name_array[1][i] == "carbon-source") {
           if (!source_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
-            alert = true;
+             addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: Acetate, Fructose, Glucose, Galactose, Glycerol, or Xylose followed by the concentration in (g/L) EXAMPLE: Glucose(1)")
+             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "nitrogen-source") {
-          if (!source_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
-            alert = true;
+         if (!source_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+             addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: (NH4)2SO4, NH4Cl, Glutamine, or Glutamate followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
+             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "phosphorous-source") {
@@ -767,8 +953,8 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
       if(variable_file_name_array[1][i] == "electron-acceptor") {
-          if (!source_validation(electron_acceptor_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Electron Acceptor ERROR [Line " + (name_idx+1) + "], Please input one of the folowing: O2, NO3, or SO4 followed by the concentration in (g/L) EXAMPLE: O2(6)")
+          if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("Electron Acceptor ERROR [Line " + (name_idx+1) + "], Please input one of the following: O2, NO3, or SO4")
             alert = true;
           }
       }
@@ -786,12 +972,10 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
 
-
-
       for (var x = 0; x < required_input.length; x++) {
         if (variable_file_name_array[1][i] == required_input[x]) {
            if (variable_file_name_array[name_idx][i] == "") {
-             addAlert("[Line " + (name_idx+1) + "], " + required_input[x] + " feild requires input")
+             addAlert("[Line " + (name_idx+1) + "], " + required_input[x] + " field requires input")
              alert = true;
            }
         }
@@ -825,10 +1009,15 @@ function addAlert(message) {
         '</div>');
 }
 
+function regExpEscape(literal_string) {
+    return literal_string.replace(/[^A-Za-z0-9_]/g, '\\$&');
+}
+
 function source_validation(list, index) {
   alert_call = false;
   for (var i = 0; i < list.length; i++) {
-    regex_sources = '(?:^|\\b)(' + list[i] + ')(?=\\b|$)\\(\\d*\\.?\\d*\\)$'
+   
+    regex_sources = '(?:^|\\\b)(' + regExpEscape(list[i]) + ')(?=\\\b|)\\(-?[0-9]\\d*(\\.\\d+)?\\)$'
     newregex = new RegExp(regex_sources, 'i')
     if(newregex.test(index) == true) {
         alert_call = true;
@@ -839,9 +1028,18 @@ function source_validation(list, index) {
 
 function dropdown_validation(list, index) {
   error_call = false;
+  changed = false;
   for (var i = 0; i < list.length; i++) {
+
+    if (list[i].indexOf(')') != -1) {
+      list[i] = list[i].replace(/["'()]/g, "}")
+      changed = true
+    }
     regex_sources = '(?:^|\\b)(' + list[i] + ')(?=\\b|$)'
     newregex = new RegExp(regex_sources, 'i')
+    if (changed == true) {
+      index = index.replace(/["'()]/g, "}")
+    }
     if(newregex.test(index) == true) {
         error_call = true;
     }
@@ -884,56 +1082,6 @@ function save_ale_metadata(array) {
 
     saveAs(file, file_name + '.csv');
   }
-
-   if (files.length > 1) {
-
-    var Spreadsheet_data = [];
-    var filearray = [];
-    var output_file_name = "Metadata_spreadsheet",
-          example_output = [["Name"],[,"Email"],[,"Title of Project"],
-          [,'"Data type, Input one of the folowing:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the folowing: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" ],
-          [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
-          [,'"Base media, Input one of the folowing: "' + "[" + base_media_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,'"Isolate type, Input one of the folowing: "' + "[" + isolate_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
-          [,"Sample time is the hours from the start of experiment"],[,"Link to internal / external accession number; link to sequence file + annotation"],[,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
-          [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
-          [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
-          [,'"Nitrogen Source, Input one of the folowing: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
-          [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the folowing: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: O2(6)"],
-          [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
-          [,'"Input one of the following Antibiotic(s) added: "' + "[" + antibiotic_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"],
-          [,'"Machine, Input one of the folowing: "' + "[" + machine_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,'"Library Prep Kit Manufacturer, Input one of the folowing: "' + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,'"Library Prep Kit, Input one of the folowing: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,'"Library Prep Kit Cycles, Input one of the folowing: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,'"Read Type, Input one of the folowing: "' + "[" + read_type_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,'"Read Length, Input one of the folowing: "' + "[" + read_length_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: (medium, cultivation volume, cultivation time, inoculated with spores / mycelium from plate / mycelium from liquid culture, inoculation volume)"'],
-          [,'"Data on cultivation: (volume, fermenter/shake flask, baffel?, Springs,  growth curves,‰Û_)"'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
-          [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],[,"m5sum per file"],[,"Data on growth curve"],
-          [,"\n" + "creator"],[,"creator-email"],[,"project"],
-          [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
-          [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
-          [,"Isolate-number"],[,"technical-replicate-number"],[,"sample-time"],[,"Link-to-reference-sequence"],[,"read-files"],
-          [,"serial-number"],[,"growth-stage"],[,"antibody"],[,"temperature"],
-          [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
-          [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
-          [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
-          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
-          [,"biological-replicates"],[,"technical-replicates"],[,"genome-reference-file"],[,"File-Checksum"],[,"archive-link"]],
-
-      Spreadsheet_data = example_output;
-      for (var i = 0; i < correct_format_files_ALE.length; i++) {
-        for (var j = 0; j < correct_format_files_ALE[i].length; j++) {
-          filearray[j] = JSON.stringify(correct_format_files_ALE[i][j][1])
-        }
-        Spreadsheet_data.push("\n")
-        Spreadsheet_data.push(filearray)
-        filearray = []
-      };
-
-      var file = new Blob(Spreadsheet_data, { type: 'text/plain;charset=utf-8' })
-      saveAs(file, output_file_name + '.csv')
-
-  }
 }
 
 function save_generic_metadata(array) {
@@ -944,64 +1092,19 @@ function save_generic_metadata(array) {
      var file = new Blob(csv, {type: 'text/plain;charset=utf-8'});
       saveAs(file, label + '.csv');
   }
-  if (files.length > 1) {
-    var Spreadsheet_data = [];
-    var filearray = [];
-    var output_file_name = "Metadata_spreadsheet",
-          example_output = [["Name"],[,"Email"],[,"Title of Project"],
-          [,'"Data type, Input one of the folowing:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the folowing: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" ],
-          [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
-          [,'"Base media, Input one of the folowing: "' + "[" + base_media_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,'"Isolate type, Input one of the folowing: "' + "[" + isolate_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
-          [,"Sample time is the hours from the start of experiment"],[,"Link to internal / external accession number; link to sequence file + annotation"],[,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],
-          [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
-          [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the folowing: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
-          [,'"Nitrogen Source, Input one of the folowing: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
-          [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the folowing: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: O2(6)"],
-          [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
-          [,'"Input one of the following Antibiotic(s) added: "' + "[" + antibiotic_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]" + " followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"],
-          [,'"Machine, Input one of the folowing: "' + "[" + machine_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,'"Library Prep Kit Manufacturer, Input one of the folowing: "' + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,'"Library Prep Kit, Input one of the folowing: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,'"Library Prep Kit Cycles, Input one of the folowing: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,'"Read Type, Input one of the folowing: "' + "[" + read_type_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],
-          [,'"Read Length, Input one of the folowing: "' + "[" + read_length_options_strings.replace(/[^\w\s\-]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: (medium, cultivation volume, cultivation time, inoculated with spores / mycelium from plate / mycelium from liquid culture, inoculation volume)"'],
-          [,'"Data on cultivation: (volume, fermenter/shake flask, baffel?, Springs,  growth curves,‰Û_)"'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
-          [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],[,"m5sum per file"],[,"Data on growth curve"],
-          [,"\n" + "creator"],[,"creator-email"],[,"project"],
-          [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
-          [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
-          [,"Isolate-number"],[,"technical-replicate-number"],[,"sample-time"],[,"Link-to-reference-sequence"],[,"read-files"],
-          [,"serial-number"],[,"growth-stage"],[,"antibody"],[,"temperature"],
-          [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
-          [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
-          [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
-          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
-          [,"biological-replicates"],[,"technical-replicates"],[,"genome-reference-file"],[,"File-Checksum"],[,"archive-link"]],
-
-      Spreadsheet_data = example_output;
-      for (var i = 0; i < correct_format_files_Generic.length; i++) {
-        for (var j = 0; j < correct_format_files_Generic[i].length; j++) {
-          filearray[j] = JSON.stringify(correct_format_files_Generic[i][j][1])
-
-        }
-        Spreadsheet_data.push("\n")
-        Spreadsheet_data.push(filearray)
-        filearray = []
-      };
-
-      var file = new Blob(Spreadsheet_data, { type: 'text/plain;charset=utf-8' })
-      saveAs(file, output_file_name + '.csv')
-  }
 }
 
 function get_value_spreadsheet(spreadsheet_id, spreadsheet_val) {
 
   var data_array = []
   for(var i = 0; i < spreadsheet_id.length; i++){
-    data_array.push([spreadsheet_id[i], spreadsheet_val[i]])
-    spreadsheet_dict[spreadsheet_id[i]] = spreadsheet_val[i]
+    if (spreadsheet_id[i] == spreadsheet_id[i]) {
+      data_array.push([spreadsheet_id[i], spreadsheet_val[i]])
+      spreadsheet_dict[spreadsheet_id[i]] = spreadsheet_val[i]
+    }
   }
   return data_array
+
 }
 
 var saved_ALE_number;
@@ -1014,14 +1117,16 @@ function get_value(id, input_only) {
   if (_.isUndefined(input_only))
     input_only = false
 
-  // try to get concentrations
+  // Get concentrations
   var concentrations = {}
   $('#' + id).parent().find('.concentration-input>input').each(function() {
     var el = $(this),
         val = $(this).val()
     if (val) concentrations[el.attr('id')] = val
   })
-  // get the value
+
+
+  // get the value ale
   if (saved_ == true) {
     if (id == 'ALE-number' ) {
       var vals = saved_ALE_number;
@@ -1042,7 +1147,7 @@ function get_value(id, input_only) {
   else {
       var vals = $('#' + id).val()
   }
-  
+
   if ((typeof vals === 'undefined') || (vals === null))
     return ''
 
@@ -1052,7 +1157,7 @@ function get_value(id, input_only) {
     // add concentrations to val
   if (_.isArray(vals)) {
     return vals.map(function(val) {
-      if (val in concentrations)
+      if (val in concentrations && Dragfile == false)
         return val + '(' + concentrations[val] + ')'
       else
         return val
@@ -1134,7 +1239,9 @@ function update_required_label(id, value) {
       .addClass('alert-success')
       .removeClass('alert-danger')
   }
-  check_required()
+  if (multiplefiles != true) {
+    check_required()
+  }
 }
 
 
@@ -1146,9 +1253,9 @@ function add_form_container(html, label, required, id, description, custom, mult
     required_str = ''
   if (none)
     custom_mult_str = ''
-  else if (custom && multiple && (workflow == 'Generic'))
+  else if (custom && multiple && (workflow == 'generic_single') && (workflow == 'generic_spreadsheet'))
     custom_mult_str = ' (Choose one or more, including custom values)'
-  else if (custom && (workflow == 'Generic'))
+  else if ((custom && (workflow == 'generic_single')) || (custom && (workflow == 'generic_spreadsheet')))
     custom_mult_str = ' (Choose or enter a new value)'
   else if (multiple)
     custom_mult_str = ' (Choose one or more)'
@@ -1240,7 +1347,7 @@ function draw_concentrations(id, def, value_dict) {
   sel.exit().remove()
 }
 
-function create_input(data, parent_sel, autofocus) {
+function create_input(data, parent_sel) {
   var label = data['label'],
       id = data['id'],
       required = data['required'],
@@ -1257,7 +1364,6 @@ function create_input(data, parent_sel, autofocus) {
       concentrations = data['concentrations'],
       min = data['min'],
       html = '',
-      autofocus_str = autofocus ? ' autofocus' : '',
       none = data['none'],
       after_append
 
@@ -1286,7 +1392,7 @@ function create_input(data, parent_sel, autofocus) {
       select_options['multiple'] = true
     }
     // custom options
-    if ((custom && (workflow == 'Generic')) || (custom && (id == 'supplement'))) {
+    if ((custom && (workflow == 'generic_single')) || (custom && (workflow == 'generic_spreadsheet')) || (custom && (id == 'supplement'))) {
       if (none) {
         select_options['tags'] = true
           select_options['createTag'] = function(query) {
@@ -1312,7 +1418,9 @@ function create_input(data, parent_sel, autofocus) {
 
     }
 
-    html = '<select id="' + id + '" style="width: 100%" ' + autofocus_str + '></select>'
+
+
+    html = '<select id="' + id + '" style="width: 100%" ' + '></select>'
 
     after_append = function() {
       // prefer options to options_function
@@ -1339,22 +1447,22 @@ function create_input(data, parent_sel, autofocus) {
   }
   else if (type === 'date') {
     html = '<input type="text" class="form-control" id="' + id + '" value="' + def + '"' +
-      ' placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >',
+      ' placeholder="' + example + '" ' + ' style="width: 100%" >',
     after_append = function() {
       $('#' + id).datepicker({ format: 'yyyy-mm-dd' })
     }
   } else if (type === 'textarea') {
-    html = '<textarea id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" ></textarea>'
+    html = '<textarea id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" ></textarea>'
   } else if (type === 'number' ){
     html = '<input id="' + id + '" type="number" class="form-control" min="' + min + '"' +
-      ' value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >'
+      ' value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
     after_append = function() {
       $('#' + id).bootstrapNumber()
     }
   } else {
-    html = '<input id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + autofocus_str + ' style="width: 100%" >'
+    html = '<input id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
   }
-  if (workflow == 'Generic') {
+  if (workflow == 'generic_single' || workflow == 'generic_spreadsheet') {
       ALErequired = false
   }
   // create and run
