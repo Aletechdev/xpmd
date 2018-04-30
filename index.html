@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111512162-1"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-111512162-1');
+    </script>
     <title>Experiment Metadata</title>
 
     <!-- JS -->
@@ -38,7 +48,6 @@
    <script>
     $(document).ready(function(){
       $('html, body').scrollTop(0);
-
       $(window).on('load', function() {
         setTimeout(function(){
           $('html, body').scrollTop(0);
@@ -62,7 +71,7 @@
       <div id="intropage">
         <div id="alert"></div>
 
-        <label class="labels" for="dropdown_forms">Step 1. Choose a form type</label>
+        <label class="labels" for="dropdown_forms">Step 1. Choose a Form Type</label>
         <input type="text" id="dropdown_formtype" list="formtype" placeholder="e.g. Generic, ALE">
 
         <datalist id="formtype">
@@ -70,16 +79,16 @@
             <option id="ale" value="ALE">
         </datalist>
 
-        <label class="labels" for="dropdown_forms">Step 2. Choose single or multiple</label>
-        <input type="text" id="dropdown_formnumber" list="formnumber" placeholder="e.g. single, mutiple">
+        <label class="labels" for="dropdown_forms">Step 2. Choose Single Form or Multiple Spreadsheet </label>
+        <input type="text" id="dropdown_formnumber" list="formnumber" placeholder="e.g. Single, Multiple">
 
         <datalist id="formnumber">
-          <option id="single" value="single files">
-            <option id="spreadsheet" value="create multiple files from spreadsheet">
+          <option id="single" value="Create Single Metadata File">
+            <option id="spreadsheet" value="Create Multiple Metadata Files: Spreadsheet">
         </datalist>
         
         <div>
-            <input type="button" id="forms" onclick="initializeTheSelectedValues()" value="submit">
+            <input type="button" id="forms" onclick="initializeTheSelectedValues()" value="Next">
         </div>
 
 
@@ -87,21 +96,17 @@
         var initializeTheSelectedValues = function() {
           alert = false
           if ($('#formnumber option[value="' + $('#dropdown_formnumber').val() + '"]').attr('id') == undefined) {
-            addAlert('please select  number of files before sumbit')
+            addAlert('Please select single or multiple files before continuing')
             alert = true
           }
           if ($('#formtype option[value="' + $('#dropdown_formtype').val() + '"]').attr('id') == undefined) {
-            addAlert('please select  type of form before sumbit')
+            addAlert('Please select form type before continuing')
             alert = true
           }
-
           var forminput =($('#formtype option[value="' + $('#dropdown_formtype').val() + '"]').attr('id') +"_"+ $('#formnumber option[value="' + $('#dropdown_formnumber').val() + '"]').attr('id'))
-
           if (alert == false) {
             create_form(forminput)
-            console.log(forminput)
           }
-
         }
         </script>
       </div>
@@ -110,156 +115,32 @@
 
     <div class="container">
         <div id="single_file_instructions">
-          <li>SINGLE FILE INSTRUCTIONS</li>
         <p>
-          <i>Using this tool at SBRG:</i>
-        <ol>
-          <li>
-            <strong>Create a new folder</strong> on Nucleoid with the form
-            <code>data/raw_data/{User}/{Project Name}/{Folder Name}/</code>.
-          </li>
+          <strong><i>Use the form below to create a single metadata file:</i></strong>
           <ul>
-            <li>
-              Each data type collected on a given day is put into a unique folder.
-            </li>
-            <li>
-              The Project Name should be short, unique, and descriptive.
-            </li>
-            <li>
-              The Folder Name format is as follows <code>{YYYY}-{MM}-{DD}_{data type}</code>.
-            </li>
-            <li>
-              The Folder Name is provided at the bottom of the page.
-            </li>
-            <li>
-              If there are duplicates, then add <code>_1</code>,
-              <code>_2</code>, &hellip; to the end.
-            </li>
-            <li>
-              Example: <code>data/raw_data/ianiefuna/Y-ome/2015-11-19_Tn-Seq_1/</code>
-            </li>
+              <li><strong><i>STEP 1:</i></strong> Fill out all of the required fields, as well as any additional information in the form below. </li>
+              <li><strong><i>STEP 2:</i></strong> Click <strong><i>"Download CSV File"</i></strong> to generate single metadata CSV. </li>
           </ul>
-          <li>
-            <strong>Copy</strong> raw data files (e.g. <code>*.fastq.gz</code>
-            from the MiSeq) to the new folder.
-          </li>
-          <li>
-            <strong>Fill out this form</strong>, save the CSV file, and put it
-            in your folder.
-          </li>
-          </ol>
+
+       
         </p>
-        <p>
-          <i>Creating metadata for multiple samples:</i>
-          <ol>
-        <li>
-          <strong>Spreadsheet to Metadata</strong>: <u>download template spreadsheet and fill out all required information under the required field names.</u>
-          <ul>
-              <li><strong> Warning: Do not change format of template spreadsheet. Input data starting from row 3</strong></li>
-              <li>Each row represents a new sample metadata file.</li>
-              <li>Examples of <u>valid</u> input located on row 1 of template spreadsheet.</li>
-          </ul>
-        </li>
-        <li>
-          Drag-and-drop spreadsheet containing your sample's data to generate metadata CSV's.
-        </li>
-        </ol>
-      </p>
-      <p>
-        <i>Creating a spreadsheet from multiple metadata files or automatically populating this form with 1 metadata file:</i>
-        <ol>
-        <li>
-          <strong>Metadata to Spreadsheet / Metadata to Metadata</strong>: <u> Edit one or more existing metadata files. </u>
-          <ul>
-              <li>Drag-and-drop one Metadata CSV File then edit on the form below, when finished <strong>click "Download CSV or SpreadSheet File"</strong> to generate and edited CSV File. </li>
-              <li>Drag-and-drop two or more Metadata CSV Files and <strong>click "Download CSV or SpreadSheet File"</strong> to generate Metadata spreadsheet of the CSV Files. The spreadsheet can then be edited and Dragged-and-Dropped into the <strong>Spreadsheet to MetaData</strong> drag-and-drop to generate metadata CSV's. </li>
-          </ul>
-        </li>
-      </ol>
-      </p>
-        <hr/>
         </div>
 
         <div id="spreadsheet_instructions">
-          <li>Multiple FILE INSTRUCTIONS</li>
         <p>
-          <i>Using this tool at SBRG:</i>
-        <ol>
-          <li>
-            <strong>Create a new folder</strong> on Nucleoid with the form
-            <code>data/raw_data/{User}/{Project Name}/{Folder Name}/</code>.
-          </li>
+          <strong><i>Use spreadsheet to create metadata for multiple samples:</i></strong>
           <ul>
-            <li>
-              Each data type collected on a given day is put into a unique folder.
-            </li>
-            <li>
-              The Project Name should be short, unique, and descriptive.
-            </li>
-            <li>
-              The Folder Name format is as follows <code>{YYYY}-{MM}-{DD}_{data type}</code>.
-            </li>
-            <li>
-              The Folder Name is provided at the bottom of the page.
-            </li>
-            <li>
-              If there are duplicates, then add <code>_1</code>,
-              <code>_2</code>, &hellip; to the end.
-            </li>
-            <li>
-              Example: <code>data/raw_data/ianiefuna/Y-ome/2015-11-19_Tn-Seq_1/</code>
-            </li>
-          </ul>
-          <li>
-            <strong>Copy</strong> raw data files (e.g. <code>*.fastq.gz</code>
-            from the MiSeq) to the new folder.
-          </li>
-          <li>
-            <strong>Fill out this form</strong>, save the CSV file, and put it
-            in your folder.
-          </li>
-          </ol>
-        </p>
-        <p>
-          <i>Creating metadata for multiple samples:</i>
-          <ol>
-        <li>
-          <strong>Spreadsheet to Metadata</strong>: <u>download template spreadsheet and fill out all required information under the required field names.</u>
-          <ul>
-              <li><strong> Warning: Do not change format of template spreadsheet. Input data starting from row 3</strong></li>
+              <li><strong> Warning: Do not change format of template spreadsheet.</strong></li>
               <li>Each row represents a new sample metadata file.</li>
-              <li>Examples of <u>valid</u> input located on row 1 of template spreadsheet.</li>
+              <li><strong><i>STEP 1:</i></strong> Click <u>"Download Template"</u> to generate spreadsheet. </li>
+              <li><strong><i>STEP 2:</i></strong> Examine examples of <u>valid</u> input located on row 1 of template spreadsheet.</li>
+              <li><strong><i>STEP 3:</i></strong> <u>"Start at row 3!"</u> Fill out all of the required fields under the correct field header. </li>
+              <li><strong><i>STEP 4:</i></strong> Drag-and-drop spreadsheet below to generate metadata CSV files. </li>  
           </ul>
-        </li>
-        <li>
-          Drag-and-drop spreadsheet containing your sample's data to generate metadata CSV's.
-        </li>
-        </ol>
-      </p>
-      <p>
-        <i>Creating a spreadsheet from multiple metadata files or automatically populating this form with 1 metadata file:</i>
-        <ol>
-        <li>
-          <strong>Metadata to Spreadsheet / Metadata to Metadata</strong>: <u> Edit one or more existing metadata files. </u>
-          <ul>
-              <li>Drag-and-drop one Metadata CSV File then edit on the form below, when finished <strong>click "Download CSV or SpreadSheet File"</strong> to generate and edited CSV File. </li>
-              <li>Drag-and-drop two or more Metadata CSV Files and <strong>click "Download CSV or SpreadSheet File"</strong> to generate Metadata spreadsheet of the CSV Files. The spreadsheet can then be edited and Dragged-and-Dropped into the <strong>Spreadsheet to MetaData</strong> drag-and-drop to generate metadata CSV's. </li>
-          </ul>
-        </li>
-      </ol>
-      </p>
-        <hr/>
+        </p>
         </div>
 
-
-
-
-
-
-
-
-
-        <div class="panel panel-default"id="csv_drag_and_drop_spreadsheet">
+<div class="panel panel-default"id="csv_drag_and_drop_spreadsheet">
           <div class="panel-heading">
             <strong>Spreadsheet to MetaData</strong>: CSV with required metadata field names.
             <button id="download_example_spreadsheet" type="submit" class="btn btn-default">
@@ -296,7 +177,7 @@
               </div>
               <div class="panel-body match-height">
                 <button id="submit" type="submit" class="btn btn-default">
-                  Download CSV or SpreadSheet File
+                  Download CSV File
                 </button>
                 <span id="required-to-submit" class="alert alert-danger" style="display: none">
                 Some required attributes are missing.
@@ -318,7 +199,7 @@
     <div class="text-center">
           <footer>
             <div>
-              <label><font color='#aaa'>Version 1.6.13</font></label>
+              <label><font color='#aaa'>Version 2.0.0</font></label>
             </div>
           </footer>
     </div>
