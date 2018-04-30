@@ -8,7 +8,7 @@ var taxonomy_id_strings;
 
 //Spreadsheet validation values
 var data_type_options = ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq']
-var base_media_options = ['M9', 'LB', 'DM25']
+var base_media_options = ['M9', 'LB', 'DM25', 'RPMI', 'MHB']
 var isolate_options = ['clonal', 'population']
 var machine_options = ['MiSeq', 'NextSeq', 'HiSeq']
 var carbon_source_options = ['Acetate', 'Fructose', 'Glucose', 'Galactose', 'Glycerol', 'Xylose','Sucrose']
@@ -21,7 +21,7 @@ var lib_prep_options = ['Nextera XT', 'KAPA HyperPlus', 'KAPA Stranded RNA-seq']
 var lib_prep_manufacturer_options = ['Illumina', 'Kapa']
 var lib_prep_cycle_options = ['50 Cycle', '76 Cycle', '150 Cycle', '300 Cycle', '500 Cycle', '600 Cycle']
 var read_type_options = ['Single-end reads', 'Paired-end reads']
-var read_length_options = ['31', '36', '50', '62', '76', '100', '151', '301']
+var read_length_options = ['31', '36', '50', '62', '76', '100', '151', '251', '301']
 
 var data = [
   { label: 'Creator (Name)',
@@ -236,13 +236,6 @@ var data = [
     min: 1,
     max: 100,
     form: 'Generic'},
-  { label: 'Genome reference file',
-    id: 'genome-reference-file',
-    type: 'input' },
-  { label: 'Archive link',
-    id: 'archive-link',
-    description: 'Data on growth curve',
-    type: 'input' }
 ]
 var data_as_object = {}
     data.forEach(function(d) { data_as_object[d.id] = d })
@@ -327,7 +320,7 @@ $(document).ready(function(){
           [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
           [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
-          [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],[,"Data on growth curve"],
+          [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],
           [,"\n" + "creator"],[,"creator-email"],[,"project"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"sample-time"],[,"Link-to-reference-sequence"],[,"read-files"],
@@ -336,7 +329,7 @@ $(document).ready(function(){
           [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
           [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
           [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
-          [,"biological-replicates"],[,"technical-replicates"],[,"genome-reference-file"],[,"archive-link"]],
+          [,"biological-replicates"],[,"technical-replicates"]],
           file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
           saveAs(file, output_file_name + '.csv')
     }
@@ -361,7 +354,7 @@ $(document).ready(function(){
           [,'"Library Prep Kit, Input one of the following: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
-          [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Input Reference Genome file name"],[,"Data on growth curve"],
+          [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],
           [,"\n" + "creator"],[,"creator-email"],[,"project"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
@@ -370,7 +363,7 @@ $(document).ready(function(){
           [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
           [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
           [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
-          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],[,"genome-reference-file"],[,"archive-link"]],
+          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"]],
           file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
           saveAs(file, output_file_name + '.csv') 
 
@@ -538,7 +531,7 @@ function format_metadata() {
           [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
           [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
-          [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],[,"Data on growth curve"],
+          [,"Insert Technical replicates number"],
           [,"\n" + "creator"],[,"creator-email"],[,"project"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
@@ -548,7 +541,7 @@ function format_metadata() {
           [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
           [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
           [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
-          [,"biological-replicates"],[,"technical-replicates"],[,"genome-reference-file"],[,"archive-link"]],
+          [,"biological-replicates"],[,"technical-replicates"]],
 
         Spreadsheet_data = example_output;
         for (var i = 0; i < correct_format_files_Generic.length; i++) {
@@ -588,7 +581,7 @@ function format_metadata() {
           [,'"Library Prep Kit, Input one of the following: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
-          [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Input Reference Genome file name"],[,"Data on growth curve"],
+          [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Input Reference Genome file name"],
           [,"\n" + "creator"],[,"creator-email"],[,"project"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
@@ -597,8 +590,7 @@ function format_metadata() {
           [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
           [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
           [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
-          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
-          [,"genome-reference-file"],[,"archive-link"]],
+          [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"]],
 
         Spreadsheet_data = example_output;
         for (var i = 0; i < correct_format_files_ALE.length; i++) {
@@ -755,7 +747,7 @@ function handle_upload_spreadsheet(e, file) {
         ["electron-acceptor"],["supplement"],["antibiotic"],["machine"],
         ["library-prep-kit-manufacturer"],["library-prep-kit"],["library-prep-kit-cycles"],
         ["read-type"],["read-length"],["experiment-details"],["Pre-culture-details"],["Cultivation-details"],["environment"],
-        ["biological-replicates"],["technical-replicates"],["genome-reference-file"],["archive-link"]]
+        ["biological-replicates"],["technical-replicates"]]
   }
   if (workflow = 'ale_spreadsheet') {
     header = [["creator"],["creator-email"],["project"],
@@ -766,8 +758,7 @@ function handle_upload_spreadsheet(e, file) {
         ["carbon-source"],["nitrogen-source"],["phosphorous-source"],["sulfur-source"],
         ["electron-acceptor"],["supplement"],["antibiotic"],["machine"],
         ["library-prep-kit-manufacturer"],["library-prep-kit"],["library-prep-kit-cycles"],
-        ["read-type"],["read-length"],["experiment-details"],["Pre-culture-details"],["Cultivation-details"],["environment"],
-        ["genome-reference-file"],["archive-link"]]
+        ["read-type"],["read-length"],["experiment-details"],["Pre-culture-details"],["Cultivation-details"],["environment"]]
   }
 
 
@@ -778,7 +769,6 @@ function handle_upload_spreadsheet(e, file) {
   var output_sample_name_array = []
   var alert = false;
   found = false;
-
 
   for (var j = 0; j < header.length; j++) {
       for (var k = 0; k < variable_file_name_array[1].length; k++) {
@@ -846,7 +836,7 @@ function handle_upload_spreadsheet(e, file) {
       }
       if(variable_file_name_array[1][i] == "base-media") {
           if (!dropdown_validation(base_media_options,variable_file_name_array[name_idx][i])) {
-            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the following: M9, LB, DM25")
+            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the following: M9, LB, DM25, RPMI, MHB")
             alert = true;
           }
       }
