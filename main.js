@@ -275,12 +275,14 @@ var read_length_options_strings = read_length_options.join()
 $(document).ready(function(){
     //single metadata form
     document.getElementById('single_metadata_sheet').style.display = 'none'
-    document.getElementById('single_file_instructions').style.display = 'none'
+    document.getElementById('single_file_instructions_gen').style.display = 'none'
+    document.getElementById('single_file_instructions_ale').style.display = 'none'
     document.getElementById('folder-name-panel').style.display = 'none'
     document.getElementById('Save_metadata').style.display = 'none'
 
     //metadata spreadsheet
-    document.getElementById('spreadsheet_instructions').style.display = 'none'
+    document.getElementById('spreadsheet_instructions_gen').style.display = 'none'
+    document.getElementById('spreadsheet_instructions_ale').style.display = 'none'
     document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'none'
 
   //add the uploader
@@ -389,17 +391,26 @@ function create_form(form_type) {
   }
 
   // Hide/show the Optional: Ale Specific Drag and drop CSV box
-  if ( (form_type == 'generic_single') || (form_type == 'ale_single') ){
+  if ( (form_type == 'generic_single') ){
     document.getElementById('single_metadata_sheet').style.display = 'block'
-    document.getElementById('single_file_instructions').style.display = 'block'
+    document.getElementById('single_file_instructions_gen').style.display = 'block'
     document.getElementById('folder-name-panel').style.display = 'block'
     document.getElementById('Save_metadata').style.display = 'block'
   }
-  if ( (form_type == 'generic_spreadsheet') || (form_type == 'ale_spreadsheet') ) {
-    document.getElementById('spreadsheet_instructions').style.display = 'block'
+  if ( (form_type == 'ale_single') ){
+    document.getElementById('single_metadata_sheet').style.display = 'block'
+    document.getElementById('single_file_instructions_ale').style.display = 'block'
+    document.getElementById('folder-name-panel').style.display = 'block'
+    document.getElementById('Save_metadata').style.display = 'block'
+  }
+  if ( (form_type == 'generic_spreadsheet') ) {
+    document.getElementById('spreadsheet_instructions_gen').style.display = 'block'
     document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
   }
- 
+  if ( (form_type == 'ale_spreadsheet') ) {
+    document.getElementById('spreadsheet_instructions_ale').style.display = 'block'
+    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
+  }
 
   // add the form
   for(var i = 0; i < data.length; i++) {
