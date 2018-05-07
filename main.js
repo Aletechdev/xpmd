@@ -84,27 +84,35 @@ var data = [
     options: isolate_options },
   { label: 'ALE number',
     id: 'ALE-number',
-    type: 'input',
+    min: 0,
+    step: [0-9],
+    type: 'ALE_number',
     required: true,
     form: 'ale_single'},
   { label: 'Flask number',
     id: 'Flask-number',
-    type: 'input',
+    min: 0,
+    step: [0-9],
+    type: 'ALE_number',
     required: true,
     form: 'ale_single'},
   { label: 'Isolate number',
     id: 'Isolate-number',
+    min: 0,
+    step: [0-9],
     required: true,
-    type: 'input',
+    type: 'ALE_number',
     form: 'ale_single'},
   { label: 'Technical replicate number',
     required: true,
     id: 'technical-replicate-number',
-    type: 'input',
+    min: 0,
+    step: [0-9],
+    type: 'ALE_number',
     form: 'ale_single'},
    { label: 'Sample Time',
     id: 'sample-time',
-    type: 'time-hours',
+    type: 'number_required',
     required: true,
     description: 'Hours from start of experiment.'},
   { label: 'Link to reference sequence',
@@ -130,6 +138,7 @@ var data = [
     description: 'Temperature in Celcius',
     id: 'temperature',
     example: '37',
+    type: 'number_required',
     form: 'ale_single'},
   { label: 'Carbon Source(s)',
     id: 'carbon-source',
@@ -1367,6 +1376,9 @@ function create_input(data, parent_sel) {
       min = data['min'],
       html = '',
       none = data['none'],
+      number_required = data['number_required'],
+      ALE_number = data['ALE_number'],
+      step = data['step'],
       after_append
 
   // check for some required attributes
@@ -1461,7 +1473,15 @@ function create_input(data, parent_sel) {
     after_append = function() {
       $('#' + id).bootstrapNumber()
     }
-  } else {
+  } else if (type === 'number_required' ){
+    html = '<input id="' + id + '" type="number" class="form-control"' +
+      ' value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
+  } else if (type === 'ALE_number' ){
+    html = '<input id="' + id + '" type="number" class="form-control" min="' + min +  '"pattern="' + step +
+      ' value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
+  }
+
+   else {
     html = '<input id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
   }
   if (workflow == 'generic_single' || workflow == 'generic_spreadsheet') {
