@@ -38,18 +38,19 @@ label.labels {
   background-image: linear-gradient(90deg, #0b2e50, rgba(0, 84, 150, 0.68));
 }
 
-div#alertdivs.alert.alert-danger.alert-dismissable.fade.in {
-    padding: 5px;
-    margin-bottom: 10px;
+div#alertdivs.alert.alert-danger.alert-dismissable {
+    padding: 15px;
+    margin-bottom: 20px;
     padding-right: 30px;
+    margin-top: 8px;
     color: #a94442;
     background-color: #f2dede;
     border-color: #ebccd1;
-    width: 60%;
-    margin: auto;
-    display: block;
+    width: 100%;
+    margin: auto; 
+    display: list-item;
+    margin-top: 8px;
 }
-
 
 span.tag.label.label-info {
     background-color: #2d5c83;

@@ -1,4 +1,3 @@
-
 /* -*- Mode: js2; indent-tabs-mode: nil; js2-basic-offset: 2; -*- */
 /* global $, Blob, saveAs, CSV, d3, JSZip, _ */
 // CSV: https://github.com/knrz/CSV.js/
@@ -85,21 +84,18 @@ var data = [
   { label: 'ALE number',
     id: 'ALE-number',
     min: 0,
-    step: [0-9],
     type: 'ALE_number',
     required: true,
     form: 'ale_single'},
   { label: 'Flask number',
     id: 'Flask-number',
     min: 0,
-    step: [0-9],
     type: 'ALE_number',
     required: true,
     form: 'ale_single'},
   { label: 'Isolate number',
     id: 'Isolate-number',
     min: 0,
-    step: [0-9],
     required: true,
     type: 'ALE_number',
     form: 'ale_single'},
@@ -107,7 +103,6 @@ var data = [
     required: true,
     id: 'technical-replicate-number',
     min: 0,
-    step: [0-9],
     type: 'ALE_number',
     form: 'ale_single'},
    { label: 'Sample Time',
@@ -281,23 +276,32 @@ var read_length_options_strings = read_length_options.join()
 
 
 
+var concentrationlist = ['carbon-source','nitrogen-source','phosphorous-source','sulfur-source','supplement']
+var antibiotic_concentration = '(ug/mL)'
+var change_concentrations = '(g/L)'
+var temperature_value = '(Celcius)'
+
 $(document).ready(function(){
-    //single metadata form
-    document.getElementById('single_metadata_sheet').style.display = 'none'
-    document.getElementById('single_file_instructions_gen').style.display = 'none'
-    document.getElementById('single_file_instructions_ale').style.display = 'none'
-    document.getElementById('folder-name-panel').style.display = 'none'
-    document.getElementById('Save_metadata').style.display = 'none'
 
-    //metadata spreadsheet
-    document.getElementById('spreadsheet_instructions_gen').style.display = 'none'
-    document.getElementById('spreadsheet_instructions_ale').style.display = 'none'
-    document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'none'
+  //single metadata form on load
+  document.getElementById('single_metadata_sheet').style.display = 'none'
+  document.getElementById('single_file_instructions_gen').style.display = 'none'
+  document.getElementById('single_file_instructions_ale').style.display = 'none'
+  document.getElementById('folder-name-panel').style.display = 'none'
+  document.getElementById('Save_metadata').style.display = 'none'
 
-  //add the uploader
+  //metadata spreadsheet on load
+  document.getElementById('spreadsheet_instructions_gen').style.display = 'none'
+  document.getElementById('spreadsheet_instructions_ale').style.display = 'none'
+  document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'none'
+
+
+  // add the uploader
   create_uploaders()
 
-  //submit
+  create_form('Generic')
+
+  // submit
   $('#submit').click(function(){
     if (!check_required())
       return
@@ -305,7 +309,7 @@ $(document).ready(function(){
     if (workflow == 'generic_single') {
       save_generic_metadata(data_array)
     } 
-    if (workflow == 'ale_single') {
+    else  if (workflow == 'ale_single') {
       save_ale_metadata(data_array)
     }
   })
@@ -343,11 +347,9 @@ $(document).ready(function(){
           [,"biological-replicates"],[,"technical-replicates"]],
           file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
           saveAs(file, output_file_name + '.csv')
-    }
-
-    if  (workflow == 'ale_spreadsheet') {
-
-        var output_file_name = "Metadata_spreadsheet",
+        }
+    else if (workflow == 'ale_spreadsheet') {
+           var output_file_name = "Metadata_spreadsheet",
           example_output = [["Name"],[,"Email"],[,"Title of Project"],
           [,'"Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
@@ -376,15 +378,14 @@ $(document).ready(function(){
           [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
           [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"]],
           file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
-          saveAs(file, output_file_name + '.csv') 
+          saveAs(file, output_file_name + '.csv')
 
-    }
-  }) 
+        }
+    })
 })
 
 function create_form(form_type) {
-  
-  document.getElementById('intropage').style.display = 'none'
+
   files = [];
   new_files = []
   original_file_content = []
@@ -400,25 +401,33 @@ function create_form(form_type) {
   }
 
   // Hide/show the Optional: Ale Specific Drag and drop CSV box
+
   if ( (form_type == 'generic_single') ){
     document.getElementById('single_metadata_sheet').style.display = 'block'
     document.getElementById('single_file_instructions_gen').style.display = 'block'
     document.getElementById('folder-name-panel').style.display = 'block'
     document.getElementById('Save_metadata').style.display = 'block'
+    document.getElementById('intropage').style.display = 'none'
+
   }
   if ( (form_type == 'ale_single') ){
     document.getElementById('single_metadata_sheet').style.display = 'block'
     document.getElementById('single_file_instructions_ale').style.display = 'block'
-    document.getElementById('folder-name-panel').style.display = 'block'
     document.getElementById('Save_metadata').style.display = 'block'
+    document.getElementById('intropage').style.display = 'none'
+
   }
   if ( (form_type == 'generic_spreadsheet') ) {
     document.getElementById('spreadsheet_instructions_gen').style.display = 'block'
     document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
+    document.getElementById('intropage').style.display = 'none'
+
   }
   if ( (form_type == 'ale_spreadsheet') ) {
     document.getElementById('spreadsheet_instructions_ale').style.display = 'block'
     document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'block'
+    document.getElementById('intropage').style.display = 'none'
+
   }
 
   // add the form
@@ -431,13 +440,23 @@ function create_form(form_type) {
 }
 
 
-
 function get_data_array() {
 
   var data_array = []
   for(var i = 0; i < data.length; i++){
     var val = get_value(data[i]['id'])
-    data_array.push([data[i]['id'], val])
+    if (concentrationlist.includes(data[i]['id'])) {
+      data_array.push([data[i]['id'] + change_concentrations, val])
+    }
+    else if (data[i]['id'] == 'antibiotic') {
+      data_array.push([data[i]['id'] + antibiotic_concentration, val])
+    }
+    else if (data[i]['id'] == 'temperature') {
+      data_array.push([data[i]['id'] + temperature_value, val])
+    }
+    else {
+      data_array.push([data[i]['id'], val])
+    }
   }
 
   return data_array
@@ -455,6 +474,7 @@ function check_required() {
     return true
   }
 }
+
 
 function create_uploaders() {
   $('#spreadsheet-upload').fileReaderJS({
@@ -506,7 +526,7 @@ function handle_upload(e, file) {
 }
 
 function format_metadata() {
-  if (workflow == 'generic_single') {
+  if (workflow == 'Generic') {
     var array_data = []
     for(var i = 0; i < data.length; i++){
       var val = get_value(data[i]['id'])
@@ -528,7 +548,7 @@ function format_metadata() {
   }
 
   if (multiplefiles == true) {
-    if (workflow == 'generic_spreadsheet') {
+    if (workflow == 'Generic') {
 
       var Spreadsheet_data = [];
       var filearray = [];
@@ -579,7 +599,7 @@ function format_metadata() {
           saveAs(file, output_file_name + '.csv')
         }
     }
-    if (workflow == 'ale_spreadsheet') {
+    else{
 
       var Spreadsheet_data = [];
       var filearray = [];
@@ -707,22 +727,22 @@ function get_file_name_spreadsheet() {
   rundate = rundate.replace(' ', '').replace(/\//g, '-')
 
   if (serial_num != '') {
-    if ((workflow == 'generic_single') || (workflow == 'generic_spreadsheet')) {
+    if ((workflow == 'generic_single')  || (workflow == 'generic_spreadsheet'))  {
      return (serial_num + '_' + project + '_' + rundate + '_' + datatype)
 
     }
-    else {
+    else if ((workflow == 'ale_single') ||  (workflow == 'ale_spreadsheet'))  {
       return (serial_num + '_' + project + '_' + ALE_numb + '_' + Flask_numb
        + '_' + Isolate_numb + '_' + tech_rep_numb)
     }
   }
 
   else {
-    if ((workflow == 'generic_single') || (workflow == 'generic_spreadsheet')) {
+    if ((workflow == 'generic_single')  || (workflow == 'generic_spreadsheet')) {
      return (project + '_' + rundate + '_' + datatype)
 
     }
-    else {
+    else if ((workflow == 'ale_single') ||  (workflow == 'ale_spreadsheet')){
       return (project + '_' + ALE_numb + '_' + Flask_numb
        + '_' + Isolate_numb + '_' + tech_rep_numb)
     }
@@ -731,7 +751,7 @@ function get_file_name_spreadsheet() {
 
 function get_file_name() {
   var label = folder_name();
-  if ((workflow == 'generic_single') || (workflow == 'generic_spreadsheet')) {
+  if ((workflow == 'generic_single')  || (workflow == 'generic_spreadsheet')) {
      var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
     if (lib_prep != '')
       lib_prep = '_' + lib_prep
@@ -739,7 +759,7 @@ function get_file_name() {
     return get_value('project').toString() + '_' + label
 
   }
-  else {
+  else if ((workflow == 'ale_single')  || (workflow == 'ale_spreadsheet')) {
     var lib_prep = get_lib_prep_code(get_value('library-prep-kit').toString())
     if (lib_prep != '') {
       lib_prep = '_' + lib_prep
@@ -769,7 +789,7 @@ function handle_upload_spreadsheet(e, file) {
         ["read-type"],["read-length"],["experiment-details"],["Pre-culture-details"],["Cultivation-details"],["environment"],
         ["biological-replicates"],["technical-replicates"]]
   }
-  if (workflow = 'ale_spreadsheet') {
+  else if (workflow == 'ale_spreadsheet') {
     header = [["creator"],["creator-email"],["project"],
         ["data-type"],["run-date"],["taxonomy-id"],["strain-description"],
         ["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],
@@ -790,30 +810,12 @@ function handle_upload_spreadsheet(e, file) {
   var alert = false;
   found = false;
 
-  for (var j = 0; j < header.length; j++) {
-      for (var k = 0; k < variable_file_name_array[1].length; k++) {
-
-          if(header[j] == variable_file_name_array[1][k]) {
-            found = true;
-            break;
-          }
-          else{
-            found = false;
-          }
-      }
-      if (found == false) {
-        addAlert(header[j] + " is a required field");
-        alert = true;
-      }
-  };
-
 
   if (workflow == 'generic_spreadsheet') {
      var required_input = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["Link-to-reference-sequence"],["sample-time"]]
   }
-  if (workflow == 'ale_spreadsheet') {
-     var required_input = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],
-        ["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["sample-time"]]
+  else if (workflow == 'ale_spreadsheet') {
+     var required_input = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["sample-time"]]
   }
   if (variable_file_name_array.length == 2) {
     addAlert("Spreadsheet requires input")
@@ -992,7 +994,20 @@ function handle_upload_spreadsheet(e, file) {
         }
       }
     spreadsheet_val.push(variable_file_name_array[name_idx][i])
-    spreadsheet_id.push(variable_file_name_array[1][i])
+    
+    var headers = variable_file_name_array[1][i]
+    if (concentrationlist.includes(headers)) {
+      spreadsheet_id.push(headers + change_concentrations)
+    }
+    else if (headers == 'antibiotic') {
+      spreadsheet_id.push(headers + antibiotic_concentration)
+    }
+    else if (headers == 'temperature') {
+      spreadsheet_id.push(headers + temperature_value)
+    }
+    else {
+      spreadsheet_id.push(headers)
+    }
     spreadsheet_data_array = get_value_spreadsheet(spreadsheet_id,spreadsheet_val)
     }
 
@@ -1014,7 +1029,7 @@ function handle_upload_spreadsheet(e, file) {
 }
 
 function addAlert(message) {
-    $('#alert').append('<div class="alert alert-danger alert-dismissable fade in" id="alertdivs">' +
+    $('#alert').append('<div class="alert alert-danger alert-dismissable" id="alertdivs">' +
         '<a href="#" class="close" data-dismiss="alert"' +
         'aria-label="close">&times;</a>' + message +
         '</div>');
@@ -1264,9 +1279,9 @@ function add_form_container(html, label, required, id, description, custom, mult
     required_str = ''
   if (none)
     custom_mult_str = ''
-  else if (custom && multiple && (workflow == 'generic_single') && (workflow == 'generic_spreadsheet'))
+  else if (custom && multiple && (workflow == 'generic_single'))
     custom_mult_str = ' (Choose one or more, including custom values)'
-  else if ((custom && (workflow == 'generic_single')) || (custom && (workflow == 'generic_spreadsheet')))
+  else if (custom && (workflow == 'generic_single'))
     custom_mult_str = ' (Choose or enter a new value)'
   else if (multiple)
     custom_mult_str = ' (Choose one or more)'
@@ -1378,7 +1393,6 @@ function create_input(data, parent_sel) {
       none = data['none'],
       number_required = data['number_required'],
       ALE_number = data['ALE_number'],
-      step = data['step'],
       after_append
 
   // check for some required attributes
@@ -1406,7 +1420,7 @@ function create_input(data, parent_sel) {
       select_options['multiple'] = true
     }
     // custom options
-    if ((custom && (workflow == 'generic_single')) || (custom && (workflow == 'generic_spreadsheet')) || (custom && (id == 'supplement'))) {
+    if ((custom && (workflow == 'generic_single')) || (custom && (id == 'supplement'))) {
       if (none) {
         select_options['tags'] = true
           select_options['createTag'] = function(query) {
@@ -1467,21 +1481,18 @@ function create_input(data, parent_sel) {
     }
   } else if (type === 'textarea') {
     html = '<textarea id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" ></textarea>'
+  } else if (type === 'number_required' ){
+    html = '<input id="' + id + '" type="number" class="form-control"' +
+      ' value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
+  } else if (type === 'ALE_number' ){
+    html = '<input id="' + id + '" type="number" class="form-control" min="' + min + ' value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
   } else if (type === 'number' ){
     html = '<input id="' + id + '" type="number" class="form-control" min="' + min + '"' +
       ' value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
     after_append = function() {
       $('#' + id).bootstrapNumber()
     }
-  } else if (type === 'number_required' ){
-    html = '<input id="' + id + '" type="number" class="form-control"' +
-      ' value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
-  } else if (type === 'ALE_number' ){
-    html = '<input id="' + id + '" type="number" class="form-control" min="' + min +  '"pattern="' + step +
-      ' value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
-  }
-
-   else {
+  } else {
     html = '<input id="' + id + '" class="form-control" value="' + def + '" placeholder="' + example + '" ' + ' style="width: 100%" >'
   }
   if (workflow == 'generic_single' || workflow == 'generic_spreadsheet') {
