@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111512162-3"></script>
@@ -11,6 +10,7 @@
 
     gtag('config', 'UA-111512162-3');
     </script>
+
     <title>Experiment Metadata</title>
 
     <!-- JS -->
@@ -57,7 +57,7 @@
   </script>
   
   <body>
-    <div class="text-center">
+     <div class="text-center">
       <h1>
         Experimental Metadata
         <small>[<a href="http://github.com/SBRG/experiment_metadata">GitHub</a>]</small>
@@ -68,14 +68,13 @@
         an experiment.
       </p>
 
-      <div id="intropage">
-        <div id="alert"></div>
+       <div id="intropage">
 
         <label class="labels" for="dropdown_forms">Step 1. Choose a Form Type</label>
         <input type="text" id="dropdown_formtype" list="formtype" placeholder="e.g. Generic, ALE">
 
         <datalist id="formtype">
-          <option id="generic" value="Generic">
+            <option id="generic" value="Generic">
             <option id="ale" value="ALE">
         </datalist>
 
@@ -83,7 +82,7 @@
         <input type="text" id="dropdown_formnumber" list="formnumber" placeholder="e.g. Single, Multiple">
 
         <datalist id="formnumber">
-          <option id="single" value="Create Single Metadata File">
+            <option id="single" value="Create Single Metadata File">
             <option id="spreadsheet" value="Create Multiple Metadata Files: Spreadsheet">
         </datalist>
         
@@ -110,7 +109,6 @@
         }
         </script>
       </div>
-
     </div>
 
     <div class="container">
@@ -195,70 +193,73 @@
         </div>
         </div>
 
-<div class="panel panel-default"id="csv_drag_and_drop_spreadsheet">
-          <div class="panel-heading">
-            <strong>Spreadsheet to MetaData</strong>: CSV with required metadata field names.
-            <button id="download_example_spreadsheet" type="submit" class="btn btn-default">
-              Download Template
-            </button>
-          </div>
-          <div class="panel-body">
-            <div id="spreadsheet-upload">Drag and drop Spreadsheet.</div>
-          </div>
-          <div id="alert"></div>
-        </div>
-        <!--
-        <div class="panel panel-default"id="csv_drag_and_drop_metadata">
-          <div class="panel-heading">
-            <strong>Metadata to Spreadsheet / Metadata to Metadata</strong>: Load existing CSV file(s) to edit existing CSV(s).
-          </div>
-          <div class="panel-body">
-            <div id="file-upload">Drag and drop CSV file(s).</div>
-          </div>
-        </div>
-        -->
-        <div class="panel panel-default"id="single_metadata_sheet">
-          <div class="panel-heading"id="Single_Metadata_header">
-            Enter or Edit your metadata.
-          </div>
-          <div id="center-column" class="panel-body">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-8">
-            <div class="panel panel-default"id="Save_metadata">
-              <div class="panel-heading"id="Save_metadata">
-                Save the metadata CSV file/CSV Spreadsheet with your dataset.
-              </div>
-              <div class="panel-body match-height">
-                <button id="submit" type="submit" class="btn btn-default">
-                  Download CSV File
-                </button>
-                <span id="required-to-submit" class="alert alert-danger" style="display: none">
-                Some required attributes are missing.
-              </span>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-4" id="folder-name-panel">
-            <div class="panel panel-default">
-              <div class="panel-heading">Folder name</div>
-              <div class="panel-body match-height">
-                <input id="folder-name" class="form-control" onclick="select();" readonly></input>
-              </div>
-            </div>
-          </div>
-        </div>
-    </div>
+      <div id="alert"></div>
 
-    <div class="text-center">
+
+      <div class="panel panel-default"id="csv_drag_and_drop_spreadsheet">
+        <div class="panel-heading">
+          <strong>Spreadsheet to Metadata</strong>: CSV with required metadata field names.
+          <button id="download_example_spreadsheet" type="submit" class="btn btn-default">
+            Download Template
+          </button>
+        </div>
+        <div class="panel-body">
+          <div id="spreadsheet-upload">Drag and drop spreadsheet.</div>
+        </div>
+      </div>
+      <!--
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <strong>Metadata to Spreadsheet / Metadata to Metadata</strong>: Load existing CSV file(s) to edit existing CSV(s).
+        </div>
+        <div class="panel-body">
+          <div id="file-upload">Drag and drop CSV file(s).</div>
+        </div>
+      </div>
+      -->
+      <div class="panel panel-default" id='single_metadata_sheet'>
+        <div class="panel-heading" id="Single_Metadata_header">
+          Enter or Edit your metadata.
+        </div>
+        <div id="center-column" class="panel-body">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-8">
+           <div class="panel panel-default"id="Save_metadata">
+              <div class="panel-heading"id="Save_metadata">
+              Save the metadata CSV file/CSV Spreadsheet with your dataset.
+            </div>
+            <div class="panel-body match-height">
+              <button id="submit" type="submit" class="btn btn-default">
+                Download CSV File
+              </button>
+              <span id="required-to-submit" class="alert alert-danger" style="display: none">
+              Some required attributes are missing.
+            </span>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4" id="folder-name-panel">
+          <div class="panel panel-default">
+            <div class="panel-heading">Folder name</div>
+            <div class="panel-body match-height">
+              <input id="folder-name" class="form-control" onclick="select();" readonly></input>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+ 
+  <div class="text-center">
           <footer>
             <div>
               <label><font color='#aaa'>Version 2.0.0</font></label>
             </div>
           </footer>
-    </div>
-    
+  </div>
+
   </body>
  
 </html>
