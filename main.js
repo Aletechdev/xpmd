@@ -856,8 +856,8 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
       if(variable_file_name_array[1][i] == "supplement") {
-          list_supplment = ['\\w+']
-          if (!source_validation(list_supplment,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          list_supplment = ['/^([^\s]*)$/']
+          if (!/^([^\s]*)$/.test(variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
             alert = true;
           }
