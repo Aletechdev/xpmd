@@ -1,10 +1,15 @@
 {
-    "413997": "Escherichia coli B str. REL606",
-    "511145": "Escherichia coli str. K-12 substr. MG1655",
-    "668369": "Escherichia coli DH5[alpha]",
-    "511693": "Escherichia coli BL21",
-    "679895": "Escherichia coli BW25113",
-    "243274": "Thermotoga maritima MSB8",
-    "451516": "Staphylococcus aureus subsp. aureus USA300_TCH1516",
-    "2144189": "Synthetic bacterium JCVI-Syn3A"
+    "NC_012967": "Escherichia coli B str. REL606",
+    "CP000819.1": "Escherichia coli B str. REL606",
+    "NC_000913": "Escherichia coli str. K-12 substr. MG1655",
+    "CP025268.1": "Escherichia coli str. K-12 substr. MG1655",
+    "NZ_JRYM00000000": "Escherichia coli DH5[alpha]",
+    "KT943377": "Escherichia coli BL21",
+    "NZ_CP009273": "Escherichia coli BW25113",
+    "CP009273": "Escherichia coli BW25113",
+    "NZ_CP011107.1": "Thermotoga maritima MSB8",
+    "NC_023151.1": "Thermotoga maritima MSB8",
+    "NC_021214.1": "Thermotoga maritima MSB8",
+    "NC_010079": "Staphylococcus aureus subsp. aureus USA300_TCH1516",
+    "CP016816": "Synthetic bacterium JCVI-Syn3A"
 }
