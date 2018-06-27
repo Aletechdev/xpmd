@@ -71,7 +71,7 @@
        <div id="intropage">
 
         <label class="labels" for="dropdown_forms">Step 1. Choose a Form Type</label>
-        <input type="text" id="dropdown_formtype" list="formtype" placeholder="e.g. Generic, ALE">
+        <input type="text" id="dropdown_formtype" list="formtype" placeholder="e.g. Generic, ALE" onmousedown="value = '';">
 
         <datalist id="formtype">
             <option id="generic" value="Generic">
@@ -79,7 +79,7 @@
         </datalist>
 
         <label class="labels" for="dropdown_forms">Step 2. Choose Single Form or Multiple Spreadsheet </label>
-        <input type="text" id="dropdown_formnumber" list="formnumber" placeholder="e.g. Single, Multiple">
+        <input type="text" id="dropdown_formnumber" list="formnumber" placeholder="e.g. Single, Multiple" onmousedown="value = '';">
 
         <datalist id="formnumber">
             <option id="single" value="Create Single Metadata File">
