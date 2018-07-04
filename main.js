@@ -67,6 +67,7 @@ var data = [
   { label: 'NCBI Accession ID for Strain',
     id: 'Accession',
     type: 'dropdown',
+    required: true,
     custom: true,
     options_function: function(callback) {
       $.getJSON('Accession.json')
@@ -128,6 +129,10 @@ var data = [
     type: 'input',
     required: true,
     description: 'Link to internal / external accession number; link to sequence file + annotation'},
+   { label: 'Reference File Name',
+    id: 'reference-file-name',
+    required: true,
+    type: 'input' },
   { label: 'Read Files',
     id: 'read-files',
     type: 'tags',
@@ -251,10 +256,7 @@ var data = [
     default: 1,
     min: 1,
     max: 100,
-    form: 'generic_single'},
-  { label: 'Reference File Name',
-    id: 'reference-file-name',
-    type: 'input' }
+    form: 'generic_single'}
 ]
 var data_as_object = {}
     data.forEach(function(d) { data_as_object[d.id] = d })
@@ -298,10 +300,7 @@ var temperature_value = '(Celcius)'
 var output_file_name = "Metadata_spreadsheet"
 var header_generic = []
 var header_ale = []
-
-var required_input_gen = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["Link-to-reference-sequence"]]
-var required_input_ale = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"]]
-
+var required_input_list = []
 
 
 $(document).ready(function(){
@@ -371,10 +370,27 @@ $(document).ready(function(){
           [,"biological-replicates"],[,"technical-replicates"],[,"reference-file-name"]]
 
 
+    required_input_list = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["reference-file-name"],["Accession"]]
+
+
     Liststart = false
     Listsplice = false
     if (workflow == 'generic_spreadsheet') {
-      
+
+      list_of_required_ALE = ["read-files", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
+
+      for(var j = 0; j < required_input_list.length; j++) {
+
+
+        if (list_of_required_ALE.indexOf(required_input_list[j][0]) >= 0) {
+            required_input_list.splice(j, 1);
+            j = j - 1    
+        }
+      }
+
+      console.log(required_input_list)
+
+
       list_of_ALE_only = ["Insert ALE number", "Insert Flask number", "Insert Isolate number", "Insert Technical Replicate Number", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
       for(var i = 0; i < example_output.length; i++) {
 
@@ -403,13 +419,24 @@ $(document).ready(function(){
         }
 
       }
-      console.log(header_generic)
 
       var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
       saveAs(file, output_file_name + '.csv')
     }
 
     else if (workflow == 'ale_spreadsheet') {
+
+      list_of_required_Generic = []
+
+      for(var j = 0; j < required_input_list.length; j++) {
+
+        if (list_of_required_Generic.indexOf(required_input_list[j][0]) >= 0) {
+            required_input_list.splice(j, 1);
+            j = j - 1    
+        }
+      }
+
+      console.log(required_input_list)
 
       list_of_Generic_only = ["Insert Biological replicates number", "Insert Technical replicates number", "biological-replicates", "technical-replicates"]
 
@@ -439,7 +466,6 @@ $(document).ready(function(){
         }
 
       }
-      console.log(header_ale)
 
       var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
       saveAs(file, output_file_name + '.csv')
@@ -742,14 +768,6 @@ function handle_upload_spreadsheet(e, file) {
   var alert = false;
   found = false;
 
-
-  if (workflow == 'generic_spreadsheet') {
-     var required_input = required_input_gen
-  }
-  else if (workflow == 'ale_spreadsheet') {
-     var required_input = required_input_ale
-  }
-
   if (variable_file_name_array.length == 2) {
     addAlert("Spreadsheet requires input")
     return;
@@ -924,11 +942,18 @@ function handle_upload_spreadsheet(e, file) {
             alert = true;
           }
       }
+      if(variable_file_name_array[1][i] == "reference-file-name") {
+        if (!(/^[a-zA-Z]+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("ERROR [Line " + (name_idx+1) + "], Please input Reference Genome file name")
+            alert = true;
+          }
+      }
 
-      for (var x = 0; x < required_input.length; x++) {
-        if (variable_file_name_array[1][i] == required_input[x]) {
+
+      for (var x = 0; x < required_input_list.length; x++) {
+        if (variable_file_name_array[1][i] == required_input_list[x]) {
            if (variable_file_name_array[name_idx][i] == "") {
-             addAlert("[Line " + (name_idx+1) + "], " + required_input[x] + " field requires input")
+             addAlert("[Line " + (name_idx+1) + "], " + required_input_list[x] + " field requires input")
              alert = true;
            }
         }
