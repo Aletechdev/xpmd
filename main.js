@@ -35,8 +35,8 @@ var data = [
     required: true,
     type: 'input',
     example: 'ify.aniefuna@gmail.com' },
-  { label: 'Project Name',
-    id: 'project',
+  { label: 'Experiment Name',
+    id: 'experiment',
     required: true,
     type: 'input' },
   { label: 'Data Type',
@@ -67,6 +67,7 @@ var data = [
   { label: 'NCBI Accession ID for Strain',
     id: 'Accession',
     type: 'dropdown',
+    required: true,
     custom: true,
     options_function: function(callback) {
       $.getJSON('Accession.json')
@@ -128,6 +129,10 @@ var data = [
     type: 'input',
     required: true,
     description: 'Link to internal / external accession number; link to sequence file + annotation'},
+   { label: 'Reference File Name',
+    id: 'reference-file-name',
+    required: true,
+    type: 'input' },
   { label: 'Read Files',
     id: 'read-files',
     type: 'tags',
@@ -251,10 +256,7 @@ var data = [
     default: 1,
     min: 1,
     max: 100,
-    form: 'generic_single'},
-  { label: 'Reference File Name',
-    id: 'reference-file-name',
-    type: 'input' }
+    form: 'generic_single'}
 ]
 var data_as_object = {}
     data.forEach(function(d) { data_as_object[d.id] = d })
@@ -298,10 +300,7 @@ var temperature_value = '(Celcius)'
 var output_file_name = "Metadata_spreadsheet"
 var header_generic = []
 var header_ale = []
-
-var required_input_gen = [["creator"],["creator-email"],["data-type"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["Link-to-reference-sequence"]]
-var required_input_ale = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["project"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"]]
-
+var required_input_list = []
 
 
 $(document).ready(function(){
@@ -337,12 +336,16 @@ $(document).ready(function(){
     }
   })
 
+
   $('#download_example_spreadsheet').click(function(){
 
-    var example_output = [["Name"],[,"Email"],[,"Title of Project"],
+      console.log(Accession_strings)
+
+
+    var example_output = [["Name"],[,"Email"],[,"Title of Experiment"],
           [,'"Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
-          [,'"NCBI Accession ID for Strain, Input one of the following: "' + "[" + Accession_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
+          [,'"NCBI Accession ID for Strain, Input one of the following: "' + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]" ],
           [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
           [,'"Base media, Input one of the following: "' + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Isolate type, Input one of the following: "' + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
@@ -359,7 +362,7 @@ $(document).ready(function(){
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
           [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
           [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],
-          [,"\n" + "creator"],[,"creator-email"],[,"project"],
+          [,"\n" + "creator"],[,"creator-email"],[,"experiment"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"Accession"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
           [,"Isolate-number"],[,"technical-replicate-number"],[,"sample-time"],[,"Link-to-reference-sequence"],[,"read-files"],
@@ -371,10 +374,24 @@ $(document).ready(function(){
           [,"biological-replicates"],[,"technical-replicates"],[,"reference-file-name"]]
 
 
+    required_input_list = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["experiment"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["reference-file-name"],["Accession"]]
+
+
     Liststart = false
     Listsplice = false
     if (workflow == 'generic_spreadsheet') {
-      
+
+      list_of_required_ALE = ["read-files", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
+
+      for(var j = 0; j < required_input_list.length; j++) {
+
+
+        if (list_of_required_ALE.indexOf(required_input_list[j][0]) >= 0) {
+            required_input_list.splice(j, 1);
+            j = j - 1    
+        }
+      }
+
       list_of_ALE_only = ["Insert ALE number", "Insert Flask number", "Insert Isolate number", "Insert Technical Replicate Number", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
       for(var i = 0; i < example_output.length; i++) {
 
@@ -403,13 +420,22 @@ $(document).ready(function(){
         }
 
       }
-      console.log(header_generic)
 
       var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
       saveAs(file, output_file_name + '.csv')
     }
 
     else if (workflow == 'ale_spreadsheet') {
+
+      list_of_required_Generic = []
+
+      for(var j = 0; j < required_input_list.length; j++) {
+
+        if (list_of_required_Generic.indexOf(required_input_list[j][0]) >= 0) {
+            required_input_list.splice(j, 1);
+            j = j - 1    
+        }
+      }
 
       list_of_Generic_only = ["Insert Biological replicates number", "Insert Technical replicates number", "biological-replicates", "technical-replicates"]
 
@@ -439,7 +465,6 @@ $(document).ready(function(){
         }
 
       }
-      console.log(header_ale)
 
       var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
       saveAs(file, output_file_name + '.csv')
@@ -610,17 +635,17 @@ function populate_metaform(file_data) {
 
 
 function get_zip_name() {
-  return get_value('project').toString() + '_' + folder_name()
+  return get_value('experiment').toString() + '_' + folder_name()
 }
 
 function get_zip_name_spreadsheet() {
-  var project;
+  var experiment;
   var rundate;
   var datatype;
 
   for (const [key, val] of Object.entries(spreadsheet_dict)) {
-      if (key == 'project') {
-        project = val
+      if (key == 'experiment') {
+        experiment = val
       }
       if (key == 'run-date') {
         rundate = val
@@ -629,13 +654,13 @@ function get_zip_name_spreadsheet() {
         datatype = val
       }
   }
-  return (project + '_' + rundate + '_' + datatype)
+  return (experiment + '_' + rundate + '_' + datatype)
 
 }
 
 function get_file_name_spreadsheet() {
 
-  var project;
+  var experiment;
   var rundate;
   var datatype;
   var ALE_numb;
@@ -645,8 +670,8 @@ function get_file_name_spreadsheet() {
   var serial_num;
 
   for (const [key, val] of Object.entries(spreadsheet_dict)) {
-      if (key == 'project') {
-        project = val
+      if (key == 'experiment') {
+        experiment = val
       }
       if (key == 'run-date') {
         rundate = val
@@ -676,22 +701,22 @@ function get_file_name_spreadsheet() {
 
   if (serial_num != '') {
     if ((workflow == 'generic_single')  || (workflow == 'generic_spreadsheet'))  {
-     return (serial_num + '_' + project + '_' + rundate + '_' + datatype)
+     return (serial_num + '_' + experiment + '_' + rundate + '_' + datatype)
 
     }
     else if ((workflow == 'ale_single') ||  (workflow == 'ale_spreadsheet'))  {
-      return (serial_num + '_' + project + '_' + ALE_numb + '_' + Flask_numb
+      return (serial_num + '_' + experiment + '_' + ALE_numb + '_' + Flask_numb
        + '_' + Isolate_numb + '_' + tech_rep_numb)
     }
   }
 
   else {
     if ((workflow == 'generic_single')  || (workflow == 'generic_spreadsheet')) {
-     return (project + '_' + rundate + '_' + datatype)
+     return (experiment + '_' + rundate + '_' + datatype)
 
     }
     else if ((workflow == 'ale_single') ||  (workflow == 'ale_spreadsheet')){
-      return (project + '_' + ALE_numb + '_' + Flask_numb
+      return (experiment + '_' + ALE_numb + '_' + Flask_numb
        + '_' + Isolate_numb + '_' + tech_rep_numb)
     }
   }
@@ -704,7 +729,7 @@ function get_file_name() {
     if (lib_prep != '')
       lib_prep = '_' + lib_prep
 
-    return get_value('project').toString() + '_' + label
+    return get_value('experiment').toString() + '_' + label
 
   }
   else if ((workflow == 'ale_single')  || (workflow == 'ale_spreadsheet')) {
@@ -713,7 +738,7 @@ function get_file_name() {
       lib_prep = '_' + lib_prep
     }
 
-    return get_value('project').toString()
+    return get_value('experiment').toString()
     + lib_prep
     + '_'
     + get_value('ALE-number').toString()
@@ -741,14 +766,6 @@ function handle_upload_spreadsheet(e, file) {
   var output_sample_name_array = []
   var alert = false;
   found = false;
-
-
-  if (workflow == 'generic_spreadsheet') {
-     var required_input = required_input_gen
-  }
-  else if (workflow == 'ale_spreadsheet') {
-     var required_input = required_input_ale
-  }
 
   if (variable_file_name_array.length == 2) {
     addAlert("Spreadsheet requires input")
@@ -792,7 +809,7 @@ function handle_upload_spreadsheet(e, file) {
       if(variable_file_name_array[1][i] == "Accession") {
 
           if (!dropdown_validation(Accession_list,variable_file_name_array[name_idx][i])) {
-            addAlert("NCBI Accession ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + Accession_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
+            addAlert("NCBI Accession ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]")
             alert = true;
           }
       }
@@ -924,11 +941,18 @@ function handle_upload_spreadsheet(e, file) {
             alert = true;
           }
       }
+      if(variable_file_name_array[1][i] == "reference-file-name") {
+        if (!(/^[a-zA-Z]+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("ERROR [Line " + (name_idx+1) + "], Please input Reference Genome file name")
+            alert = true;
+          }
+      }
 
-      for (var x = 0; x < required_input.length; x++) {
-        if (variable_file_name_array[1][i] == required_input[x]) {
+
+      for (var x = 0; x < required_input_list.length; x++) {
+        if (variable_file_name_array[1][i] == required_input_list[x]) {
            if (variable_file_name_array[name_idx][i] == "") {
-             addAlert("[Line " + (name_idx+1) + "], " + required_input[x] + " field requires input")
+             addAlert("[Line " + (name_idx+1) + "], " + required_input_list[x] + " field requires input")
              alert = true;
            }
         }
