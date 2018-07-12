@@ -129,10 +129,11 @@ var data = [
     type: 'input',
     required: true,
     description: 'Link to internal / external accession number; link to sequence file + annotation'},
-   { label: 'Reference File Name',
-    id: 'reference-file-name',
+   { label: 'Reference File List',
+    id: 'reference-file-list',
     required: true,
-    type: 'input' },
+    type: 'tags',
+    description: 'Input associated reference files names. Select "enter" per reference file name to build list.' },
   { label: 'Read Files',
     id: 'read-files',
     type: 'tags',
@@ -361,7 +362,7 @@ $(document).ready(function(){
           [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
           [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
-          [,"Insert Technical replicates number"],[,"Input Reference Genome file name"],
+          [,"Insert Technical replicates number"],[,'"Input associated (comma seperated) Reference Genome File Names. e.g. file1,file2,file3,file4"'],
           [,"\n" + "creator"],[,"creator-email"],[,"experiment"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"Accession"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
@@ -371,10 +372,10 @@ $(document).ready(function(){
           [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
           [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
           [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
-          [,"biological-replicates"],[,"technical-replicates"],[,"reference-file-name"]]
+          [,"biological-replicates"],[,"technical-replicates"],[,"reference-file-list"]]
 
 
-    required_input_list = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["experiment"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["reference-file-name"],["Accession"]]
+    required_input_list = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["experiment"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["reference-file-list"],["Accession"]]
 
 
     Liststart = false
@@ -785,7 +786,7 @@ function handle_upload_spreadsheet(e, file) {
 
     for (var i = 0; i < variable_file_name_array[1].length; i++) {
       if(variable_file_name_array[1][i] == "data-type") {
-         if (!dropdown_validation(data_type_options ,variable_file_name_array[name_idx][i])) {
+         if (!label_validation(data_type_options ,variable_file_name_array[name_idx][i])) {
             addAlert("Data type Field ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
          }
@@ -801,62 +802,62 @@ function handle_upload_spreadsheet(e, file) {
 
       if(variable_file_name_array[1][i] == "taxonomy-id") {
 
-          if (!dropdown_validation(taxonomy_id_list,variable_file_name_array[name_idx][i])) {
+          if (!label_validation(taxonomy_id_list,variable_file_name_array[name_idx][i])) {
             addAlert("NCBI Taxonomy ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "Accession") {
 
-          if (!dropdown_validation(Accession_list,variable_file_name_array[name_idx][i])) {
+          if (!label_validation(Accession_list,variable_file_name_array[name_idx][i])) {
             addAlert("NCBI Accession ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "base-media") {
-          if (!dropdown_validation(base_media_options,variable_file_name_array[name_idx][i])) {
+          if (!label_validation(base_media_options,variable_file_name_array[name_idx][i])) {
             addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "isolate-type") {
-          if (!dropdown_validation(isolate_options,variable_file_name_array[name_idx][i])) {
+          if (!label_validation(isolate_options,variable_file_name_array[name_idx][i])) {
             addAlert("Isolate type ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
           }
       }
      if(variable_file_name_array[1][i] == "machine") {
-          if (!dropdown_validation(machine_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_validation(machine_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Machine ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + machine_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "library-prep-kit-manufacturer") {
-          if (!dropdown_validation(lib_prep_manufacturer_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_validation(lib_prep_manufacturer_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Library Prep Kit Manufacturer ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "library-prep-kit") {
-          if (!dropdown_validation(lib_prep_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_validation(lib_prep_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Library Prep Kit ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "library-prep-kit-cycles") {
-          if (!dropdown_validation(lib_prep_cycle_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_validation(lib_prep_cycle_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Library Prep Kit Cycles ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "read-type") {
-          if (!dropdown_validation(read_type_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_validation(read_type_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Read Type ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "["+ read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "read-length") {
-          if (!dropdown_validation(read_length_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_validation(read_length_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Read Length ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
           }
@@ -899,25 +900,25 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
       if(variable_file_name_array[1][i] == "carbon-source") {
-          if (!source_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_with_number_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
              addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: "+ "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]" +" followed by the concentration in (g/L) EXAMPLE: Glucose(1)" )
              alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "nitrogen-source") {
-         if (!source_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+         if (!label_with_number_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
              addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: "+ "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" +" followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
              alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "phosphorous-source") {
-          if (!source_validation(phosphorous_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_with_number_validation(phosphorous_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Phosphorous Source ERROR [Line " + (name_idx+1) + "], Please input "+ "[" +phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]" +" followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)")
             alert = true;
           }
       }
       if(variable_file_name_array[1][i] == "sulfur-source") {
-          if (!source_validation(sulfur_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_with_number_validation(sulfur_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("Sulfur Source ERROR [Line " + (name_idx+1) + "], Please input "+ "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" +" followed by the concentration in (g/L) EXAMPLE: MgSO4(3)")
             alert = true;
           }
@@ -936,14 +937,14 @@ function handle_upload_spreadsheet(e, file) {
           }
       }
       if(variable_file_name_array[1][i] == "antibiotic") {
-          if (!source_validation(antibiotic_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
+          if (!label_with_number_validation(antibiotic_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please input one of the following Antibiotic(s) added: "+ "[" + antibiotic_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]" +" followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)")
             alert = true;
           }
       }
-      if(variable_file_name_array[1][i] == "reference-file-name") {
-        if (!(/^[a-zA-Z]+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input Reference Genome file name")
+      if(variable_file_name_array[1][i] == "reference-file-list") {
+        if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
+            addAlert("ERROR [Line " + (name_idx+1) + "], Please Input associated (comma seperated) Reference Genome File Names. e.g. file1,file2,file3,file4")
             alert = true;
           }
       }
@@ -1003,7 +1004,7 @@ function regExpEscape(literal_string) {
     return literal_string.replace(/[^A-Za-z0-9_]/g, '\\$&');
 }
 
-function source_validation(list, index) {
+function label_with_number_validation(list, index) {
   alert_call = false;
   for (var i = 0; i < list.length; i++) {
    
@@ -1016,7 +1017,7 @@ function source_validation(list, index) {
   return alert_call;
 }
 
-function dropdown_validation(list, index) {
+function label_validation(list, index) {
   error_call = false;
   changed = false;
   for (var i = 0; i < list.length; i++) {
