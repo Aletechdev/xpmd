@@ -1,4 +1,4 @@
-# experiment_metadata
+# Experiment Metadata (XPMD)
 Collect metadata for sequencing experiments.  
 Generates separate metadata files for individual samples using spreadsheet input.  
 Ensures required metadata is included.  
