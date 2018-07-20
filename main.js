@@ -20,8 +20,8 @@ var electron_acceptor_options= ['O2', 'NO3', 'SO4']
 var antibiotic_options = ['Kanamycin', 'Spectinomycin', 'Streptomycin', 'Ampicillin', 'Carbenicillin', 'Bleomycin', 'Erythromycin', 'Polymyxin B', 'Tetracycline', 'Chloramphenicol','Nafcillin']
 var lib_prep_options = ['Nextera XT', 'KAPA HyperPlus', 'KAPA Stranded RNA-seq']
 var lib_prep_manufacturer_options = ['Illumina', 'Kapa']
-var lib_prep_cycle_options = ['50 Cycle', '76 Cycle', '150 Cycle', '300 Cycle', '500 Cycle', '600 Cycle']
-var read_type_options = ['Single-end reads', 'Paired-end reads']
+var lib_prep_cycle_options = ['50', '76', '150', '300', '500', '600']
+var read_type_options = ['Single-end', 'Paired-end']
 var read_length_options = ['31', '36', '50', '62', '76', '100', '151', '251', '301']
 
 var data = [
