@@ -904,7 +904,7 @@ function handle_upload_spreadsheet(e, file) {
             alert = true;
           }
       }
-      f(variable_file_name_array[1][i] == "index-files") {
+      if(variable_file_name_array[1][i] == "index-files") {
         if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please input associated (comma seperated) Index Files. e.g. file1,file2,file3")
             alert = true;
