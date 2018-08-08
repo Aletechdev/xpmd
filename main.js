@@ -154,7 +154,7 @@ var data = [
     id: 'antibody',
     example: 'anti-CRP' },
   { label: 'Temperature',
-    description: 'Temperature in Celcius',
+    description: 'Temperature in Celsius',
     id: 'temperature',
     example: '37',
     type: 'number_required',
@@ -301,7 +301,7 @@ var read_length_options_strings = read_length_options.join()
 var concentrationlist = ['carbon-source','nitrogen-source','phosphorous-source','sulfur-source','supplement']
 var antibiotic_concentration = '(ug/mL)'
 var change_concentrations = '(g/L)'
-var temperature_value = '(Celcius)'
+var temperature_value = '(Celsius)'
 
 var output_file_name = "Metadata_spreadsheet"
 var header_generic = []
@@ -357,7 +357,7 @@ $(document).ready(function(){
           [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
           [,"Sample time is the hours from the start of experiment"],[,"Link to internal / external accession number; link to sequence file + annotation"],[,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],[,'"Input associated (comma seperated) Index Files. e.g. file1,file2,file3"'],
           [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
-          [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celcius. e.g. 37"],[,'"Carbon Source, Input one of the following: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
+          [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celsius. e.g. 37"],[,'"Carbon Source, Input one of the following: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
           [,'"Nitrogen Source, Input one of the following: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
           [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the following: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
@@ -882,7 +882,7 @@ function handle_upload_spreadsheet(e, file) {
       }
       if(variable_file_name_array[1][i] == "temperature") {
         if (!(/^[+-]?(?:\d*\.)?\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Temperature in Celcius. e.g. 37")
+            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Temperature in Celsius. e.g. 37")
             alert = true;
           }
       }
