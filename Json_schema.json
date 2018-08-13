@@ -1,5 +1,4 @@
 {
-  //"$schema": "empty schema",
   "type": "array",
   "items": {
     "type": "object",
