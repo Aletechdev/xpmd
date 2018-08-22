@@ -110,7 +110,7 @@
         "$id": "antibody",
         "type": "string"
       },
-      "temperature(Celcius)": {
+      "temperature(Celsius)": {
         "$id": "temperature",
         "type": "string",
         "pattern": "^\\d*\\.?\\d*$"
