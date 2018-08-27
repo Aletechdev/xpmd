@@ -129,11 +129,6 @@ var data = [
     type: 'input',
     required: true,
     description: 'Link to internal / external accession number; link to sequence file + annotation'},
-   { label: 'Reference File List',
-    id: 'reference-file-list',
-    required: true,
-    type: 'tags',
-    description: 'Input associated reference files names. Select "enter" per reference file name to build list.' },
   { label: 'Read Files',
     id: 'read-files',
     type: 'tags',
@@ -144,6 +139,11 @@ var data = [
     type: 'tags',
     ALErequired: true,
     description: 'Input associated index file names. Select "enter" per file name to build list.' },
+  { label: 'Reference File List',
+    id: 'reference-file-list',
+    required: true,
+    type: 'tags',
+    description: 'Input associated reference files names. Select "enter" per reference file name to build list.' },
   { label: 'Serial Number',
     id: 'serial-number',
     type: 'input' },
@@ -264,22 +264,26 @@ var data = [
     max: 100,
     form: 'generic_single'}
 ]
+
 var data_as_object = {}
     data.forEach(function(d) { data_as_object[d.id] = d })
 var multiplefiles = false;
 var files = [];
-var Dragfile = false
-var SIZEOFFILES = 0
 var new_files = []
 var original_file_content = []
+var current_instance = []
+var example_output = []
 var ifSpreadsheet = false;
 var header = [];
+var sizeoffiles = 0;
 var spreadsheet_val = [];
 var spreadsheet_id = [];
 var spreadsheet_data_array = [];
 var spreadsheet_dict = {};
-var correct_format_files_ALE = [];
-var correct_format_files_Generic = [];
+var validationstep = false;
+var correct_format_files_Array = [];
+var list_of_Generic_only = [];
+var list_of_ALE_only = [];
 var data_type_options_strings = data_type_options.join()
 var base_media_options_strings = base_media_options.join()
 var isolate_options_strings = isolate_options.join()
@@ -323,11 +327,14 @@ $(document).ready(function(){
   document.getElementById('spreadsheet_instructions_ale').style.display = 'none'
   document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'none'
 
+  //Validation spreadsheet on load
+  document.getElementById('validation_spreadsheet_instructions_gen').style.display = 'none'
+  document.getElementById('validation_spreadsheet_instructions_ale').style.display = 'none'
+  document.getElementById('validation_drag_and_drop').style.display = 'none'
+
 
   // add the uploader
   create_uploaders()
-
-  create_form('Generic')
 
   // submit
   $('#submit').click(function(){
@@ -342,13 +349,9 @@ $(document).ready(function(){
     }
   })
 
-
   $('#download_example_spreadsheet').click(function(){
 
-      console.log(Accession_strings)
-
-
-    var example_output = [["Name"],[,"Email"],[,"Title of Experiment"],
+          example_output = [["Name"],[,"Email"],[,"Title of Experiment"],
           [,'"Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
           [,'"NCBI Accession ID for Strain, Input one of the following: "' + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]" ],
@@ -385,7 +388,7 @@ $(document).ready(function(){
 
     Liststart = false
     Listsplice = false
-    if (workflow == 'generic_spreadsheet') {
+    if (workflow == 'generic_spreadsheet' || workflow == 'generic_validation') {
 
       list_of_required_ALE = ["read-files", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
 
@@ -427,11 +430,19 @@ $(document).ready(function(){
 
       }
 
-      var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
-      saveAs(file, output_file_name + '.csv')
+      if (validationstep == false) {
+
+        var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
+        saveAs(file, output_file_name + '.csv')
+
+      }
+
+      else if (validationstep == true) {
+        return example_output
+      }
     }
 
-    else if (workflow == 'ale_spreadsheet') {
+    else if (workflow == 'ale_spreadsheet' || workflow == 'ale_validation') {
 
       list_of_required_Generic = []
 
@@ -472,8 +483,15 @@ $(document).ready(function(){
 
       }
 
-      var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
-      saveAs(file, output_file_name + '.csv')
+      if (validationstep == false) {
+
+        var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
+        saveAs(file, output_file_name + '.csv')
+
+      }
+      else if (validationstep == true) {
+        return example_output
+      }
 
     }
   })
@@ -524,6 +542,19 @@ function create_form(form_type) {
     document.getElementById('intropage').style.display = 'none'
 
   }
+  if ( (form_type == 'generic_validation') ) {
+    document.getElementById('validation_spreadsheet_instructions_gen').style.display = 'block'
+    document.getElementById('validation_drag_and_drop').style.display = 'block'
+    document.getElementById('intropage').style.display = 'none'
+
+  }
+  if ( (form_type == 'ale_validation') ) {
+    document.getElementById('validation_spreadsheet_instructions_ale').style.display = 'block'
+    document.getElementById('validation_drag_and_drop').style.display = 'block'
+    document.getElementById('intropage').style.display = 'none'
+
+  }
+
 
   // add the form
   for(var i = 0; i < data.length; i++) {
@@ -557,6 +588,7 @@ function get_data_array() {
 
 }
 
+
 function check_required() {
   if ($('.required.alert-danger').length !== 0) {
     $('#submit').get(0).disabled = true
@@ -586,12 +618,78 @@ function create_uploaders() {
       load: handle_upload
     }
   });
+
+  $('#validation-upload').fileReaderJS({
+    dragClass: 'drag',
+    readAsDefault: 'Text',
+    on: {
+      groupstart: getsizeoffiles,
+      load: handle_upload_validation
+    }
+  });
 }
+
+
+function getsizeoffiles(e,file) {
+  sizeoffiles = e.files.length
+}
+
+function handle_upload_validation (e,file) {
+
+  handle_upload(e,file);
+  format_metadata(); 
+
+
+  if (sizeoffiles == files.length) {
+    files = []
+    correct_format_files_Array = []
+
+    return
+  }
+
+}
+
+function format_metadata() {
+  var array_data_json = {}
+  var array_data = []
+  for(var i = 0; i < data.length; i++){
+    var val = get_value(data[i]['id'])
+    val = val.toString()
+
+
+    if (concentrationlist.includes(data[i]['id'])) {
+      array_data_json[data[i]['id'] + change_concentrations] = val
+    }
+    else if (data[i]['id'] == 'antibiotic') {
+      array_data_json[data[i]['id'] + antibiotic_concentration] = val
+    }
+    else if (data[i]['id'] == 'temperature') {
+      array_data_json[data[i]['id'] + temperature_value] = val
+    }
+    else {
+      array_data_json[data[i]['id']] = val
+    }
+    array_data.push([data[i]['id'], val])
+
+
+
+  }
+
+  getschema([array_data_json], array_data)
+
+
+
+
+}
+
+var data_id_array = []
+var array_id = []
+var file_id;
 
 function handle_upload(e, file) {
   var csv_data = e.target.result,
   arrays = new CSV(csv_data).parse()
-  var file_id = file.name; //name of file
+  file_id = file.name; //name of file
   if (file_id.indexOf(".csv") == -1) {
     return
   }
@@ -601,42 +699,157 @@ function handle_upload(e, file) {
     }
   };
 
+  if (workflow.includes('validation')) {
+    for (var k = 0; k < data.length; k++) {
+      data_id_array.push(data[k]['id'])
+    };
+
+    for (var j=0; j<arrays.length; j++){
+      array_id.push(arrays[j][0])
+    }
+
+    for (var l=0; l<data_id_array.length; l++){
+
+
+      if (array_id.indexOf(data_id_array[l]) == -1) {
+
+        if (concentrationlist.includes(data_id_array[l])) {
+          if (array_id.indexOf(data_id_array[l] + change_concentrations) == -1) {
+            arrays.push([data_id_array[l], ""])
+          }
+        }
+        else if (data_id_array[l] == 'antibiotic') {
+          if (array_id.indexOf(data_id_array[l] + antibiotic_concentration) == -1) {
+            arrays.push([data_id_array[l], ""])
+          }
+        }
+        else if (data_id_array[l] == 'temperature') {
+          if (array_id.indexOf(data_id_array[l] + temperature_value) == -1) {
+            arrays.push([data_id_array[l], ""])
+          }
+        }
+        else {
+          arrays.push([data_id_array[l], ""])
+          array_id.push(data_id_array[l])
+        }
+
+      }
+
+    }
+
+    array_id = []
+
+  }
+
   files.push(arrays); // data from meta data sheet
 
   for(var i=0; i<files.length; i++) {
+
      populate_metaform(files[i]);
      original_file_content = files[i]; // ORIGINAL FILE CONTENT
+
   }
-  format_metadata();
+
 }
 
-function format_metadata() {
-  if (workflow == 'Generic') {
-    var array_data = []
-    for(var i = 0; i < data.length; i++){
-      var val = get_value(data[i]['id'])
-      val = val.toString()
+function getschema(current_instance_json, instance){
 
-      array_data.push([data[i]['id'], val])
-    }
-    correct_format_files_Generic.push(array_data)
+  $.getJSON('Json_schema.json', function(data) { 
+
+    processSchema(data, current_instance_json, instance);
+
+  });
+}
+
+function processSchema(json, current_instance_json, instance) {
+
+  instance_json = current_instance_json
+
+  Json_Validator(json, instance_json, instance)
+}
+
+
+function Json_Validator(schema, instance_json, instance) {
+
+  var ajv = new Ajv({allErrors: true});
+  var validate = ajv.compile(schema)
+  var valid = validate(instance_json);
+
+  if (valid) {
+    correct_format_files_Array.push(instance)
   }
   else {
-    var array_data = []
-    for(var i = 0; i < data.length; i++){
-      var val = get_value(data[i]['id'])
-      val = val.toString()
-
-      array_data.push([data[i]['id'], val])
+    for (j =0; j < instance.length; j++) {
+      for (var i = 0; i < Object.values(validate.errors).length; i++) {
+        if (Object.values(validate.errors)[i].dataPath.includes(instance[j][0])) {
+          instance[j][1] = ""
+          addAlert("Row[" + (correct_format_files_Array.length + 3) + "], " + "Could not return validated value for field: " + instance[j][0])
+        }
+      }
     }
-    correct_format_files_ALE.push(array_data)
+    correct_format_files_Array.push(instance)
+  }
+
+  if (sizeoffiles == correct_format_files_Array.length) {
+    Convert_to_Spreadsheet()
   }
 
 }
 
+function Convert_to_Spreadsheet() {
+  validationstep = true
+
+  $('#download_example_spreadsheet').triggerHandler("click")
+
+  var start_of_list = 0
+  for (var k=1; k<example_output.length; k++) {
+      if (example_output[k][1].includes("\n")) {
+        start_of_list = k
+      }
+  }
+
+  var final_array = []
+  var new_correct_format_files_Array = []
+  for (var x = 0; x < correct_format_files_Array.length; x++) {
+
+    for (var l = start_of_list; l < example_output.length; l++) {
+      for (var y = 0; y < correct_format_files_Array[x].length; y++) {
+
+        if ((example_output[l][1] == correct_format_files_Array[x][y][0]) || (example_output[l][1] == ("\n" + correct_format_files_Array[x][y][0]))) {
+           final_array.push([correct_format_files_Array[x][y][1]])
+           break;
+        }
+      }
+    }
+    new_correct_format_files_Array.push(final_array)
+    final_array = []
+  }
+
+  var filearray = [];
+  var Spreadsheet_data = [];
+  var Spreadsheet_data = example_output;
+
+  for (var i = 0; i < new_correct_format_files_Array.length; i++) {
+    for (var j = 0; j < new_correct_format_files_Array[i].length; j++) {
+      filearray[j] = JSON.stringify(new_correct_format_files_Array[i][j][0])
+    }
+      Spreadsheet_data.push("\n")
+      Spreadsheet_data.push(filearray)
+      filearray = []
+  }
+
+  var file = new Blob(Spreadsheet_data, { type: 'text/plain;charset=utf-8' })
+  saveAs(file, output_file_name + '.csv')
+  
+}
+
+
 function populate_metaform(file_data) {
-  for (var i = 0; i < file_data.length; i++)
+
+  for (var i = 0; i < file_data.length; i++) { 
     set_value(file_data[i][0], file_data[i][1] + '')
+    
+  }
 }
 
 
@@ -1113,8 +1326,20 @@ var saved_ALE_number;
 var saved_Flask_number;
 var saved_Isolate_number;
 var saved_technical_replicate_number;
+var saved_temperature;
+var saved_carbon;
+var saved_nitrogen;
+var saved_phosphorous;
+var saved_sulfur;
+var saved_electron;
+var saved_supplement;
+var saved_antibiotic;
+
 var saved_ = false;
+
+
 function get_value(id, input_only) {
+
   /** Get the value for the given input id */
   if (_.isUndefined(input_only))
     input_only = false
@@ -1142,6 +1367,30 @@ function get_value(id, input_only) {
     else if (id == 'technical-replicate-number') {
       var vals = saved_technical_replicate_number;
     }
+    else if (id.includes('temperature')) {
+      var vals = saved_temperature;
+    }
+    else if (id.includes('carbon-source')) {
+      var vals = saved_carbon;
+    }
+    else if (id.includes('nitrogen-source')) {
+      var vals = saved_nitrogen;
+    }
+    else if (id.includes('phosphorous-source')) {
+      var vals = saved_phosphorous;
+    }
+    else if (id.includes('sulfur-source')) {
+      var vals = saved_sulfur;
+    }
+    else if (id.includes('electron-acceptor')) {
+      var vals = saved_electron;
+    }
+    else if (id.includes('supplement')) {
+      var vals = saved_supplement;
+    }
+    else if (id.includes('antibiotic')) {
+      var vals = saved_antibiotic;
+    }
     else {
       var vals = $('#' + id).val()
     }
@@ -1150,27 +1399,44 @@ function get_value(id, input_only) {
       var vals = $('#' + id).val()
   }
 
+
+
+
+
   if ((typeof vals === 'undefined') || (vals === null))
     return ''
+
 
   if (input_only)
     return vals
 
+
     // add concentrations to val
   if (_.isArray(vals)) {
     return vals.map(function(val) {
-      if (val in concentrations && Dragfile == false)
+      if (val in concentrations) {
         return val + '(' + concentrations[val] + ')'
-      else
+      }
+      else {
         return val
+      }
     })
   } else {
     return vals
   }
+
+
+
 }
 
+unrecognizedkey_array = []
+
+
 function set_value(id, value) {
+
  saved_ = true;
+ var is_unit = false;
+
  if (id == 'ALE-number') {
       saved_ALE_number = value;
  }
@@ -1183,12 +1449,66 @@ function set_value(id, value) {
  if (id == 'technical-replicate-number') {
       saved_technical_replicate_number = value;
  }
+ if (id.includes('temperature')) {
+      id = 'temperature'
+      saved_temperature = value;
+      is_unit = true
+ }
+ if (id.includes('carbon-source')) {
+      id = 'carbon-source'
+      saved_carbon = value;
+      is_unit = true
+ }
+ if (id.includes('nitrogen-source')) {
+      id = 'nitrogen-source'
+      saved_nitrogen = value;      
+      is_unit = true
+ }
+ if (id.includes('phosphorous-source')) {
+      id = 'phosphorous-source'
+      saved_phosphorous = value;
+      is_unit = true
+ }
+ if (id.includes('sulfur-source')) {
+      id = 'sulfur-source'
+      saved_sulfur = value;
+      is_unit = true
+ }
+ if (id.includes('electron-acceptor')) {
+      id = 'electron-acceptor'
+      saved_electron = value;
+      is_unit = true
+ }
+ if (id.includes('supplement')) {
+      id = 'supplement'
+      saved_supplement = value;
+      is_unit = true
+ }
+ if (id.includes('antibiotic')) {
+      id = 'antibiotic'
+      saved_antibiotic = value;
+      is_unit = true
+ }
 
-
+//make unrecognized key array
  if (!(id in data_as_object)) {
-    console.warn('Unrecognized key ' + id)
-    return
+    if (is_unit == false) {
+      unrecognizedkey_array.push("")
+      console.warn('Unrecognized key ' + id)
+      if (workflow.includes('validation') && unrecognizedkey_array.indexOf(id) == -1 ) {
+        unrecognizedkey_array.push(id)
+        addAlert('Could not return validated value for unrecognized key: ' + id)
+
+      }
+      
+      return
+    }
+    else {
+      return
+    }
+    
   }
+
   var sel = $('#' + id)
   if (sel.data('select2')) {
 
@@ -1223,11 +1543,14 @@ function set_value(id, value) {
                           concentrations)
       }
   }
+
     sel.val(value).trigger('change')
+
 
   // update UI
   update_required_label(id, value)
   update_folder_name()
+
 }
 
 
