@@ -1047,218 +1047,29 @@ function handle_upload_spreadsheet(e, file) {
     spreadsheet_data_array = [];
     spreadsheet_dict = {};
 
-    //console.log(variable_file_name_array[name_idx])
-
-    /*var myREfordate = new RegExp (['^((0?[13578]|10|12)(-|\/)(([1-9])|(0[1-9])|([12])',
-      '([0-9]?)|(3[01]?))(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])',
-      '(\d{1}))|(0?[2469]|11)(-|\/)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[0]?))',
-      '(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1})))$'].join(''));*/
-
+    
     for (var i = 0; i < variable_file_name_array[1].length; i++) {
 
+      spreadsheet_val.push(variable_file_name_array[name_idx][i])
+      
+      var headers = variable_file_name_array[1][i]
 
+      header.push(headers)
 
-      /*if(variable_file_name_array[1][i] == "data-type") {
-         if (!label_validation(data_type_options ,variable_file_name_array[name_idx][i])) {
-            addAlert("Data type Field ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-         }
+      if (concentrationlist.includes(headers)) {
+        spreadsheet_id.push(headers + change_concentrations)
       }
-
-      if(variable_file_name_array[1][i] == "run-date") {
-        if(myREfordate.test(variable_file_name_array[name_idx][i])
-         && (variable_file_name_array[name_idx][i]) != '') {
-          addAlert("Enter Valid Experiment Date (YYYY-MM-DD) [Line " + (name_idx+1) + "]")
-          alert = true;
-        }
+      else if (headers == 'antibiotic') {
+        spreadsheet_id.push(headers + antibiotic_concentration)
       }
-
-      if(variable_file_name_array[1][i] == "taxonomy-id") {
-
-          if (!label_validation(taxonomy_id_list,variable_file_name_array[name_idx][i])) {
-            addAlert("NCBI Taxonomy ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
+      else if (headers == 'temperature') {
+        spreadsheet_id.push(headers + temperature_value)
       }
-      if(variable_file_name_array[1][i] == "Accession") {
-
-          if (!label_validation(Accession_list,variable_file_name_array[name_idx][i])) {
-            addAlert("NCBI Accession ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
+      else {
+        spreadsheet_id.push(headers)
       }
-      if(variable_file_name_array[1][i] == "base-media") {
-          if (!label_validation(base_media_options,variable_file_name_array[name_idx][i])) {
-            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "isolate-type") {
-          if (!label_validation(isolate_options,variable_file_name_array[name_idx][i])) {
-            addAlert("Isolate type ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-     if(variable_file_name_array[1][i] == "machine") {
-          if (!label_validation(machine_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Machine ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + machine_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "library-prep-kit-manufacturer") {
-          if (!label_validation(lib_prep_manufacturer_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Library Prep Kit Manufacturer ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "library-prep-kit") {
-          if (!label_validation(lib_prep_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Library Prep Kit ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "library-prep-kit-cycles") {
-          if (!label_validation(lib_prep_cycle_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Library Prep Kit Cycles ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "read-type") {
-          if (!label_validation(read_type_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Read Type ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "["+ read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "read-length") {
-          if (!label_validation(read_length_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Read Length ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if((variable_file_name_array[1][i] == "ALE-number") || (variable_file_name_array[1][i] == "Flask-number")
-        || (variable_file_name_array[1][i] == "technical-replicate-number") || (variable_file_name_array[1][i] == "Isolate-number")) {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert a numerical value for the ALE-number, Isolate-number, Flask-number or Technical-replicate-number")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "sample-time") {
-         if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert numerical value for Sample time (hours from start of experiment) e.g. 4")
-            alert = true;
-         }
-      }
-      if(variable_file_name_array[1][i] == "temperature") {
-        if (!(/^[+-]?(?:\d*\.)?\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Temperature in Celsius. e.g. 37")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "biological-replicates") {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Biological replicates number")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "technical-replicates") {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Technical replicates number")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "read-files") {
-        if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "index-files") {
-        if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input associated (comma seperated) Index Files. e.g. file1,file2,file3")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "carbon-source") {
-          if (!label_with_number_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-             addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: "+ "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]" +" followed by the concentration in (g/L) EXAMPLE: Glucose(1)" )
-             alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "nitrogen-source") {
-         if (!label_with_number_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-             addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: "+ "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" +" followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
-             alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "phosphorous-source") {
-          if (!label_with_number_validation(phosphorous_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Phosphorous Source ERROR [Line " + (name_idx+1) + "], Please input "+ "[" +phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]" +" followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "sulfur-source") {
-          if (!label_with_number_validation(sulfur_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Sulfur Source ERROR [Line " + (name_idx+1) + "], Please input "+ "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" +" followed by the concentration in (g/L) EXAMPLE: MgSO4(3)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "electron-acceptor") {
-          if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Electron Acceptor ERROR [Line " + (name_idx+1) + "], Please input one of the following: "+ "[" +electron_acceptor_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "supplement") {
-          list_supplment = ['/^([^\s]*)$/']
-          if (!/^([^\s]*)$/.test(variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "antibiotic") {
-          if (!label_with_number_validation(antibiotic_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input one of the following Antibiotic(s) added: "+ "[" + antibiotic_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]" +" followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "reference-file-list") {
-        if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please Input associated (comma seperated) Reference Genome File Names. e.g. file1,file2,file3,file4")
-            alert = true;
-          }
-      }*/
-
-
-        /*for (var x = 0; x < required_input_list.length; x++) {
-          if (variable_file_name_array[1][i] == required_input_list[x]) {
-             if (variable_file_name_array[name_idx][i] == "") {
-               addAlert("[Line " + (name_idx+1) + "], " + required_input_list[x] + " field requires input")
-               alert = true;
-             }
-          }
-        }*/
-
-    
-
-    spreadsheet_val.push(variable_file_name_array[name_idx][i])
-    
-    var headers = variable_file_name_array[1][i]
-
-    header.push(headers)
-
-    if (concentrationlist.includes(headers)) {
-      spreadsheet_id.push(headers + change_concentrations)
-    }
-    else if (headers == 'antibiotic') {
-      spreadsheet_id.push(headers + antibiotic_concentration)
-    }
-    else if (headers == 'temperature') {
-      spreadsheet_id.push(headers + temperature_value)
-    }
-    else {
-      spreadsheet_id.push(headers)
-    }
-    spreadsheet_data_array = get_value_spreadsheet(spreadsheet_id,spreadsheet_val)
+      spreadsheet_data_array = get_value_spreadsheet(spreadsheet_id,spreadsheet_val)
+      
     }
 
     var stop = getschema([spreadsheet_dict], spreadsheet_data_array, (name_idx+1)) 
