@@ -274,6 +274,7 @@ var original_file_content = []
 var current_instance = []
 var example_output = []
 var ifSpreadsheet = false;
+var stop_spreadsheet_creation = false;
 var header = [];
 var sizeoffiles = 0;
 var spreadsheet_val = [];
@@ -388,7 +389,9 @@ $(document).ready(function(){
 
     Liststart = false
     Listsplice = false
+
     if (workflow == 'generic_spreadsheet' || workflow == 'generic_validation') {
+
 
       list_of_required_ALE = ["read-files", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
 
@@ -430,6 +433,10 @@ $(document).ready(function(){
 
       }
 
+      if (workflow == 'generic_spreadsheet') {
+        return
+      }
+
       if (validationstep == false) {
 
         var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
@@ -440,7 +447,10 @@ $(document).ready(function(){
       else if (validationstep == true) {
         return example_output
       }
+
     }
+
+
 
     else if (workflow == 'ale_spreadsheet' || workflow == 'ale_validation') {
 
@@ -481,6 +491,10 @@ $(document).ready(function(){
             Liststart = true
         }
 
+      }
+      
+      if (workflow == 'ale_spreadsheet') {
+        return
       }
 
       if (validationstep == false) {
@@ -671,14 +685,9 @@ function format_metadata() {
     }
     array_data.push([data[i]['id'], val])
 
-
-
   }
 
   getschema([array_data_json], array_data)
-
-
-
 
 }
 
@@ -752,49 +761,94 @@ function handle_upload(e, file) {
 
 }
 
-function getschema(current_instance_json, instance){
+
+
+function getschema(current_instance_json, instance, name_idx){
+
+  $.ajaxSetup({
+   async: false
+  });
+
+  var get_stop;
 
   $.getJSON('Json_schema.json', function(data) { 
 
-    processSchema(data, current_instance_json, instance);
+    get_stop = processSchema(data, current_instance_json, instance, name_idx);
 
   });
+
+  return get_stop
+
 }
 
-function processSchema(json, current_instance_json, instance) {
+function processSchema(json, current_instance_json, instance, name_idx) {
 
   instance_json = current_instance_json
 
-  Json_Validator(json, instance_json, instance)
+  return Json_Validator(json, instance_json, instance, name_idx)
+
 }
 
 
-function Json_Validator(schema, instance_json, instance) {
+function Json_Validator(schema, instance_json, instance, name_idx) {
 
   var ajv = new Ajv({allErrors: true});
-  var validate = ajv.compile(schema)
+  var validate = ajv.compile(schema);
   var valid = validate(instance_json);
 
-  if (valid) {
-    correct_format_files_Array.push(instance)
-  }
-  else {
-    for (j =0; j < instance.length; j++) {
-      for (var i = 0; i < Object.values(validate.errors).length; i++) {
-        if (Object.values(validate.errors)[i].dataPath.includes(instance[j][0])) {
-          instance[j][1] = ""
-          addAlert("Row[" + (correct_format_files_Array.length + 3) + "], " + "Could not return validated value for field: " + instance[j][0])
+  if (workflow.includes("spreadsheet")) {
+
+    if (!valid) {
+      for (var l = 0; l < instance.length; l++) {
+        for (var k = 0; k < Object.values(validate.errors).length; k++) {
+    
+          if (Object.values(validate.errors)[k].dataPath.includes(instance[l][0])) {
+            if (instance[l][0] == "" && Object.values(validate.errors)[k].keyword == 'required') {
+            }
+            else if ((Object.values(validate.errors)[k].keyword == 'enum' && instance[l][0] != "") || (Object.values(validate.errors)[k].keyword == 'pattern' && instance[l][0] != "")) {
+              if (required_input_list.join().includes(instance[l][0])) {
+                addAlert("Row[" + (name_idx) + "], The " + instance[l][0] + " field is REQUIRED and must have a valid information! Please refer to row 1 in spreadsheet for valid input.")
+              }
+              else {
+                addAlert("Row[" + (name_idx) + "], The " + instance[l][0] + " field has invalid information! Please refer to row 1 in spreadsheet for valid input.")
+              }
+            }
+          }
         }
       }
+      return true;
     }
-    correct_format_files_Array.push(instance)
-  }
+    else {
+      return false;
+    }
+  
+  }  
 
-  if (sizeoffiles == correct_format_files_Array.length) {
-    Convert_to_Spreadsheet()
+  if (workflow.includes("validation")) {
+
+    if (valid) {
+      correct_format_files_Array.push(instance)
+    }
+    else {
+      for (j =0; j < instance.length; j++) {
+        for (var i = 0; i < Object.values(validate.errors).length; i++) {
+          if (Object.values(validate.errors)[i].dataPath.includes(instance[j][0])) {
+            instance[j][1] = ""
+            addAlert("Row[" + (correct_format_files_Array.length + 3) + "], " + "Could not return validated value for field: " + instance[j][0])
+          }
+        }
+      }
+      correct_format_files_Array.push(instance)
+    }
+
+    if (sizeoffiles == correct_format_files_Array.length) {
+       Convert_to_Spreadsheet()
+    }
+
   }
 
 }
+
 
 function Convert_to_Spreadsheet() {
   validationstep = true
@@ -970,21 +1024,16 @@ function get_file_name() {
 function handle_upload_spreadsheet(e, file) {
   $(".alert").remove();
   ifSpreadsheet = true;
-  if (workflow == 'generic_spreadsheet') {
-    header = header_generic
-  }
-  else if (workflow == 'ale_spreadsheet') {
-    header = header_ale
-  }
 
+  header = []
 
+  $('#download_example_spreadsheet').triggerHandler("click")
+  
+  var alert;
   var zip = new JSZip()
   var input_csv_data = e.target.result,
       variable_file_name_array = new CSV(input_csv_data).parse()
 
-  var output_sample_name_array = []
-  var alert = false;
-  found = false;
 
   if (variable_file_name_array.length == 2) {
     addAlert("Spreadsheet requires input")
@@ -997,13 +1046,19 @@ function handle_upload_spreadsheet(e, file) {
     spreadsheet_id = [];
     spreadsheet_data_array = [];
     spreadsheet_dict = {};
-    var myREfordate = new RegExp (['^((0?[13578]|10|12)(-|\/)(([1-9])|(0[1-9])|([12])',
+
+    //console.log(variable_file_name_array[name_idx])
+
+    /*var myREfordate = new RegExp (['^((0?[13578]|10|12)(-|\/)(([1-9])|(0[1-9])|([12])',
       '([0-9]?)|(3[01]?))(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])',
       '(\d{1}))|(0?[2469]|11)(-|\/)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[0]?))',
-      '(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1})))$'].join(''));
+      '(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1})))$'].join(''));*/
 
     for (var i = 0; i < variable_file_name_array[1].length; i++) {
-      if(variable_file_name_array[1][i] == "data-type") {
+
+
+
+      /*if(variable_file_name_array[1][i] == "data-type") {
          if (!label_validation(data_type_options ,variable_file_name_array[name_idx][i])) {
             addAlert("Data type Field ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
             alert = true;
@@ -1171,20 +1226,26 @@ function handle_upload_spreadsheet(e, file) {
             addAlert("ERROR [Line " + (name_idx+1) + "], Please Input associated (comma seperated) Reference Genome File Names. e.g. file1,file2,file3,file4")
             alert = true;
           }
-      }
+      }*/
 
 
-      for (var x = 0; x < required_input_list.length; x++) {
-        if (variable_file_name_array[1][i] == required_input_list[x]) {
-           if (variable_file_name_array[name_idx][i] == "") {
-             addAlert("[Line " + (name_idx+1) + "], " + required_input_list[x] + " field requires input")
-             alert = true;
-           }
-        }
-      }
+        /*for (var x = 0; x < required_input_list.length; x++) {
+          if (variable_file_name_array[1][i] == required_input_list[x]) {
+             if (variable_file_name_array[name_idx][i] == "") {
+               addAlert("[Line " + (name_idx+1) + "], " + required_input_list[x] + " field requires input")
+               alert = true;
+             }
+          }
+        }*/
+
+    
+
     spreadsheet_val.push(variable_file_name_array[name_idx][i])
     
     var headers = variable_file_name_array[1][i]
+
+    header.push(headers)
+
     if (concentrationlist.includes(headers)) {
       spreadsheet_id.push(headers + change_concentrations)
     }
@@ -1200,22 +1261,64 @@ function handle_upload_spreadsheet(e, file) {
     spreadsheet_data_array = get_value_spreadsheet(spreadsheet_id,spreadsheet_val)
     }
 
+    var stop = getschema([spreadsheet_dict], spreadsheet_data_array, (name_idx+1)) 
+
+    var diff = []
+
+
+    if (workflow == 'ale_spreadsheet') {
+
+      diff = $(header_ale.join().split(',')).not(header).get();
+
+      for (var y = 0; y < diff.length; y++) {
+        addAlert("Row[" + (name_idx) + "], The " + diff[y] + " field is missing from spreadsheet! Please include " + diff[y] + " in spreadsheet to continue.")
+      }
+
+      header_ale = []
+    }
+
+    else {
+
+      diff = $(header_generic.join().split(',')).not(header).get();
+
+      for (var y = 0; y < diff.length; y++) {
+        addAlert("Row[" + (name_idx) + "], The " + diff[y] + " field is missing from spreadsheet! Please include " + diff[y] + " in spreadsheet to continue.")
+      }
+
+      header_generic = []
+
+    }
+
+
+    if (stop == true || diff.length > 1) {
+      alert = true
+    }
+
+
+
+ 
     var file_name = get_file_name_spreadsheet() + "(" + filecounter + ")" + '.csv';
 
     var output_sample_csv_data = [new CSV(spreadsheet_data_array).encode()]
     var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' })
     zip.folder("MetaData Files").file(file_name, output_sample_metadata_file)
-  }
-    if (alert == true) {
-      return;
-    }
 
-    zip.generateAsync({type:"blob"})
-    .then(function (blob) {
-      saveAs(blob, get_zip_name_spreadsheet() + '.zip')
-    })
+
+  }
+
+  if (alert == true) {
+    return
+  }
+
+  zip.generateAsync({type:"blob"})
+  .then(function (blob) {
+    saveAs(blob, get_zip_name_spreadsheet() + '.zip')
+  })
 
 }
+
+
+
 
 function addAlert(message) {
     $('#alert').append('<div class="alert alert-danger alert-dismissable" id="alertdivs">' +

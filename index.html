@@ -25,6 +25,7 @@
     <script src="lib/csv.min.js"></script>
     <script src="lib/bootstrap-number-input.js"></script>
     <script src="lib/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/6.5.2/ajv.min.js"></script>
     <script src="main.js"></script>
     <script src="https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 
@@ -78,12 +79,13 @@
             <option id="ale" value="ALE">
         </datalist>
 
-        <label class="labels" for="dropdown_forms">Step 2. Choose Single Form or Multiple Spreadsheet </label>
-        <input type="text" id="dropdown_formnumber" list="formnumber" placeholder="e.g. Single, Multiple" onmousedown="value = '';">
+        <label class="labels" for="dropdown_forms">Step 2. Choose Single Form, Multiple Spreadsheet, or Validation Spreadsheet </label>
+        <input type="text" id="dropdown_formnumber" list="formnumber" placeholder="e.g. Single, Multiple, or Validation" onmousedown="value = '';">
 
         <datalist id="formnumber">
             <option id="single" value="Create Single Metadata File">
             <option id="spreadsheet" value="Create Multiple Metadata Files: Spreadsheet">
+            <option id="validation" value="Create Validation Spreadsheet for Metadata File(s)">
         </datalist>
         
         <div>
@@ -95,7 +97,7 @@
         var initializeTheSelectedValues = function() {
           alert = false
           if ($('#formnumber option[value="' + $('#dropdown_formnumber').val() + '"]').attr('id') == undefined) {
-            addAlert('Please select single or multiple files before continuing')
+            addAlert('Please select single, multiple, or validation before continuing')
             alert = true
           }
           if ($('#formtype option[value="' + $('#dropdown_formtype').val() + '"]').attr('id') == undefined) {
@@ -193,10 +195,54 @@
         </div>
         </div>
 
+
+         <div id="validation_spreadsheet_instructions_gen">
+          <h3>
+            Generic Metadata (validation)
+          </h3>
+          <p>
+            <strong><i>Drag and Drop metadata to create spreadsheet containing only valid metadata information:</i></strong>
+            <ul>
+                <li><strong> Warning: Invalid information and or fields will be removed from generated spreadsheet.</strong></li>
+                <li><strong><i>STEP 1:</i></strong> Drag and Drop Metadata CSV file(s) to generate spreadsheet. </li> 
+                <li><strong> Warning: Do not change format of template spreadsheet.</strong></li>                   
+                <li>Each row represents a new sample metadata file.</li>
+                <li><strong><i>STEP 2:</i></strong> Examine examples of <u>valid</u> input located on row 1 of template spreadsheet.</li>
+                <li><strong><i>STEP 3:</i></strong> <u>"Start at row 3!"</u> Fill out all of the required fields under the correct field header. </li>
+            </ul>
+          </p>
+          <div>
+            <label><font color='#0d3051'>To generate new metadata from spreadsheet: Refresh page to navigate back to the start of workflow</font></label>
+          </div>
+        </div>
+
+
+        <div id="validation_spreadsheet_instructions_ale">
+          <h3>
+            ALE Metadata (validation)
+          </h3>
+          <p>
+            <strong><i>Drag and Drop metadata to create spreadsheet containing only valid metadata information:</i></strong>
+            <ul>
+                <li><strong> Warning: Invalid information and or fields will be removed from generated spreadsheet.</strong></li>
+                <li><strong><i>STEP 1:</i></strong> Drag and Drop Metadata CSV file(s) to generate spreadsheet. </li> 
+                <li><strong> Warning: Do not change format of template spreadsheet.</strong></li>                   
+                <li>Each row represents a new sample metadata file.</li>
+                <li><strong><i>STEP 2:</i></strong> Examine examples of <u>valid</u> input located on row 1 of template spreadsheet.</li>
+                <li><strong><i>STEP 3:</i></strong> <u>"Start at row 3!"</u> Fill out all of the required fields under the correct field header. </li>
+            </ul>
+          </p>
+          <div>
+            <label><font color='#0d3051'>To generate new metadata from spreadsheet: Refresh page to navigate back to the start of workflow</font></label>
+          </div>
+        </div>
+
+      
+
       <div id="alert"></div>
 
 
-      <div class="panel panel-default"id="csv_drag_and_drop_spreadsheet">
+      <div class="panel panel-default" id="csv_drag_and_drop_spreadsheet">
         <div class="panel-heading">
           <strong>Spreadsheet to Metadata</strong>: CSV with required metadata field names.
           <button id="download_example_spreadsheet" type="submit" class="btn btn-default">
@@ -207,6 +253,16 @@
           <div id="spreadsheet-upload">Drag and drop spreadsheet.</div>
         </div>
       </div>
+
+      <div class="panel panel-default" id="validation_drag_and_drop">
+        <div class="panel-heading">
+          <strong>Metadata to Spreadsheet</strong>: Load existing CSV file(s) to generate Spreadsheet with corrected information per CSV.
+        </div>
+        <div class="panel-body">
+          <div id="validation-upload">Drag and drop CSV file(s).</div>
+        </div>
+      </div>
+
       <div class="panel panel-default" id='single_metadata_sheet'>
         <div class="panel-heading" id="Single_Metadata_header">
           Enter or Edit your metadata.
@@ -239,6 +295,7 @@
           </div>
         </div>
       </div>
+
     </div>
   
  
