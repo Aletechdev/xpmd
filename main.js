@@ -129,11 +129,6 @@ var data = [
     type: 'input',
     required: true,
     description: 'Link to internal / external accession number; link to sequence file + annotation'},
-   { label: 'Reference File List',
-    id: 'reference-file-list',
-    required: true,
-    type: 'tags',
-    description: 'Input associated reference files names. Select "enter" per reference file name to build list.' },
   { label: 'Read Files',
     id: 'read-files',
     type: 'tags',
@@ -144,6 +139,11 @@ var data = [
     type: 'tags',
     ALErequired: true,
     description: 'Input associated index file names. Select "enter" per file name to build list.' },
+  { label: 'Reference File List',
+    id: 'reference-file-list',
+    required: true,
+    type: 'tags',
+    description: 'Input associated reference files names. Select "enter" per reference file name to build list.' },
   { label: 'Serial Number',
     id: 'serial-number',
     type: 'input' },
@@ -264,22 +264,28 @@ var data = [
     max: 100,
     form: 'generic_single'}
 ]
+
 var data_as_object = {}
     data.forEach(function(d) { data_as_object[d.id] = d })
 var multiplefiles = false;
 var files = [];
-var Dragfile = false
-var SIZEOFFILES = 0
 var new_files = []
 var original_file_content = []
+var current_instance = []
+var example_output = []
 var ifSpreadsheet = false;
+var stop_spreadsheet_creation = false;
 var header = [];
+var sizeoffiles = 0;
 var spreadsheet_val = [];
 var spreadsheet_id = [];
 var spreadsheet_data_array = [];
 var spreadsheet_dict = {};
-var correct_format_files_ALE = [];
-var correct_format_files_Generic = [];
+var drag_drop = false;
+var validationstep = false;
+var correct_format_files_Array = [];
+var list_of_Generic_only = [];
+var list_of_ALE_only = [];
 var data_type_options_strings = data_type_options.join()
 var base_media_options_strings = base_media_options.join()
 var isolate_options_strings = isolate_options.join()
@@ -323,11 +329,14 @@ $(document).ready(function(){
   document.getElementById('spreadsheet_instructions_ale').style.display = 'none'
   document.getElementById('csv_drag_and_drop_spreadsheet').style.display = 'none'
 
+  //Validation spreadsheet on load
+  document.getElementById('validation_spreadsheet_instructions_gen').style.display = 'none'
+  document.getElementById('validation_spreadsheet_instructions_ale').style.display = 'none'
+  document.getElementById('validation_drag_and_drop').style.display = 'none'
+
 
   // add the uploader
   create_uploaders()
-
-  create_form('Generic')
 
   // submit
   $('#submit').click(function(){
@@ -342,20 +351,16 @@ $(document).ready(function(){
     }
   })
 
-
   $('#download_example_spreadsheet').click(function(){
 
-      console.log(Accession_strings)
-
-
-    var example_output = [["Name"],[,"Email"],[,"Title of Experiment"],
-          [,'"Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
-          [,"Enter Experiment Date (YYYY-MM-DD)"],[,'"NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
-          [,'"NCBI Accession ID for Strain, Input one of the following: "' + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]" ],
-          [,'"Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
-          [,'"Base media, Input one of the following: "' + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Isolate type, Input one of the following: "' + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
-          [,"Insert ALE number"],[,"Insert Flask number"],[,"Insert Isolate number"],[,"Insert Technical Replicate Number"],
-          [,"Sample time is the hours from the start of experiment"],[,"Link to internal / external accession number; link to sequence file + annotation"],[,'"Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],[,'"Input associated (comma seperated) Index Files. e.g. file1,file2,file3"'],
+          example_output = [["REQUIRED: Name"],[,"REQUIRED: Email"],[,"REQUIRED: Title of Experiment"],
+          [,'"REQUIRED: Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"REQUIRED: Enter Experiment Date (YYYY-MM-DD)"],[,'"REQUIRED: NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
+          [,'"REQUIRED: NCBI Accession ID for Strain, Input one of the following: "' + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]" ],
+          [,'"REQUIRED: Provide a full description of the strain. e.g. Keio-crp, 76A>T, D111E, ΔF508, BOP8900(ΔadhE)"'],
+          [,'"REQUIRED: Base media, Input one of the following: "' + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"REQUIRED: Isolate type, Input one of the following: "' + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,"REQUIRED: Insert ALE number"],[,"REQUIRED: Insert Flask number"],[,"REQUIRED: Insert Isolate number"],[,"REQUIRED: Insert Technical Replicate Number"],
+          [,"Sample time is the hours from the start of experiment"],[,"REQUIRED: Link to internal / external accession number; link to sequence file + annotation"],[,'"REQUIRED: Input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],[,'"REQUIRED: Input associated (comma seperated) Index Files. e.g. file1,file2,file3"'],
           [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
           [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celsius. e.g. 37"],[,'"Carbon Source, Input one of the following: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
           [,'"Nitrogen Source, Input one of the following: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
@@ -367,7 +372,7 @@ $(document).ready(function(){
           [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
           [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
-          [,"Insert Technical replicates number"],[,'"Input associated (comma seperated) Reference Genome File Names. e.g. file1,file2,file3,file4"'],
+          [,"Insert Technical replicates number"],[,'"REQUIRED: Input associated (comma seperated) Reference Genome File Names. e.g. file1,file2,file3,file4"'],
           [,"\n" + "creator"],[,"creator-email"],[,"experiment"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"Accession"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
@@ -385,7 +390,9 @@ $(document).ready(function(){
 
     Liststart = false
     Listsplice = false
-    if (workflow == 'generic_spreadsheet') {
+
+    if (workflow == 'generic_spreadsheet' || workflow == 'generic_validation') {
+
 
       list_of_required_ALE = ["read-files", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
 
@@ -398,7 +405,7 @@ $(document).ready(function(){
         }
       }
 
-      list_of_ALE_only = ["Insert ALE number", "Insert Flask number", "Insert Isolate number", "Insert Technical Replicate Number", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
+      list_of_ALE_only = ["REQUIRED: Insert ALE number", "REQUIRED: Insert Flask number", "REQUIRED: Insert Isolate number", "REQUIRED: Insert Technical Replicate Number", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
       for(var i = 0; i < example_output.length; i++) {
 
         if (list_of_ALE_only.indexOf(example_output[i][1]) >= 0) {
@@ -427,11 +434,26 @@ $(document).ready(function(){
 
       }
 
-      var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
-      saveAs(file, output_file_name + '.csv')
+      if (workflow == 'generic_spreadsheet' && drag_drop == true) {
+        return
+      }
+
+      if (validationstep == false) {
+
+        var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
+        saveAs(file, output_file_name + '.csv')
+
+      }
+
+      else if (validationstep == true) {
+        return example_output
+      }
+
     }
 
-    else if (workflow == 'ale_spreadsheet') {
+
+
+    else if (workflow == 'ale_spreadsheet' || workflow == 'ale_validation') {
 
       list_of_required_Generic = []
 
@@ -471,9 +493,20 @@ $(document).ready(function(){
         }
 
       }
+      
+      if (workflow == 'ale_spreadsheet' && drag_drop == true) {
+        return
+      }
 
-      var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
-      saveAs(file, output_file_name + '.csv')
+      if (validationstep == false) {
+
+        var file = new Blob(example_output, { type: 'text/plain;charset=utf-8' })
+        saveAs(file, output_file_name + '.csv')
+
+      }
+      else if (validationstep == true) {
+        return example_output
+      }
 
     }
   })
@@ -524,6 +557,19 @@ function create_form(form_type) {
     document.getElementById('intropage').style.display = 'none'
 
   }
+  if ( (form_type == 'generic_validation') ) {
+    document.getElementById('validation_spreadsheet_instructions_gen').style.display = 'block'
+    document.getElementById('validation_drag_and_drop').style.display = 'block'
+    document.getElementById('intropage').style.display = 'none'
+
+  }
+  if ( (form_type == 'ale_validation') ) {
+    document.getElementById('validation_spreadsheet_instructions_ale').style.display = 'block'
+    document.getElementById('validation_drag_and_drop').style.display = 'block'
+    document.getElementById('intropage').style.display = 'none'
+
+  }
+
 
   // add the form
   for(var i = 0; i < data.length; i++) {
@@ -557,6 +603,7 @@ function get_data_array() {
 
 }
 
+
 function check_required() {
   if ($('.required.alert-danger').length !== 0) {
     $('#submit').get(0).disabled = true
@@ -586,12 +633,73 @@ function create_uploaders() {
       load: handle_upload
     }
   });
+
+  $('#validation-upload').fileReaderJS({
+    dragClass: 'drag',
+    readAsDefault: 'Text',
+    on: {
+      groupstart: getsizeoffiles,
+      load: handle_upload_validation
+    }
+  });
 }
+
+
+function getsizeoffiles(e,file) {
+  sizeoffiles = e.files.length
+}
+
+function handle_upload_validation (e,file) {
+
+  handle_upload(e,file);
+  format_metadata(); 
+
+
+  if (sizeoffiles == files.length) {
+    files = []
+    correct_format_files_Array = []
+
+    return
+  }
+
+}
+
+function format_metadata() {
+  var array_data_json = {}
+  var array_data = []
+  for(var i = 0; i < data.length; i++){
+    var val = get_value(data[i]['id'])
+    val = val.toString()
+
+
+    if (concentrationlist.includes(data[i]['id'])) {
+      array_data_json[data[i]['id'] + change_concentrations] = val
+    }
+    else if (data[i]['id'] == 'antibiotic') {
+      array_data_json[data[i]['id'] + antibiotic_concentration] = val
+    }
+    else if (data[i]['id'] == 'temperature') {
+      array_data_json[data[i]['id'] + temperature_value] = val
+    }
+    else {
+      array_data_json[data[i]['id']] = val
+    }
+    array_data.push([data[i]['id'], val])
+
+  }
+
+  getschema([array_data_json], array_data)
+
+}
+
+var data_id_array = []
+var array_id = []
+var file_id;
 
 function handle_upload(e, file) {
   var csv_data = e.target.result,
   arrays = new CSV(csv_data).parse()
-  var file_id = file.name; //name of file
+  file_id = file.name; //name of file
   if (file_id.indexOf(".csv") == -1) {
     return
   }
@@ -601,42 +709,220 @@ function handle_upload(e, file) {
     }
   };
 
+  if (workflow.includes('validation')) {
+    for (var k = 0; k < data.length; k++) {
+      data_id_array.push(data[k]['id'])
+    };
+
+    for (var j=0; j<arrays.length; j++){
+      array_id.push(arrays[j][0])
+    }
+
+    for (var l=0; l<data_id_array.length; l++){
+
+
+      if (array_id.indexOf(data_id_array[l]) == -1) {
+
+        if (concentrationlist.includes(data_id_array[l])) {
+          if (array_id.indexOf(data_id_array[l] + change_concentrations) == -1) {
+            arrays.push([data_id_array[l], ""])
+          }
+        }
+        else if (data_id_array[l] == 'antibiotic') {
+          if (array_id.indexOf(data_id_array[l] + antibiotic_concentration) == -1) {
+            arrays.push([data_id_array[l], ""])
+          }
+        }
+        else if (data_id_array[l] == 'temperature') {
+          if (array_id.indexOf(data_id_array[l] + temperature_value) == -1) {
+            arrays.push([data_id_array[l], ""])
+          }
+        }
+        else {
+          arrays.push([data_id_array[l], ""])
+          array_id.push(data_id_array[l])
+        }
+
+      }
+
+    }
+
+    array_id = []
+
+  }
+
   files.push(arrays); // data from meta data sheet
 
   for(var i=0; i<files.length; i++) {
+
      populate_metaform(files[i]);
      original_file_content = files[i]; // ORIGINAL FILE CONTENT
-  }
-  format_metadata();
-}
 
-function format_metadata() {
-  if (workflow == 'Generic') {
-    var array_data = []
-    for(var i = 0; i < data.length; i++){
-      var val = get_value(data[i]['id'])
-      val = val.toString()
-
-      array_data.push([data[i]['id'], val])
-    }
-    correct_format_files_Generic.push(array_data)
-  }
-  else {
-    var array_data = []
-    for(var i = 0; i < data.length; i++){
-      var val = get_value(data[i]['id'])
-      val = val.toString()
-
-      array_data.push([data[i]['id'], val])
-    }
-    correct_format_files_ALE.push(array_data)
   }
 
 }
+
+
+
+function getschema(current_instance_json, instance, name_idx){
+
+  $.ajaxSetup({
+   async: false
+  });
+
+  var get_stop;
+
+  $.getJSON('Json_schema.json', function(data) { 
+
+    get_stop = processSchema(data, current_instance_json, instance, name_idx);
+
+  });
+  return get_stop
+
+}
+
+function processSchema(json, current_instance_json, instance, name_idx) {
+
+  instance_json = current_instance_json
+
+  return Json_Validator(json, instance_json, instance, name_idx)
+
+}
+
+
+function Json_Validator(schema, instance_json, instance, name_idx) {
+
+  var ajv = new Ajv({allErrors: true});
+  var validate = ajv.compile(schema);
+  var valid = validate(instance_json);
+
+  if (workflow.includes("spreadsheet")) {
+
+    if (workflow == "generic_spreadsheet") {
+
+        for (var x = 0; x < Object.values(validate.errors).length; x++) {    
+            if (_.intersection(Object.values(validate.errors)[x].message.split("'"), list_of_ALE_only)) {
+              validate.errors.splice( validate.errors.indexOf(Object.values(validate.errors)[x]), 1 );
+              x = x-1
+            }
+        }
+        if (validate.errors.length == 0 ) {
+          valid = true
+        }
+    }
+
+    if (!valid) {
+
+      for (var l = 0; l < instance.length; l++) {
+        for (var k = 0; k < Object.values(validate.errors).length; k++) {    
+          if (Object.values(validate.errors)[k].dataPath.includes(instance[l][0])) {
+            if (instance[l][0] == "" && Object.values(validate.errors)[k].keyword == 'required') {
+            }
+            else if ((Object.values(validate.errors)[k].keyword == 'enum' && instance[l][0] != "") || (Object.values(validate.errors)[k].keyword == 'pattern' && instance[l][0] != "")) {
+              if (required_input_list.join().includes(instance[l][0])) {
+                addAlert("Row[" + (name_idx) + "], The " + instance[l][0] + " field is REQUIRED and must have a valid information! Please refer to row 1 in spreadsheet for valid input.")
+              }
+              else {
+                addAlert("Row[" + (name_idx) + "], The " + instance[l][0] + " field has invalid information! Please refer to row 1 in spreadsheet for valid input.")
+              }
+            }
+          }
+        }
+      }
+      return true;
+    }
+    else {
+      return false;
+    }
+  
+  }  
+
+  if (workflow.includes("validation")) {
+    validationstep = true
+
+    $('#download_example_spreadsheet').triggerHandler("click")
+
+
+    if (valid) {
+      correct_format_files_Array.push(instance)
+    }
+    else {
+      for (j =0; j < instance.length; j++) {
+        for (var i = 0; i < Object.values(validate.errors).length; i++) {
+          if (Object.values(validate.errors)[i].dataPath.includes(instance[j][0])) {
+            instance[j][1] = ""
+
+            if ((workflow == "generic_validation" && !list_of_ALE_only.includes(instance[j][0])) ||
+               (workflow == "ale_validation" && !list_of_Generic_only.includes(instance[j][0]))) {
+              
+                addAlert("Row[" + (correct_format_files_Array.length + 3) + "], " + "Could not return validated value for field: " + instance[j][0])
+            }
+          }
+        }
+      }
+      correct_format_files_Array.push(instance)
+    }
+
+    if (sizeoffiles == correct_format_files_Array.length) {
+       Convert_to_Spreadsheet()
+    }
+
+  }
+
+}
+
+
+function Convert_to_Spreadsheet() {
+ 
+  var start_of_list = 0
+  for (var k=1; k<example_output.length; k++) {
+      if (example_output[k][1].includes("\n")) {
+        start_of_list = k
+      }
+  }
+
+  var final_array = []
+  var new_correct_format_files_Array = []
+  for (var x = 0; x < correct_format_files_Array.length; x++) {
+
+    for (var l = start_of_list; l < example_output.length; l++) {
+      for (var y = 0; y < correct_format_files_Array[x].length; y++) {
+
+        if ((example_output[l][1] == correct_format_files_Array[x][y][0]) || (example_output[l][1] == ("\n" + correct_format_files_Array[x][y][0]))) {
+           final_array.push([correct_format_files_Array[x][y][1]])
+           break;
+        }
+      }
+    }
+    new_correct_format_files_Array.push(final_array)
+    final_array = []
+  }
+
+  var filearray = [];
+  var Spreadsheet_data = [];
+  var Spreadsheet_data = example_output;
+
+  for (var i = 0; i < new_correct_format_files_Array.length; i++) {
+    for (var j = 0; j < new_correct_format_files_Array[i].length; j++) {
+      filearray[j] = JSON.stringify(new_correct_format_files_Array[i][j][0])
+    }
+      Spreadsheet_data.push("\n")
+      Spreadsheet_data.push(filearray)
+      filearray = []
+  }
+
+  var file = new Blob(Spreadsheet_data, { type: 'text/plain;charset=utf-8' })
+  saveAs(file, output_file_name + '.csv')
+  
+}
+
 
 function populate_metaform(file_data) {
-  for (var i = 0; i < file_data.length; i++)
+
+  for (var i = 0; i < file_data.length; i++) { 
     set_value(file_data[i][0], file_data[i][1] + '')
+    
+  }
 }
 
 
@@ -757,21 +1043,17 @@ function get_file_name() {
 function handle_upload_spreadsheet(e, file) {
   $(".alert").remove();
   ifSpreadsheet = true;
-  if (workflow == 'generic_spreadsheet') {
-    header = header_generic
-  }
-  else if (workflow == 'ale_spreadsheet') {
-    header = header_ale
-  }
 
+  drag_drop = true
+  header = []
 
+  $('#download_example_spreadsheet').triggerHandler("click")
+  
+  var alert;
   var zip = new JSZip()
   var input_csv_data = e.target.result,
       variable_file_name_array = new CSV(input_csv_data).parse()
 
-  var output_sample_name_array = []
-  var alert = false;
-  found = false;
 
   if (variable_file_name_array.length == 2) {
     addAlert("Spreadsheet requires input")
@@ -784,225 +1066,107 @@ function handle_upload_spreadsheet(e, file) {
     spreadsheet_id = [];
     spreadsheet_data_array = [];
     spreadsheet_dict = {};
-    var myREfordate = new RegExp (['^((0?[13578]|10|12)(-|\/)(([1-9])|(0[1-9])|([12])',
-      '([0-9]?)|(3[01]?))(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])',
-      '(\d{1}))|(0?[2469]|11)(-|\/)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[0]?))',
-      '(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1})))$'].join(''));
 
-    for (var i = 0; i < variable_file_name_array[1].length; i++) {
-      if(variable_file_name_array[1][i] == "data-type") {
-         if (!label_validation(data_type_options ,variable_file_name_array[name_idx][i])) {
-            addAlert("Data type Field ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-         }
-      }
-
-      if(variable_file_name_array[1][i] == "run-date") {
-        if(myREfordate.test(variable_file_name_array[name_idx][i])
-         && (variable_file_name_array[name_idx][i]) != '') {
-          addAlert("Enter Valid Experiment Date (YYYY-MM-DD) [Line " + (name_idx+1) + "]")
-          alert = true;
-        }
-      }
-
-      if(variable_file_name_array[1][i] == "taxonomy-id") {
-
-          if (!label_validation(taxonomy_id_list,variable_file_name_array[name_idx][i])) {
-            addAlert("NCBI Taxonomy ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "Accession") {
-
-          if (!label_validation(Accession_list,variable_file_name_array[name_idx][i])) {
-            addAlert("NCBI Accession ID ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "base-media") {
-          if (!label_validation(base_media_options,variable_file_name_array[name_idx][i])) {
-            addAlert("Base media ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "isolate-type") {
-          if (!label_validation(isolate_options,variable_file_name_array[name_idx][i])) {
-            addAlert("Isolate type ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-     if(variable_file_name_array[1][i] == "machine") {
-          if (!label_validation(machine_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Machine ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + machine_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "library-prep-kit-manufacturer") {
-          if (!label_validation(lib_prep_manufacturer_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Library Prep Kit Manufacturer ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "library-prep-kit") {
-          if (!label_validation(lib_prep_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Library Prep Kit ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "library-prep-kit-cycles") {
-          if (!label_validation(lib_prep_cycle_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Library Prep Kit Cycles ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "read-type") {
-          if (!label_validation(read_type_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Read Type ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "["+ read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "read-length") {
-          if (!label_validation(read_length_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Read Length ERROR [Line " + (name_idx+1) + "], Please input one of the following: " + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if((variable_file_name_array[1][i] == "ALE-number") || (variable_file_name_array[1][i] == "Flask-number")
-        || (variable_file_name_array[1][i] == "technical-replicate-number") || (variable_file_name_array[1][i] == "Isolate-number")) {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert a numerical value for the ALE-number, Isolate-number, Flask-number or Technical-replicate-number")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "sample-time") {
-         if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert numerical value for Sample time (hours from start of experiment) e.g. 4")
-            alert = true;
-         }
-      }
-      if(variable_file_name_array[1][i] == "temperature") {
-        if (!(/^[+-]?(?:\d*\.)?\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Temperature in Celsius. e.g. 37")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "biological-replicates") {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Biological replicates number")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "technical-replicates") {
-        if (!(/^\d+$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please insert Technical replicates number")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "read-files") {
-        if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input associated (comma seperated) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "index-files") {
-        if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input associated (comma seperated) Index Files. e.g. file1,file2,file3")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "carbon-source") {
-          if (!label_with_number_validation(carbon_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-             addAlert("Carbon Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: "+ "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]" +" followed by the concentration in (g/L) EXAMPLE: Glucose(1)" )
-             alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "nitrogen-source") {
-         if (!label_with_number_validation(nitrogen_source_options,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-             addAlert("Nitrogen Source ERROR [Line " + (name_idx+1) + "], Please input one of the following: "+ "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" +" followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)")
-             alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "phosphorous-source") {
-          if (!label_with_number_validation(phosphorous_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Phosphorous Source ERROR [Line " + (name_idx+1) + "], Please input "+ "[" +phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]" +" followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "sulfur-source") {
-          if (!label_with_number_validation(sulfur_source_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Sulfur Source ERROR [Line " + (name_idx+1) + "], Please input "+ "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" +" followed by the concentration in (g/L) EXAMPLE: MgSO4(3)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "electron-acceptor") {
-          if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("Electron Acceptor ERROR [Line " + (name_idx+1) + "], Please input one of the following: "+ "[" +electron_acceptor_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "supplement") {
-          list_supplment = ['/^([^\s]*)$/']
-          if (!/^([^\s]*)$/.test(variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "antibiotic") {
-          if (!label_with_number_validation(antibiotic_options ,variable_file_name_array[name_idx][i]) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please input one of the following Antibiotic(s) added: "+ "[" + antibiotic_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[')+ "]" +" followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)")
-            alert = true;
-          }
-      }
-      if(variable_file_name_array[1][i] == "reference-file-list") {
-        if (!(/^([^\s]*)$/.test(variable_file_name_array[name_idx][i])) && (variable_file_name_array[name_idx][i]) != '') {
-            addAlert("ERROR [Line " + (name_idx+1) + "], Please Input associated (comma seperated) Reference Genome File Names. e.g. file1,file2,file3,file4")
-            alert = true;
-          }
-      }
-
-
-      for (var x = 0; x < required_input_list.length; x++) {
-        if (variable_file_name_array[1][i] == required_input_list[x]) {
-           if (variable_file_name_array[name_idx][i] == "") {
-             addAlert("[Line " + (name_idx+1) + "], " + required_input_list[x] + " field requires input")
-             alert = true;
-           }
-        }
-      }
-    spreadsheet_val.push(variable_file_name_array[name_idx][i])
     
-    var headers = variable_file_name_array[1][i]
-    if (concentrationlist.includes(headers)) {
-      spreadsheet_id.push(headers + change_concentrations)
+    for (var i = 0; i < variable_file_name_array[1].length; i++) {
+
+      spreadsheet_val.push(variable_file_name_array[name_idx][i])
+      
+      var headers = variable_file_name_array[1][i]
+
+      header.push(headers)
+
+      if (concentrationlist.includes(headers)) {
+        spreadsheet_id.push(headers + change_concentrations)
+      }
+      else if (headers == 'antibiotic') {
+        spreadsheet_id.push(headers + antibiotic_concentration)
+      }
+      else if (headers == 'temperature') {
+        spreadsheet_id.push(headers + temperature_value)
+      }
+      else {
+        spreadsheet_id.push(headers)
+      }
+      spreadsheet_data_array = get_value_spreadsheet(spreadsheet_id,spreadsheet_val)
+
     }
-    else if (headers == 'antibiotic') {
-      spreadsheet_id.push(headers + antibiotic_concentration)
+
+    var stop = getschema([spreadsheet_dict], spreadsheet_data_array, (name_idx+1)) 
+
+    var diff = []
+
+
+    if (workflow == 'ale_spreadsheet') {
+
+      diff = $(header_ale.join().split(',')).not(header).get();
+
+      if (diff.includes("")) {
+        diff.splice( diff.indexOf(""), 1 );
+      }
+
+      if (diff.length > 0) {
+
+        for (var y = 0; y < diff.length; y++) {
+          addAlert("Row[" + (name_idx) + "], The " + diff[y] + " field is missing from spreadsheet! Please include " + diff[y] + " in spreadsheet to continue.")
+        }
+
+        alert = true;
+
+      }
+
+      header_ale = []
     }
-    else if (headers == 'temperature') {
-      spreadsheet_id.push(headers + temperature_value)
-    }
+
     else {
-      spreadsheet_id.push(headers)
+
+      diff = $(header_generic.join().split(',')).not(header).get();
+    
+      if (diff.includes("")) {
+        diff.splice( diff.indexOf(""), 1 );
+      }
+
+      if (diff.length > 0) {
+
+        for (var y = 0; y < diff.length; y++) {
+          addAlert("Row[" + (name_idx) + "], The " + diff[y] + " field is missing from spreadsheet! Please include " + diff[y] + " in spreadsheet to continue.")
+        }
+
+        alert = true;
+
+      }
+
+      header_generic = []
+
     }
-    spreadsheet_data_array = get_value_spreadsheet(spreadsheet_id,spreadsheet_val)
+
+    if (stop == true) {
+      alert = true
     }
+
 
     var file_name = get_file_name_spreadsheet() + "(" + filecounter + ")" + '.csv';
 
     var output_sample_csv_data = [new CSV(spreadsheet_data_array).encode()]
     var output_sample_metadata_file = new Blob(output_sample_csv_data, { type: 'text/plain;charset=utf-8' })
     zip.folder("MetaData Files").file(file_name, output_sample_metadata_file)
-  }
-    if (alert == true) {
-      return;
-    }
 
-    zip.generateAsync({type:"blob"})
-    .then(function (blob) {
-      saveAs(blob, get_zip_name_spreadsheet() + '.zip')
-    })
+
+  }
+
+  if (alert == true) {
+    return
+  }
+
+  zip.generateAsync({type:"blob"})
+  .then(function (blob) {
+    saveAs(blob, get_zip_name_spreadsheet() + '.zip')
+  })
 
 }
+
+
+
 
 function addAlert(message) {
     $('#alert').append('<div class="alert alert-danger alert-dismissable" id="alertdivs">' +
@@ -1113,8 +1277,21 @@ var saved_ALE_number;
 var saved_Flask_number;
 var saved_Isolate_number;
 var saved_technical_replicate_number;
+var saved_temperature;
+var saved_carbon;
+var saved_nitrogen;
+var saved_phosphorous;
+var saved_sulfur;
+var saved_electron;
+var saved_supplement;
+var saved_antibiotic;
+var saved_rundate;
+
 var saved_ = false;
+
+
 function get_value(id, input_only) {
+
   /** Get the value for the given input id */
   if (_.isUndefined(input_only))
     input_only = false
@@ -1130,6 +1307,7 @@ function get_value(id, input_only) {
 
   // get the value ale
   if (saved_ == true) {
+    
     if (id == 'ALE-number' ) {
       var vals = saved_ALE_number;
     }
@@ -1142,6 +1320,33 @@ function get_value(id, input_only) {
     else if (id == 'technical-replicate-number') {
       var vals = saved_technical_replicate_number;
     }
+    else if (id == 'run-date') {
+      var vals = saved_rundate;
+    }
+    else if (id.includes('temperature')) {
+      var vals = saved_temperature;
+    }
+    else if (id.includes('carbon-source')) {
+      var vals = saved_carbon;
+    }
+    else if (id.includes('nitrogen-source')) {
+      var vals = saved_nitrogen;
+    }
+    else if (id.includes('phosphorous-source')) {
+      var vals = saved_phosphorous;
+    }
+    else if (id.includes('sulfur-source')) {
+      var vals = saved_sulfur;
+    }
+    else if (id.includes('electron-acceptor')) {
+      var vals = saved_electron;
+    }
+    else if (id.includes('supplement')) {
+      var vals = saved_supplement;
+    }
+    else if (id.includes('antibiotic')) {
+      var vals = saved_antibiotic;
+    }
     else {
       var vals = $('#' + id).val()
     }
@@ -1150,27 +1355,47 @@ function get_value(id, input_only) {
       var vals = $('#' + id).val()
   }
 
+
+
+
+
   if ((typeof vals === 'undefined') || (vals === null))
     return ''
+
 
   if (input_only)
     return vals
 
+
     // add concentrations to val
   if (_.isArray(vals)) {
     return vals.map(function(val) {
-      if (val in concentrations && Dragfile == false)
+      if (val in concentrations) {
         return val + '(' + concentrations[val] + ')'
-      else
+      }
+      else {
         return val
+      }
     })
   } else {
     return vals
   }
+
+
+
 }
 
+unrecognizedkey_array = []
+
+
 function set_value(id, value) {
+
  saved_ = true;
+ var is_unit = false;
+
+ if (id == 'run-date') {
+     saved_rundate = value.replace(/-/gi, "/")
+ }
  if (id == 'ALE-number') {
       saved_ALE_number = value;
  }
@@ -1183,12 +1408,66 @@ function set_value(id, value) {
  if (id == 'technical-replicate-number') {
       saved_technical_replicate_number = value;
  }
+ if (id.includes('temperature')) {
+      id = 'temperature'
+      saved_temperature = value;
+      is_unit = true
+ }
+ if (id.includes('carbon-source')) {
+      id = 'carbon-source'
+      saved_carbon = value;
+      is_unit = true
+ }
+ if (id.includes('nitrogen-source')) {
+      id = 'nitrogen-source'
+      saved_nitrogen = value;      
+      is_unit = true
+ }
+ if (id.includes('phosphorous-source')) {
+      id = 'phosphorous-source'
+      saved_phosphorous = value;
+      is_unit = true
+ }
+ if (id.includes('sulfur-source')) {
+      id = 'sulfur-source'
+      saved_sulfur = value;
+      is_unit = true
+ }
+ if (id.includes('electron-acceptor')) {
+      id = 'electron-acceptor'
+      saved_electron = value;
+      is_unit = true
+ }
+ if (id.includes('supplement')) {
+      id = 'supplement'
+      saved_supplement = value;
+      is_unit = true
+ }
+ if (id.includes('antibiotic')) {
+      id = 'antibiotic'
+      saved_antibiotic = value;
+      is_unit = true
+ }
 
-
+//make unrecognized key array
  if (!(id in data_as_object)) {
-    console.warn('Unrecognized key ' + id)
-    return
+    if (is_unit == false) {
+      unrecognizedkey_array.push("")
+      console.warn('Unrecognized key ' + id)
+      if (workflow.includes('validation') && unrecognizedkey_array.indexOf(id) == -1 ) {
+        unrecognizedkey_array.push(id)
+        addAlert('Could not return validated value for unrecognized key: ' + id)
+
+      }
+      
+      return
+    }
+    else {
+      return
+    }
+    
   }
+
   var sel = $('#' + id)
   if (sel.data('select2')) {
 
@@ -1223,11 +1502,14 @@ function set_value(id, value) {
                           concentrations)
       }
   }
+
     sel.val(value).trigger('change')
+
 
   // update UI
   update_required_label(id, value)
   update_folder_name()
+
 }
 
 

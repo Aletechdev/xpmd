@@ -205,6 +205,18 @@ label.btn.btn-success.active.toggle-off {
   padding-bottom: 10px;
 }
 
+#validation-upload {
+  height: 60px;
+  border: 2px solid #fff;
+  padding: 20px;
+  border: 2px dashed #46748e;
+  text-align: center;
+}
+
+#validation-upload.drag {
+  background-color: #d6e6fd;
+}
+
 #spreadsheet-upload {
   height: 60px;
   border: 2px solid #fff;
