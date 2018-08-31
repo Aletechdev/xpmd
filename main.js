@@ -281,6 +281,7 @@ var spreadsheet_val = [];
 var spreadsheet_id = [];
 var spreadsheet_data_array = [];
 var spreadsheet_dict = {};
+var drag_drop = false;
 var validationstep = false;
 var correct_format_files_Array = [];
 var list_of_Generic_only = [];
@@ -404,7 +405,7 @@ $(document).ready(function(){
         }
       }
 
-      list_of_ALE_only = ["Insert ALE number", "Insert Flask number", "Insert Isolate number", "Insert Technical Replicate Number", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
+      list_of_ALE_only = ["REQUIRED: Insert ALE number", "REQUIRED: Insert Flask number", "REQUIRED: Insert Isolate number", "REQUIRED: Insert Technical Replicate Number", "ALE-number", "Flask-number", "Isolate-number", "technical-replicate-number"]
       for(var i = 0; i < example_output.length; i++) {
 
         if (list_of_ALE_only.indexOf(example_output[i][1]) >= 0) {
@@ -433,7 +434,7 @@ $(document).ready(function(){
 
       }
 
-      if (workflow == 'generic_spreadsheet') {
+      if (workflow == 'generic_spreadsheet' && drag_drop == true) {
         return
       }
 
@@ -493,7 +494,7 @@ $(document).ready(function(){
 
       }
       
-      if (workflow == 'ale_spreadsheet') {
+      if (workflow == 'ale_spreadsheet' && drag_drop == true) {
         return
       }
 
@@ -1043,6 +1044,7 @@ function handle_upload_spreadsheet(e, file) {
   $(".alert").remove();
   ifSpreadsheet = true;
 
+  drag_drop = true
   header = []
 
   $('#download_example_spreadsheet').triggerHandler("click")
