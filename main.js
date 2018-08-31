@@ -776,7 +776,6 @@ function getschema(current_instance_json, instance, name_idx){
     get_stop = processSchema(data, current_instance_json, instance, name_idx);
 
   });
-
   return get_stop
 
 }
@@ -798,10 +797,23 @@ function Json_Validator(schema, instance_json, instance, name_idx) {
 
   if (workflow.includes("spreadsheet")) {
 
+    if (workflow == "generic_spreadsheet") {
+
+        for (var x = 0; x < Object.values(validate.errors).length; x++) {    
+            if (_.intersection(Object.values(validate.errors)[x].message.split("'"), list_of_ALE_only)) {
+              validate.errors.splice( validate.errors.indexOf(Object.values(validate.errors)[x]), 1 );
+              x = x-1
+            }
+        }
+        if (validate.errors.length == 0 ) {
+          valid = true
+        }
+    }
+
     if (!valid) {
+
       for (var l = 0; l < instance.length; l++) {
-        for (var k = 0; k < Object.values(validate.errors).length; k++) {
-    
+        for (var k = 0; k < Object.values(validate.errors).length; k++) {    
           if (Object.values(validate.errors)[k].dataPath.includes(instance[l][0])) {
             if (instance[l][0] == "" && Object.values(validate.errors)[k].keyword == 'required') {
             }
@@ -825,6 +837,10 @@ function Json_Validator(schema, instance_json, instance, name_idx) {
   }  
 
   if (workflow.includes("validation")) {
+    validationstep = true
+
+    $('#download_example_spreadsheet').triggerHandler("click")
+
 
     if (valid) {
       correct_format_files_Array.push(instance)
@@ -834,7 +850,12 @@ function Json_Validator(schema, instance_json, instance, name_idx) {
         for (var i = 0; i < Object.values(validate.errors).length; i++) {
           if (Object.values(validate.errors)[i].dataPath.includes(instance[j][0])) {
             instance[j][1] = ""
-            addAlert("Row[" + (correct_format_files_Array.length + 3) + "], " + "Could not return validated value for field: " + instance[j][0])
+
+            if ((workflow == "generic_validation" && !list_of_ALE_only.includes(instance[j][0])) ||
+               (workflow == "ale_validation" && !list_of_Generic_only.includes(instance[j][0]))) {
+              
+                addAlert("Row[" + (correct_format_files_Array.length + 3) + "], " + "Could not return validated value for field: " + instance[j][0])
+            }
           }
         }
       }
@@ -851,10 +872,7 @@ function Json_Validator(schema, instance_json, instance, name_idx) {
 
 
 function Convert_to_Spreadsheet() {
-  validationstep = true
-
-  $('#download_example_spreadsheet').triggerHandler("click")
-
+ 
   var start_of_list = 0
   for (var k=1; k<example_output.length; k++) {
       if (example_output[k][1].includes("\n")) {
@@ -1069,7 +1087,7 @@ function handle_upload_spreadsheet(e, file) {
         spreadsheet_id.push(headers)
       }
       spreadsheet_data_array = get_value_spreadsheet(spreadsheet_id,spreadsheet_val)
-      
+
     }
 
     var stop = getschema([spreadsheet_dict], spreadsheet_data_array, (name_idx+1)) 
@@ -1081,8 +1099,18 @@ function handle_upload_spreadsheet(e, file) {
 
       diff = $(header_ale.join().split(',')).not(header).get();
 
-      for (var y = 0; y < diff.length; y++) {
-        addAlert("Row[" + (name_idx) + "], The " + diff[y] + " field is missing from spreadsheet! Please include " + diff[y] + " in spreadsheet to continue.")
+      if (diff.includes("")) {
+        diff.splice( diff.indexOf(""), 1 );
+      }
+
+      if (diff.length > 0) {
+
+        for (var y = 0; y < diff.length; y++) {
+          addAlert("Row[" + (name_idx) + "], The " + diff[y] + " field is missing from spreadsheet! Please include " + diff[y] + " in spreadsheet to continue.")
+        }
+
+        alert = true;
+
       }
 
       header_ale = []
@@ -1091,23 +1119,30 @@ function handle_upload_spreadsheet(e, file) {
     else {
 
       diff = $(header_generic.join().split(',')).not(header).get();
+    
+      if (diff.includes("")) {
+        diff.splice( diff.indexOf(""), 1 );
+      }
 
-      for (var y = 0; y < diff.length; y++) {
-        addAlert("Row[" + (name_idx) + "], The " + diff[y] + " field is missing from spreadsheet! Please include " + diff[y] + " in spreadsheet to continue.")
+      if (diff.length > 0) {
+
+        for (var y = 0; y < diff.length; y++) {
+          addAlert("Row[" + (name_idx) + "], The " + diff[y] + " field is missing from spreadsheet! Please include " + diff[y] + " in spreadsheet to continue.")
+        }
+
+        alert = true;
+
       }
 
       header_generic = []
 
     }
 
-
-    if (stop == true || diff.length > 1) {
+    if (stop == true) {
       alert = true
     }
 
 
-
- 
     var file_name = get_file_name_spreadsheet() + "(" + filecounter + ")" + '.csv';
 
     var output_sample_csv_data = [new CSV(spreadsheet_data_array).encode()]
@@ -1248,6 +1283,7 @@ var saved_sulfur;
 var saved_electron;
 var saved_supplement;
 var saved_antibiotic;
+var saved_rundate;
 
 var saved_ = false;
 
@@ -1269,6 +1305,7 @@ function get_value(id, input_only) {
 
   // get the value ale
   if (saved_ == true) {
+    
     if (id == 'ALE-number' ) {
       var vals = saved_ALE_number;
     }
@@ -1280,6 +1317,9 @@ function get_value(id, input_only) {
     }
     else if (id == 'technical-replicate-number') {
       var vals = saved_technical_replicate_number;
+    }
+    else if (id == 'run-date') {
+      var vals = saved_rundate;
     }
     else if (id.includes('temperature')) {
       var vals = saved_temperature;
@@ -1351,6 +1391,9 @@ function set_value(id, value) {
  saved_ = true;
  var is_unit = false;
 
+ if (id == 'run-date') {
+     saved_rundate = value.replace(/-/gi, "/")
+ }
  if (id == 'ALE-number') {
       saved_ALE_number = value;
  }
