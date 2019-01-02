@@ -13,6 +13,11 @@
         "type": "string",
         "pattern": ".*\\S.*"
       },
+      "project": {
+        "$id": "project",
+        "type": "string",
+        "pattern": ".*\\S.*"
+      },
       "experiment": {
         "$id": "experiment",
         "type": "string",
@@ -86,7 +91,7 @@
       "reference-file-list": {
         "$id": "reference-file-list",
         "type": "string",
-        "pattern": "^([^\\s]*)$"        
+        "pattern": "^([^\\s]*)$"
       },
       "read-files": {
         "$id": "read-files",
@@ -209,6 +214,7 @@
     "required": [
       "creator",
       "creator-email",
+      "project",
       "experiment",
       "data-type",
       "run-date",
