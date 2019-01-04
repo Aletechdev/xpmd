@@ -35,6 +35,10 @@ var data = [
     required: true,
     type: 'input',
     example: 'ify.aniefuna@gmail.com' },
+  { label: 'Project Name',
+    id: 'project',
+    required: true,
+    type: 'input' },
   { label: 'Experiment Name',
     id: 'experiment',
     required: true,
@@ -352,7 +356,7 @@ $(document).ready(function(){
 
   $('#download_example_spreadsheet').click(function(){
 
-          example_output = [["REQUIRED: Name"],[,"REQUIRED: Email"],[,"REQUIRED: Title of Experiment"],
+          example_output = [["REQUIRED: Name"],[,"REQUIRED: Email"],[,"REQUIRED: Name of Project"],[,"REQUIRED: Title of Experiment"],
           [,'"REQUIRED: Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"REQUIRED: Enter Experiment Date (YYYY-MM-DD)"],[,'"REQUIRED: NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
           [,'"REQUIRED: NCBI Accession ID for Strain, Input one of the following: "' + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]" ],
@@ -360,7 +364,7 @@ $(document).ready(function(){
           [,'"REQUIRED: Base media, Input one of the following: "' + "[" + base_media_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"REQUIRED: Isolate type, Input one of the following: "' + "[" + isolate_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"REQUIRED: Insert ALE number"],[,"REQUIRED: Insert Flask number"],[,"REQUIRED: Insert Isolate number"],[,"REQUIRED: Insert Technical Replicate Number"],
           [,"Sample time is the hours from the start of experiment"],[,"REQUIRED: Link to internal / external accession number; link to sequence file + annotation"],[,'"REQUIRED: Input associated (comma seperated with no space after comma) Read Files. e.g. file1.fastq,file2.fastq,file3.fastq,file4.fastq"'],[,'"Input associated (comma seperated) Index Files. e.g. file1,file2,file3"'],
-          [,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
+          [,'"REQUIRED: Input associated (comma seperated) Reference Genome File Names. e.g. file1,file2,file3,file4"'],[,"Insert Serial Number"],[,"Insert Growth stage. e.g. mid-log"],
           [,"Insert Antibody. e.g. anti-CRP"],[,"Insert Temperature in Celsius. e.g. 37"],[,'"Carbon Source, Input one of the following: "' + "[" + carbon_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: Glucose(1)"],
           [,'"Nitrogen Source, Input one of the following: "' + "[" + nitrogen_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: NH4Cl(4)"],[,'"Phosphorous Source, Input "' + "[" + phosphorous_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: KH2PO4(5)"],
           [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the following: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
@@ -371,17 +375,17 @@ $(document).ready(function(){
           [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
           [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
-          [,"Insert Technical replicates number"],[,'"REQUIRED: Input associated (comma seperated) Reference Genome File Names. e.g. file1,file2,file3,file4"'],
-          [,"\n" + "creator"],[,"creator-email"],[,"experiment"],
+          [,"Insert Technical replicates number"],
+          [,"\n" + "creator"],[,"creator-email"],[,"project"],[,"experiment"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"Accession"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
           [,"Isolate-number"],[,"technical-replicate-number"],[,"sample-time"],[,"Link-to-reference-sequence"],[,"read-files"],[,"index-files"],
-          [,"serial-number"],[,"growth-stage"],[,"antibody"],[,"temperature"],
+          [,"reference-file-list"],[,"serial-number"],[,"growth-stage"],[,"antibody"],[,"temperature"],
           [,"carbon-source"],[,"nitrogen-source"],[,"phosphorous-source"],[,"sulfur-source"],
           [,"electron-acceptor"],[,"supplement"],[,"antibiotic"],[,"machine"],
           [,"library-prep-kit-manufacturer"],[,"library-prep-kit"],[,"library-prep-kit-cycles"],
           [,"read-type"],[,"read-length"],[,"experiment-details"],[,"Pre-culture-details"],[,"Cultivation-details"],[,"environment"],
-          [,"biological-replicates"],[,"technical-replicates"],[,"reference-file-list"]]
+          [,"biological-replicates"],[,"technical-replicates"]]
 
 
     required_input_list = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["experiment"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["reference-file-list"],["Accession"]]
