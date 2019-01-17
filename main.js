@@ -39,10 +39,6 @@ var data = [
     id: 'project',
     required: true,
     type: 'input' },
-  { label: 'Experiment Name',
-    id: 'experiment',
-    required: true,
-    type: 'input' },
   { label: 'Data Type',
     id: 'data-type',
     type: 'dropdown',
@@ -356,7 +352,7 @@ $(document).ready(function(){
 
   $('#download_example_spreadsheet').click(function(){
 
-          example_output = [["REQUIRED: Name"],[,"REQUIRED: Email"],[,"REQUIRED: Name of Project"],[,"REQUIRED: Title of Experiment"],
+          example_output = [["REQUIRED: Name"],[,"REQUIRED: Email"],[,"REQUIRED: Name of Project"],
           [,'"REQUIRED: Data type, Input one of the following:  "' + "[" + data_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"REQUIRED: Enter Experiment Date (YYYY-MM-DD)"],[,'"REQUIRED: NCBI Taxonomy ID for Strain, Input one of the following: "' + "[" + taxonomy_id_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" ],
           [,'"REQUIRED: NCBI Accession ID for Strain, Input one of the following: "' + "[" + Accession_strings.replace(/[^\w\s\-\.\(\)]/gi, ']-[') + "]" ],
@@ -376,7 +372,7 @@ $(document).ready(function(){
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
           [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
           [,"Insert Technical replicates number"],
-          [,"\n" + "creator"],[,"creator-email"],[,"project"],[,"experiment"],
+          [,"\n" + "creator"],[,"creator-email"],[,"project"],
           [,"data-type"],[,"run-date"],[,"taxonomy-id"],[,"Accession"],[,"strain-description"],
           [,"base-media"],[,"isolate-type"],[,"ALE-number"],[,"Flask-number"],
           [,"Isolate-number"],[,"technical-replicate-number"],[,"sample-time"],[,"Link-to-reference-sequence"],[,"read-files"],[,"index-files"],
@@ -388,7 +384,7 @@ $(document).ready(function(){
           [,"biological-replicates"],[,"technical-replicates"]]
 
 
-    required_input_list = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["experiment"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["reference-file-list"],["Accession"]]
+    required_input_list = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["reference-file-list"],["Accession"]]
 
 
     Liststart = false
@@ -930,17 +926,18 @@ function populate_metaform(file_data) {
 
 
 function get_zip_name() {
-  return get_value('experiment').toString() + '_' + folder_name()
+  return get_value('project').toString() + '_' + folder_name()
 }
 
 function get_zip_name_spreadsheet() {
-  var experiment;
+
   var rundate;
   var datatype;
+  var project;
 
   for (const [key, val] of Object.entries(spreadsheet_dict)) {
-      if (key == 'experiment') {
-        experiment = val
+      if (key == 'project') {
+        project = val
       }
       if (key == 'run-date') {
         rundate = val
@@ -949,13 +946,13 @@ function get_zip_name_spreadsheet() {
         datatype = val
       }
   }
-  return (experiment + '_' + rundate + '_' + datatype)
+  return (project + '_' + rundate + '_' + datatype)
 
 }
 
 function get_file_name_spreadsheet() {
 
-  var experiment;
+  var project;
   var rundate;
   var datatype;
   var ALE_numb;
@@ -965,8 +962,8 @@ function get_file_name_spreadsheet() {
   var serial_num;
 
   for (const [key, val] of Object.entries(spreadsheet_dict)) {
-      if (key == 'experiment') {
-        experiment = val
+      if (key == 'project') {
+        project = val
       }
       if (key == 'run-date') {
         rundate = val
@@ -996,22 +993,22 @@ function get_file_name_spreadsheet() {
 
   if (serial_num != '') {
     if ((workflow == 'generic_single')  || (workflow == 'generic_spreadsheet'))  {
-     return (serial_num + '_' + experiment + '_' + rundate + '_' + datatype)
+     return (serial_num + '_' + project + '_' + rundate + '_' + datatype)
 
     }
     else if ((workflow == 'ale_single') ||  (workflow == 'ale_spreadsheet'))  {
-      return (serial_num + '_' + experiment + '_' + ALE_numb + '_' + Flask_numb
+      return (serial_num + '_' + project + '_' + ALE_numb + '_' + Flask_numb
        + '_' + Isolate_numb + '_' + tech_rep_numb)
     }
   }
 
   else {
     if ((workflow == 'generic_single')  || (workflow == 'generic_spreadsheet')) {
-     return (experiment + '_' + rundate + '_' + datatype)
+     return (project + '_' + rundate + '_' + datatype)
 
     }
     else if ((workflow == 'ale_single') ||  (workflow == 'ale_spreadsheet')){
-      return (experiment + '_' + ALE_numb + '_' + Flask_numb
+      return (project + '_' + ALE_numb + '_' + Flask_numb
        + '_' + Isolate_numb + '_' + tech_rep_numb)
     }
   }
@@ -1024,7 +1021,7 @@ function get_file_name() {
     if (lib_prep != '')
       lib_prep = '_' + lib_prep
 
-    return get_value('experiment').toString() + '_' + label
+    return get_value('project').toString() + '_' + label
 
   }
   else if ((workflow == 'ale_single')  || (workflow == 'ale_spreadsheet')) {
@@ -1033,7 +1030,7 @@ function get_file_name() {
       lib_prep = '_' + lib_prep
     }
 
-    return get_value('experiment').toString()
+    return get_value('project').toString()
     + lib_prep
     + '_'
     + get_value('ALE-number').toString()

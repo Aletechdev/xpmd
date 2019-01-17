@@ -18,11 +18,6 @@
         "type": "string",
         "pattern": ".*\\S.*"
       },
-      "experiment": {
-        "$id": "experiment",
-        "type": "string",
-        "pattern": ".*\\S.*"
-      },
       "data-type": {
         "$id": "data-type",
         "type": "string",
