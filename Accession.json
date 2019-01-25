@@ -13,5 +13,12 @@
     "NC_010079": "Staphylococcus aureus subsp. aureus USA300_TCH1516",
     "CP016816": "Synthetic bacterium JCVI-Syn3A",
     "PRJNA50719": "Staphylococcus aureus LAC",
-    "NZ_CP016346.1": "Vibrio natriegens"
+    "NZ_CP016346.1": "Vibrio natriegens",
+    "CP000255": "Staphylococcus aureus subsp. aureus USA300_FPR3757",
+    "NC_002737": "Streptococcus pyogenes M1 GAS",
+    "PRJNA77021": "Acinetobacter baumannii AB5075",
+    "PRJNA17477": "Acinetobacter baumannii ATCC17978",
+    "NZ_LS483442": "Streptococcus pyogenes FDAARGOS 149",
+    "CP014027": "Streptococcus pyogenes NCTC8370",
+    "CP008776.1": "Streptococcus pyogenes strain 5448"
 }

@@ -9,7 +9,7 @@ var Accession_strings;
 
 //Spreadsheet validation values
 var data_type_options = ['DNA-seq', 'RNA-seq', 'ChIP-seq', 'ChIP-exo', 'Ribo-seq']
-var base_media_options = ['M9', 'LB', 'DM25', 'RPMI', 'MHB', 'SMM']
+var base_media_options = ['M9', 'LB', 'DM25', 'RPMI', 'MHB', 'SMM', 'TH', 'THY']
 var isolate_options = ['clonal', 'population']
 var machine_options = ['MiSeq', 'NextSeq', 'HiSeq']
 var carbon_source_options = ['Acetate', 'Fructose', 'Glucose', 'Galactose', 'Glycerol', 'Xylose','Sucrose']
@@ -214,16 +214,19 @@ var data = [
   { label: 'Library Prep Kit Manufacturer',
     id: 'library-prep-kit-manufacturer',
     type: 'dropdown',
+    required: true,
     custom: true,
     options: lib_prep_manufacturer_options },
   { label: 'Library Prep Kit',
     id: 'library-prep-kit',
     type: 'dropdown',
+    required: true,
     custom: true,
     options: lib_prep_options },
   { label: 'Library Prep Kit Cycles',
     id: 'library-prep-kit-cycles',
     type: 'dropdown',
+    required: true,
     custom: true,
     options: lib_prep_cycle_options },
   { label: 'Single- or paired-end reads',
@@ -366,9 +369,9 @@ $(document).ready(function(){
           [,'"Sulfur Source, Input "' + "[" + sulfur_source_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration in (g/L) EXAMPLE: MgSO4(3)"],[,'"Electron Acceptor, Input one of the following: "' + "[" + electron_acceptor_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,"Input any other supplement(s) followed by the concentration in (g/L) EXAMPLE: supplement(0)"],
           [,'"Input one of the following Antibiotic(s) added: "' + "[" + antibiotic_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]" + " followed by the concentration (ug/mL) EXAMPLE: Ampicillin(0.5)"],
-          [,'"Machine, Input one of the following: "' + "[" + machine_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Library Prep Kit Manufacturer, Input one of the following: "' + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
-          [,'"Library Prep Kit, Input one of the following: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
-          [,'"Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"Machine, Input one of the following: "' + "[" + machine_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"REQUIRED: Library Prep Kit Manufacturer, Input one of the following: "' + "[" + lib_prep_manufacturer_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"REQUIRED: Library Prep Kit, Input one of the following: "' + "[" + lib_prep_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
+          [,'"REQUIRED: REQUIRED: Library Prep Kit Cycles, Input one of the following: "' + "[" + lib_prep_cycle_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,'"Read Type, Input one of the following: "' + "[" + read_type_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],
           [,'"Read Length, Input one of the following: "' + "[" + read_length_options_strings.replace(/[^\w\s\-\(\)]/gi, ']-[') + "]"],[,"Input Sample Preparation and Experiment Details"],[,'"Information on the pre-culture: Medium, cultivation volume, cultivation time, inoculated with spores, mycelium from plate, mycelium from liquid culture, inoculation volume, etc."'],
           [,'"Data on cultivation: Volume, fermenter/shake flask, baffle, springs, etc."'],[,"Describe any other environmental parameters."],[,"Insert Biological replicates number"],
           [,"Insert Technical replicates number"],
@@ -384,7 +387,7 @@ $(document).ready(function(){
           [,"biological-replicates"],[,"technical-replicates"]]
 
 
-    required_input_list = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["reference-file-list"],["Accession"]]
+    required_input_list = [["creator"],["creator-email"],["data-type"],["read-files"],["run-date"],["taxonomy-id"],["strain-description"],["base-media"],["isolate-type"],["ALE-number"],["Flask-number"],["Isolate-number"],["technical-replicate-number"],["Link-to-reference-sequence"],["reference-file-list"],["Accession"],["library-prep-kit-manufacturer"],["library-prep-kit"],["library-prep-kit-cycles"]]
 
 
     Liststart = false
