@@ -18,11 +18,6 @@
         "type": "string",
         "pattern": ".*\\S.*"
       },
-      "experiment": {
-        "$id": "experiment",
-        "type": "string",
-        "pattern": ".*\\S.*"
-      },
       "data-type": {
         "$id": "data-type",
         "type": "string",
@@ -36,12 +31,12 @@
       "taxonomy-id": {
         "$id": "taxonomy-id",
         "type": "string",
-        "enum": ["413997", "511145", "668369", "511693", "679895", "243274", "451516", "2144189", "867914", "1219067"]
+        "enum": ["413997", "511145", "668369", "511693", "679895", "243274", "451516", "2144189", "867914", "1219067","451515","160490","1116234","400667","301447"]
       },
       "Accession": {
         "$id": "Accession",
         "type": "string",
-        "enum": ["NC_012967", "CP000819.1", "NC_000913", "CP025268.1", "NZ_JRYM00000000", "KT943377", "NZ_CP009273", "CP009273", "NZ_CP011107.1", "NC_023151.1", "NC_021214.1", "NC_010079", "CP016816", "PRJNA50719", "NZ_CP016346.1"]
+        "enum": ["NC_012967", "CP000819.1", "NC_000913", "CP025268.1", "NZ_JRYM00000000", "KT943377", "NZ_CP009273", "CP009273", "NZ_CP011107.1", "NC_023151.1", "NC_021214.1", "NC_010079", "CP016816", "PRJNA50719", "NZ_CP016346.1", "CP000255", "NC_002737","PRJNA77021","PRJNA17477","CP008776.1"]
       },
       "strain-description": {
         "$id": "strain-description",
@@ -51,7 +46,7 @@
       "base-media": {
         "$id": "base-media",
         "type": "string",
-        "enum": ["M9", "LB", "DM25", "RPMI", "MHB", "SMM"]
+        "enum": ["M9", "LB", "DM25", "RPMI", "MHB", "SMM", "TH", "THY"]
       },
       "isolate-type": {
         "$id": "isolate-type",
