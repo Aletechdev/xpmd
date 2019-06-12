@@ -1,7 +1,7 @@
 
 QUnit.test( "Test_source_validation", function( assert ) {
   list = ["Only", "these", "words", "will", "match"]
-  list_actual_values = ['MgSO4', 'Spectinomycin', 'Polymyxin B', 'Ampicillin', 'KH2PO4', 'Fructose', 'Glucose', 'Galactose', '(NH4)2SO4', 'Glutamine']
+  list_actual_values = ['MgSO4', 'Spectinomycin', 'Polymyxin B', 'Polymyxin E', 'Ampicillin', 'KH2PO4', 'Fructose', 'Glucose', 'Galactose', '(NH4)2SO4', 'Glutamine']
   match = "only(9)"
   mismatch1 = "random(10)"
   mismatch2 = "these"
